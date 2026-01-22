@@ -1,0 +1,4 @@
+Django~=5.2.10
+dotenv~=0.9.9
+python-dotenv~=1.2.1
+psycopg2-binary
