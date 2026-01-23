@@ -15,7 +15,7 @@ services:
 
   django:
     build:
-      context: ./backend_core/src
+      context: ./backend_core
     container_name: diploma_django
     command: >
       sh -c "
@@ -36,6 +36,27 @@ services:
     ports:
       - "8000:8000"
 
+  fastapi:
+    build: ./backend_fastapi
+    container_name: diploma_fastapi
+    command: >
+      sh -c "
+      until nc -z postgres 5432; do
+        echo 'Waiting for postgres...';
+        sleep 1;
+      done;
+      uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+      "
+
+    volumes:
+      - ./backend_fastapi:/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    ports:
+      - "8001:8001"
+
   nginx:
     image: nginx:latest
     container_name: diploma_nginx
@@ -45,22 +66,13 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - django
+      - fastapi
+
 
 volumes:
   postgres_data:
 
 
-  #fastapi:
-  #  build: ./backend_fastapi
-  #  container_name: diploma_fastapi
-  #  command: uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
-  #  volumes:
-  #    - ./backend_fastapi:/app
-  #  env_file:
-  #    - .env
-  #  depends_on:
-  #    - postgres
-  #  ports:
-  #    - "8001:8001"
+
 
 
