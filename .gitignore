@@ -1,2 +1,5 @@
 /.env
 /.venv/
+/monitoring/
+/backend_core/src/media/
+/media/

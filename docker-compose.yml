@@ -1,78 +1,213 @@
 version: "3.9"
 
 services:
-
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: diploma_postgres
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: diploma_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   django:
-    build:
-      context: ./backend_core
-    container_name: diploma_django
-    command: >
-      sh -c "
-      until nc -z postgres 5432; do
-        echo 'Waiting for postgres...';
-        sleep 1;
-      done;
-      python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:8000
-      "
-
-    volumes:
-      - ./backend_core/src:/app
-    env_file:
-      - .env
-    depends_on:
-      - postgres
     ports:
       - "8000:8000"
-
-  fastapi:
-    build: ./backend_fastapi
-    container_name: diploma_fastapi
+    build:
+      context: ./backend_core
+      dockerfile: Dockerfile
+    container_name: diploma_django
+    restart: unless-stopped
     command: >
       sh -c "
-      until nc -z postgres 5432; do
-        echo 'Waiting for postgres...';
+      echo 'Waiting for database...' &&
+      while ! nc -z postgres 5432; do
         sleep 1;
       done;
-      uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+      echo 'Database ready!' &&
+      echo 'Waiting for Redis...' &&
+      while ! nc -z redis 6379; do
+        sleep 1;
+      done;
+      echo 'Redis ready!' &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      python manage.py createsuperuser --noinput || true &&
+      gunicorn backend_core.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 120
       "
+    volumes:
+      - ./backend_core/src:/app
+      - django_static:/app/staticfiles
+      - ./media:/app/media
+      - ./frontend:/app/frontend:ro  # Read-only mount for frontend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      DEBUG: "false"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,django"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  fastapi:
+    build:
+      context: ./backend_fastapi
+      dockerfile: Dockerfile
+    container_name: diploma_fastapi
+    restart: unless-stopped
+    command: >
+      sh -c "
+      echo 'Waiting for dependencies...' &&
+      while ! nc -z postgres 5432; do sleep 1; done;
+      while ! nc -z redis 6379; do sleep 1; done;
+      while ! nc -z django 8000; do sleep 1; done;
+      uvicorn src.main:app --host 0.0.0.0 --port 8001 --workers 4 --reload
+      "
     volumes:
       - ./backend_fastapi:/app
     env_file:
       - .env
     depends_on:
       - postgres
-    ports:
-      - "8001:8001"
+      - redis
+      - django
+    networks:
+      - app-network
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: diploma_nginx
+    restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
+      - django_static:/usr/share/nginx/django-static:ro
+      - ./media:/usr/share/nginx/media:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
     depends_on:
       - django
       - fastapi
+    networks:
+      - app-network
 
+
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 volumes:
   postgres_data:
+  redis_data:
+  django_static:
+ # django_media:
+ # prometheus_data:
+ # grafana_data:
 
 
-
+#  # Optional: Frontend development server (for live reload)
+#  frontend_dev:
+#    image: node:18-alpine
+#    container_name: diploma_frontend_dev
+#    restart: unless-stopped
+#    working_dir: /app
+#    volumes:
+#      - ./frontend:/app
+#    ports:
+#      - "3000:3000"
+#    command: >
+#      sh -c "
+#      if [ -f package.json ]; then
+#        npm install && npm run dev;
+#      else
+#        echo 'No package.json found. Using static HTML.';
+#        tail -f /dev/null;
+#      fi
+#      "
+#    networks:
+#      - app-network
+#
+#  # Optional: Monitoring with Prometheus and Grafana
+#  prometheus:
+#    image: prom/prometheus:latest
+#    container_name: diploma_prometheus
+#    volumes:
+#      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prometheus_data:/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--web.console.libraries=/etc/prometheus/console_libraries'
+#      - '--web.console.templates=/etc/prometheus/consoles'
+#      - '--storage.tsdb.retention.time=200h'
+#      - '--web.enable-lifecycle'
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - app-network
+#
+#  grafana:
+#    image: grafana/grafana:latest
+#    container_name: diploma_grafana
+#    volumes:
+#      - grafana_data:/var/lib/grafana
+#      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+#    environment:
+#      - GF_SECURITY_ADMIN_PASSWORD=admin
+#      - GF_USERS_ALLOW_SIGN_UP=false
+#    ports:
+#      - "3001:3000"
+#    networks:
+#      - app-network
 
 
