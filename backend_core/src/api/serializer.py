@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import Token
 
+from users.models import UserProfile
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -102,12 +104,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
-        # TODO: Create user profile with nickname and newsletter if needed
-        # For now, you can store newsletter in a UserProfile model
-        # profile = UserProfile.objects.create(user=user, nickname=nickname, subscribe_newsletter=subscribe_newsletter)
+        # Fetch the profile created by the signal and update it
+        if hasattr(user, 'userprofile'):
+            profile = user.userprofile
+            profile.nickname = nickname
+            profile.subscribe_newsletter = subscribe_newsletter
+            profile.save()
+        else:
+            UserProfile.objects.create(
+                user=user,
+                nickname=nickname,
+                subscribe_newsletter=subscribe_newsletter,
+            )
 
         return user
 
-# TO DO
-# Create user profile with nickname if needed
-# profile = UserProfile.objects.create(user=user, nickname=nickname)

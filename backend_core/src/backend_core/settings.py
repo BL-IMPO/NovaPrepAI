@@ -128,13 +128,13 @@ SIMPLE_JWT = {
 
     'JIT_CLAIM': 'jti',
 
-    #'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    #'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    #'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-#
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+
     ## Custom claims
     #'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-#
+
     ## Custom token serializer to include user data
     #'TOKEN_OBTAIN_SERIALIZER': 'api.serializer.CustomTokenObtainPairSerializer',
 
@@ -237,11 +237,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/django-static/'
+STATIC_URL = '/assets/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend',
     BASE_DIR / 'frontend/assets',
+    BASE_DIR / 'frontend',
 ]
 
 # Media files

@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.http import QueryDict
 
 from users.models import UserProfile
 from api.serializer import (
@@ -29,7 +30,12 @@ class LoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         # Accept both email and username fields
         if 'email' in request.data and 'username' not in request.data:
-            request.data['username'] = request.data['email']
+            if isinstance(request.data, QueryDict):
+                request.data._mutable = True
+                request.data['username'] = request.data['email']
+                request.data._mutable = False
+            else:
+                request.data['username'] = request.data['email']
 
         response = super().post(request, *args, **kwargs)
 
