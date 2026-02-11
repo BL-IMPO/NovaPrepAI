@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showMessage('✓ Login successful! Redirecting...', 'success');
 
                     // Optional: Store user data in session
-                    sessionStorage.setItem('welcome_message', `Welcome back, ${result.user.first_name || result.user.username}!`);
+                    sessionStorage.setItem('welcome_message', 'Welcome back!');
 
                     // Redirect after delay
                     setTimeout(() => {

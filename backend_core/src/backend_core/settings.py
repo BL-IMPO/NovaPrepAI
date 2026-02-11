@@ -77,6 +77,7 @@ INSTALLED_APPS = [
 
 
     'users',
+    'main'
 ]
 
 REST_FRAMEWORK = {

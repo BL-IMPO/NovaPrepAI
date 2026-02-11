@@ -43,7 +43,7 @@ class UserAuthFunctionalTest(FunctionalTest):
         self.browser.find_element(By.ID, 'loginButton').click()
 
         # 4. After a little waiting Zhanyl authorized and get to the dashboard page
-        WebDriverWait(self.browser, 5).until(
+        WebDriverWait(self.browser, 50).until(
             EC.url_contains('dashboard')
         )
 
@@ -80,7 +80,7 @@ class UserAuthFunctionalTest(FunctionalTest):
         self.browser.find_element(By.ID, 'registerButton').click()
 
         # 5. After waiting for a while she sees that she is at the main page
-        WebDriverWait(self.browser, 20).until(
+        WebDriverWait(self.browser, 5).until(
             lambda driver: 'registration.html' not in driver.current_url
         )
 

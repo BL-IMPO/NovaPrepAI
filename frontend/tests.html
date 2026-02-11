@@ -5,94 +5,421 @@
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>diploma_project</title>
+    <title>ORT Testing System</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bss-overrides.css">
     <link rel="stylesheet" href="assets/css/Footer-Dark-icons.css">
+    <style>
+        .test-card {
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            height: 100%;
+            min-height: 200px;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: #0d6efd;
+        }
+        .test-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .time-badge {
+            background-color: #6c757d;
+            color: white;
+        }
+        .test-card .card-body {
+            padding: 1.5rem;
+        }
+        .test-card .card-footer {
+            background-color: transparent;
+            border-top: 1px solid #dee2e6;
+        }
+        .btn-start-test {
+            background-color: #198754;
+            border-color: #198754;
+            color: white;
+        }
+        .btn-start-test:hover {
+            background-color: #157347;
+            border-color: #146c43;
+        }
+        .section-title {
+            color: #0d6efd;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #0d6efd;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Start: Navbar Right Links (Dark) -->
     <nav class="navbar navbar-expand-md bg-dark py-3" data-bs-theme="dark">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="#"><span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
                         <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
                         <path d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z"></path>
-                    </svg></span><span>Brand</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                    </svg>
+                </span>
+                <span>ORT Testing System</span>
+            </a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
+                <span class="visually-hidden">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navcol-5">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Tests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Chat</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/">Tests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Results</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
-                </ul><a class="btn btn-primary ms-md-2" role="button" href="#">Login/Register</a>
+                </ul>
+                <a class="btn btn-primary ms-md-2" role="button" href="#">Login/Register</a>
             </div>
         </div>
-    </nav><!-- End: Navbar Right Links (Dark) -->
-    <!-- Start: 2 Rows 1+4 Columns -->
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body mt-5">
-                        <h4 class="card-title">Choose you Test</h4>
-                        <h6 class="text-muted card-subtitle mb-2">Click on one of the variants</h6>
-                        <p class="card-text">Here you can choose your type of test.</p>
+    </nav>
+    <!-- End: Navbar Right Links (Dark) -->
+
+    <div class="container py-4">
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <h1 class="card-title display-4 fw-bold text-primary mb-3">ORT Testing System</h1>
+                        <p class="card-text lead text-muted mb-4">Practice for your ORT exams with realistic test simulations. Choose from standard tests or specialized subjects.</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <span class="badge bg-success fs-6">Real-time Testing</span>
+                            <span class="badge bg-info fs-6">Instant Results</span>
+                            <span class="badge bg-warning fs-6">Performance Tracking</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row mt-3 pt-0 mb-8 pb-4">
-            <div class="col-md-3 mt-3 mb-0 pb-10">
-                <p>Real Full ART</p><button class="btn btn-primary mt-3 mb-4" type="button">ART TEST&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</button>
-            </div>
-            <div class="col-md-3 mt-3 mb-0 pb-0">
-                <p>ART by parts</p>
-                <div class="row">
-                    <div class="col"><button class="btn btn-primary me-0 pe-3 mt-3 pt-2 mb-3 pb-2" type="button">Math 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</button></div>
-                </div>
-                <div class="row">
-                    <div class="col"><button class="btn btn-primary mt-3 mb-3" type="button">Math 2&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</button></div>
-                </div>
-                <div class="row">
-                    <div class="col"><button class="btn btn-primary mt-3 mb-3" type="button">Reading&amp;unders.</button></div>
-                </div>
-                <div class="row">
-                    <div class="col"><button class="btn btn-primary mt-3 mb-3" type="button">Anology&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</button></div>
-                </div>
-                <div class="row">
-                    <div class="col"><button class="btn btn-primary mt-3 mb-3" type="button">Grammar&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</button></div>
-                </div>
-            </div>
-            <div class="col-md-3 mt-3">
-                <p>ART themes</p>
-            </div>
-            <div class="col-md-3 mt-3">
-                <p>Customized test</p>
+
+        <!-- Standard Tests Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="section-title">Standard Tests</h2>
+                <p class="text-muted mb-4">Complete ORT sections individually or take the full test</p>
             </div>
         </div>
-    </div><!-- End: 2 Rows 1+4 Columns -->
+
+        <div class="row g-4 mb-5">
+            <!-- Full Test -->
+            <div class="col-md-4">
+                <div class="card test-card" onclick="startTest('full_test')">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-primary test-type-badge fs-6">3h</span>
+                        <h4 class="card-title mb-3">Full ORT Test</h4>
+                        <p class="card-text flex-grow-1">Complete test with all sections: Math 1, Math 2, Analogy, Reading, and Grammar. Simulates the actual ORT exam experience.</p>
+                        <div class="mt-auto">
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge bg-secondary">150 questions</span>
+                                <span class="badge time-badge">180 minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-start-test w-100 py-2">Start Full Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test by Parts -->
+            <div class="col-md-8">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card test-card" onclick="startTest('math_1')">
+                            <div class="card-body">
+                                <h5 class="card-title">Math 1</h5>
+                                <p class="card-text text-muted">First mathematics section - basic arithmetic and algebra</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">30 questions</span>
+                                    <span class="badge time-badge">60 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card test-card" onclick="startTest('math_2')">
+                            <div class="card-body">
+                                <h5 class="card-title">Math 2</h5>
+                                <p class="card-text text-muted">Second mathematics section - geometry and advanced topics</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">30 questions</span>
+                                    <span class="badge time-badge">60 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card test-card" onclick="startTest('analogy')">
+                            <div class="card-body">
+                                <h5 class="card-title">Analogy</h5>
+                                <p class="card-text text-muted">Analogical reasoning and pattern recognition</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">30 questions</span>
+                                    <span class="badge time-badge">30 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card test-card" onclick="startTest('reading')">
+                            <div class="card-body">
+                                <h5 class="card-title">Reading & Understanding</h5>
+                                <p class="card-text text-muted">Reading comprehension and analysis</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">30 questions</span>
+                                    <span class="badge time-badge">60 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card test-card" onclick="startTest('grammar')">
+                            <div class="card-body">
+                                <h5 class="card-title">Grammar</h5>
+                                <p class="card-text text-muted">Grammar rules, syntax, and language usage</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">30 questions</span>
+                                    <span class="badge time-badge">30 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Subject Tests Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="section-title">Special Subject Tests</h2>
+                <p class="text-muted mb-4">Subject-specific tests for specialization and advanced practice</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Special Tests Grid -->
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_math')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">M</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Mathematics</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_physics')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-info d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">P</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Physics</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_chemistry')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">C</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Chemistry</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_biology')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">B</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Biology</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_history')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">H</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">History</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_english')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-purple d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: #6f42c1;">
+                                <span class="text-white fw-bold">E</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">English</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_russian_grammar')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">R</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Russian Grammar</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card test-card" onclick="startTest('special_kyrgyz_grammar')">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="text-white fw-bold">K</span>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Kyrgyz Grammar</h5>
+                        <div class="d-flex justify-content-center gap-1">
+                            <span class="badge bg-secondary">40 Q</span>
+                            <span class="badge time-badge">90 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Start: Footer Dark -->
-    <footer class="text-center bg-body" data-bs-theme="dark">
+    <footer class="text-center bg-body mt-5" data-bs-theme="dark">
         <div class="container py-4 py-lg-5">
-            <ul class="list-inline">
-                <li class="list-inline-item me-4"><a class="link-body-emphasis" href="#">Web design</a></li>
-                <li class="list-inline-item me-4"><a class="link-body-emphasis" href="#">Development</a></li>
-                <li class="list-inline-item"><a class="link-body-emphasis" href="#">Hosting</a></li>
-            </ul>
-            <ul class="list-inline">
-                <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-facebook text-body">
-                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"></path>
-                        </svg></a></li>
-                <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-twitter-x text-body">
-                            <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"></path>
-                        </svg></a></li>
-                <li class="list-inline-item"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-instagram text-body">
-                            <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"></path>
-                        </svg></a></li>
-            </ul>
-            <p class="text-body mb-0">Copyright © 2026 Brand</p>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">ORT Testing System</h5>
+                    <p class="text-body-secondary">Practice and prepare for your ORT exams with realistic test simulations and instant feedback.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="/">Home</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Results</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Profile</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Help</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Connect With Us</h5>
+                    <ul class="list-inline">
+                        <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-facebook text-body" style="font-size: 1.5rem;">
+                                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"></path>
+                                </svg></a></li>
+                        <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-twitter-x text-body" style="font-size: 1.5rem;">
+                                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"></path>
+                                </svg></a></li>
+                        <li class="list-inline-item"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-instagram text-body" style="font-size: 1.5rem;">
+                                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"></path>
+                                </svg></a></li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-body mb-0">Copyright © 2024 ORT Testing System. All rights reserved.</p>
         </div>
-    </footer><!-- End: Footer Dark -->
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    </footer>
+    <!-- End: Footer Dark -->
+
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to start test with confirmation
+        function startTest(testType) {
+            const testNames = {
+                'math_1': 'Math 1',
+                'math_2': 'Math 2',
+                'analogy': 'Analogy',
+                'reading': 'Reading & Understanding',
+                'grammar': 'Grammar',
+                'full_test': 'Full ORT Test',
+                'special_math': 'Special Mathematics',
+                'special_physics': 'Special Physics',
+                'special_chemistry': 'Special Chemistry',
+                'special_biology': 'Special Biology',
+                'special_history': 'Special History',
+                'special_english': 'Special English',
+                'special_russian_grammar': 'Special Russian Grammar',
+                'special_kyrgyz_grammar': 'Special Kyrgyz Grammar'
+            };
+
+            const testName = testNames[testType] || testType.replace('_', ' ').toUpperCase();
+
+            if (confirm(`Are you ready to start the "${testName}" test?\n\nMake sure you have enough time to complete the test.`)) {
+                window.location.href = `/testing/${testType}`;
+            }
+        }
+
+        // Highlight active nav link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath ||
+                    (currentPath === '/' && link.getAttribute('href') === '/')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

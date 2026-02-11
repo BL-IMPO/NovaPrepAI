@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 nickname: document.getElementById('nickname').value,
                 email: document.getElementById('email').value,
                 password: passwordInput.value,
-                password2: passwordConfirmInput.value,
+                password2: document.getElementById('password_confirm').value,
                 subscribe_newsletter: document.getElementById('newsletter').checked
             };
 

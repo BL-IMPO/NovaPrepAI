@@ -1,0 +1,241 @@
+import os
+from pathlib import Path
+from asgiref.sync import sync_to_async
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import json
+from contextlib import asynccontextmanager
+from typing import Dict, List
+
+# Initializing Django
+from . import django_settings
+
+# Now import Django models
+try:
+    from django.contrib.auth import get_user_model
+    from main.models import TestAttempt
+    print("Successfully imported Django models")
+except Exception as e:
+    print(f"Error importing Django models: {e}")
+    raise
+
+from schemas import schemas
+from . import utils
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("FastAPI Testing System starting...")
+    yield
+    # Shutdown
+    print("FastAPI Testing System shutting down...")
+
+
+app = FastAPI(title="ORT Testing System", lifespan=lifespan)
+
+# ------- CORS ---------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost",
+        "http://127.0.0.1",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# ----------------------
+
+# Mount static files
+frontend_path = Path("/usr/share/nginx/html")
+if not frontend_path.exists():
+    # Fallback for development
+    frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'frontend'
+
+# Templates
+templates = Jinja2Templates(directory=frontend_path)
+
+# Initialize test utils
+test_ort = utils.TestORT()
+
+@app.get("/")
+async def root():
+    return {"message": "ORT Testing API", "status": "running"}
+
+@app.get("/testing/{test_type}", response_class=HTMLResponse)
+async def testing_page(request: Request, test_type: str):
+    """Serve the testing interface for a specific test type"""
+    try:
+        # Validate test type exists
+        test_data = test_ort.get_test_data(test_type)
+
+        return templates.TemplateResponse("testing.html",
+                                      {"request": request,
+                                       "test_type": test_type,
+                                       "test_name": test_type.replace('_', ' ').title()})
+    except ValueError as e:
+        # Return 404 if test type not found
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        print(f"Error serving testing page: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/api/test/{test_type}")
+async def get_test_data(test_type: str):
+    """Get test data including questions and time limit"""
+    try:
+        test_data = test_ort.get_test_data(test_type)
+        return test_data
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@app.post("/api/test/submit")
+async def submit_test(submission: schemas.TestSubmission):
+    try:
+        # 1. Use data directly from the Pydantic model (No need for request.json)
+        test_type = submission.test_type
+
+        # 2. Validation
+        if not test_type:
+            raise HTTPException(status_code=400, detail="Test type is required")
+
+        # Get test data for validation
+        test_data = test_ort.get_test_data(test_type)
+        questions = list(test_data["questions"].items())
+
+        # Calculate score
+        score = 0
+        details = []
+
+        for idx, (question, answer) in enumerate(questions):
+            # 3. Access answers safely
+            # Note: JSON keys are always strings, but our loop index is int.
+            # We try both just to be safe.
+            user_answer_idx = submission.answers.get(str(idx))
+            if user_answer_idx is None:
+                user_answer_idx = submission.answers.get(idx)
+
+            # Convert string input to int if necessary
+            if isinstance(user_answer_idx, str):
+                try:
+                    user_answer_idx = int(user_answer_idx)
+                except (ValueError, TypeError):
+                    user_answer_idx = None
+            elif not isinstance(user_answer_idx, int):
+                user_answer_idx = None
+
+            if user_answer_idx is not None and user_answer_idx == 0:
+                # First answer (index 0) is always the correct one in this engine
+                score += 1
+
+            details.append({
+                "question": question,
+                "user_answer": user_answer_idx,
+                "correct_answer": 0,
+                "is_correct": user_answer_idx == 0,
+            })
+
+        # Calculate if passed (60% threshold)
+        total_questions = len(questions)
+        passed = (score / total_questions) >= 0.6 if total_questions > 0 else False
+
+        # --- DB Operations Wrapper ---
+        def db_save_attempt():
+            User = get_user_model()
+            # Get or create a test user
+            user = User.objects.first()
+            if not user:
+                user = User.objects.create_user(
+                    username="test_user",
+                    email="test@example.com",
+                    password="testpassword123"
+                )
+
+            # Create attempt
+            return TestAttempt.objects.create(
+                user=user,
+                test_type=submission.test_type,
+                score=score,
+                passed=passed,
+                details=details,
+            )
+
+        # Execute the DB operation in a thread safe way
+        test_attempt = await sync_to_async(db_save_attempt)()
+
+        return {
+            "success": True,
+            "score": score,
+            "total": total_questions,
+            "percentage": (score / total_questions * 100) if total_questions > 0 else 0,
+            "passed": passed,
+            "attempt_id": test_attempt.id
+        }
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error submitting test: {str(e)}")
+
+
+@app.get("/api/test/types")
+async def get_test_types():
+    """Get available test types"""
+    return {
+        "standard_tests": [
+            {"id": "math_1", "name": "Math 1", "questions": 30, "time": 60},
+            {"id": "math_2", "name": "Math 2", "questions": 30, "time": 60},
+            {"id": "analogy", "name": "Analogy", "questions": 30, "time": 30},
+            {"id": "reading", "name": "Reading", "questions": 30, "time": 60},
+            {"id": "grammar", "name": "Grammar", "questions": 30, "time": 30},
+            {"id": "full_test", "name": "Full Test", "questions": 150, "time": 180}
+        ],
+        "special_tests": [
+            {"id": "special_math", "name": "Mathematics", "questions": 40, "time": 90},
+            {"id": "special_biology", "name": "Biology", "questions": 40, "time": 90},
+            {"id": "special_chemistry", "name": "Chemistry", "questions": 40, "time": 90},
+            {"id": "special_english", "name": "English", "questions": 40, "time": 90},
+            {"id": "special_history", "name": "History", "questions": 40, "time": 90},
+            {"id": "special_physics", "name": "Physics", "questions": 40, "time": 90},
+            {"id": "special_russian_grammar", "name": "Russian Grammar", "questions": 40, "time": 90},
+            {"id": "special_kyrgyz_grammar", "name": "Kyrgyz Grammar", "questions": 40, "time": 90}
+        ]
+    }
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    try:
+        # Check Django database connection
+        # Wrapper for the DB check
+        def db_check():
+            from django.db import connection
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+
+        await sync_to_async(db_check)()
+
+        return {
+            "status": "healthy",
+            "service": "testing_api",
+            "database": "connected",
+            "django": "initialized"
+        }
+    except Exception as e:
+        print(f"Health check failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001, reload=True)

@@ -315,24 +315,40 @@ function resetButton(button, originalText) {
     button.innerHTML = originalText;
 }
 
+// ========== UI STATE MANAGEMENT ==========
+function updateUI() {
+    const isLoggedIn = isAuthenticated();
+
+    // 1. Show/Hide "Auth Only" elements (Profile, Logout)
+    document.querySelectorAll('[data-auth="true"]').forEach(el => {
+        if (isLoggedIn) {
+            el.style.display = '';
+        } else {
+            el.style.display = 'none';
+        }
+    });
+
+    // 2. Show/Hide "Guest Only" elements
+    document.querySelectorAll('[data-guest="true"]').forEach(el => {
+        if (!isLoggedIn) {
+            el.style.display = '';
+        } else {
+            el.style.display = 'none';
+        }
+    });
+}
+
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize register form if on registration page
-    //if (document.getElementById('registerForm')) {
-    //    initRegisterForm();
-    //}
-//
-    //// Initialize login form if on login page
-    //if (document.getElementById('loginForm')) {
-    //    initLoginForm();
-    //}
+
+    updateUI();
 
     // Handle logout buttons
     document.querySelectorAll('[data-logout], .logout-btn').forEach(button => {
         button.addEventListener('click', async function(e) {
             e.preventDefault();
             await logoutUser();
-            window.location.href = '/login.html';
+            window.location.href = '/dashboard';
         });
     });
 });
