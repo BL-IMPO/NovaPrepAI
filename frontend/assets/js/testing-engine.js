@@ -113,22 +113,14 @@ class TestingEngine {
                 timerElement.style.color = '';
             }
         }
-
-        const timePercentage = ((this.totalTime - this.timeLeft) / this.totalTime) * 100;
-        const progressBar = document.getElementById('progressBar');
-        if (progressBar) {
-            progressBar.style.width = `${timePercentage}%`;
-            progressBar.setAttribute('aria-valuenow', timePercentage);
-        }
+        // Notice: The progress bar update logic was removed from here to fix the resetting bug!
     }
 
     renderSidebar() {
         const sidebar = document.getElementById('questionSidebar');
-        if (!sidebar) return; // Guard clause to prevent crash
+        if (!sidebar) return;
 
         sidebar.innerHTML = '';
-
-        // We do NOT look for mobileQuestionSidebar because it doesn't exist in your HTML
 
         this.questions.forEach((question, index) => {
             const questionNumber = index + 1;
@@ -139,7 +131,6 @@ class TestingEngine {
             item.href = '#';
             item.className = 'list-group-item list-group-item-action question-sidebar-item';
 
-            // Add styling classes
             if (isCurrent) item.classList.add('active');
             if (isAnswered) {
                 item.classList.add('answered');
@@ -159,7 +150,7 @@ class TestingEngine {
                 e.preventDefault();
                 this.goToQuestion(index);
 
-                // Close mobile sidebar if it's open (using the CSS class from your HTML)
+                // Close mobile sidebar if it's open
                 const sidebarEl = document.getElementById('sidebar');
                 const overlayEl = document.getElementById('sidebarOverlay');
                 if (window.innerWidth <= 768 && sidebarEl && sidebarEl.classList.contains('show')) {
@@ -175,10 +166,18 @@ class TestingEngine {
     renderQuestion() {
         if (this.questions.length === 0) return;
 
-        const [questionText, answers] = this.questions[this.currentQuestionIndex];
+        const currentQ = this.questions[this.currentQuestionIndex];
+        const questionText = currentQ[0];
+        const optionsWithExtra = currentQ[1]; // The array from python including answers and extra_data
+
+        // Safely extract the extraData (the last element) and actual answers
+        const extraData = optionsWithExtra[optionsWithExtra.length - 1];
+        const actualAnswers = optionsWithExtra.slice(0, -1);
+
         const questionNumber = this.currentQuestionIndex + 1;
         const totalQuestions = this.questions.length;
 
+        // 1. Update Headers
         const titleEl = document.getElementById('currentQuestionTitle');
         if (titleEl) titleEl.textContent = `Question ${questionNumber}`;
 
@@ -188,16 +187,62 @@ class TestingEngine {
         const textEl = document.getElementById('questionText');
         if (textEl) textEl.textContent = questionText;
 
+        // 2. Render Dynamic Media (SVG, Image, Text Block, Modal)
+        const mediaContainer = document.getElementById('questionMediaContainer');
+        if (mediaContainer) {
+            mediaContainer.innerHTML = ''; // Clear previous media
+
+            if (extraData && extraData[0] !== null) {
+                const tag = extraData[0];
+                const content = extraData[1];
+
+                switch(tag) {
+                    case 'SVG_GRAPH':
+                        mediaContainer.innerHTML = content;
+                        break;
+                    case 'IMAGE_URL':
+                        mediaContainer.innerHTML = `<img src="${content}" class="img-fluid rounded border mb-3" style="max-height: 300px; object-fit: contain;">`;
+                        break;
+                    case 'HTML_TABLE':
+                        mediaContainer.innerHTML = `<div class="table-responsive mb-3 d-flex justify-content-center">${content}</div>`;
+                        break;
+                    case 'TEXT_BLOCK':
+                        mediaContainer.innerHTML = `<div class="p-3 bg-light border rounded mb-3 text-start fw-bold">${content}</div>`;
+                        break;
+                    case 'FORMULA':
+                        mediaContainer.innerHTML = `$$${content}$$`;
+                        break;
+                    case 'TEXT_BLOCK_LARGE':
+                        // Create the trigger button for the reading passage modal
+                        mediaContainer.innerHTML = `
+                            <button type="button" class="btn btn-outline-primary w-100 mb-4 py-2 fs-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#readingPassageModal">
+                                📖 Read Passage
+                            </button>
+                        `;
+                        // Inject the text into the hidden modal body
+                        const modalContent = document.getElementById('readingPassageContent');
+                        if (modalContent) {
+                            // Convert standard line breaks to HTML breaks
+                            modalContent.innerHTML = content.replace(/\n/g, '<br>');
+                        }
+                        break;
+                }
+                mediaContainer.style.display = 'block';
+            } else {
+                mediaContainer.style.display = 'none'; // Hide if no extra data
+            }
+        }
+
+        // 3. Render Answers
         const container = document.getElementById('answersContainer');
         if (!container) return;
 
         container.innerHTML = '';
-
         const answerLetters = ['A', 'B', 'C', 'D', 'E'];
         const currentAnswer = this.answers.get(this.currentQuestionIndex);
         const previousAnswer = this.previousAnswers.get(this.currentQuestionIndex);
 
-        answers.forEach((answer, index) => {
+        actualAnswers.forEach((answer, index) => {
             const col = document.createElement('div');
             col.className = 'col-md-6 mb-3';
 
@@ -222,15 +267,14 @@ class TestingEngine {
                 answerDiv.classList.add('previous');
             }
 
-            // Click on the whole box
+            // Click entire box
             answerDiv.addEventListener('click', (e) => {
-                // Prevent double triggering if clicking the radio itself
                 if (e.target.type !== 'radio') {
                     this.selectAnswer(index);
                 }
             });
 
-            // Click on radio specifically
+            // Click radio directly
             const radio = answerDiv.querySelector('input[type="radio"]');
             radio.addEventListener('change', () => {
                 if (radio.checked) {
@@ -242,7 +286,7 @@ class TestingEngine {
             container.appendChild(col);
         });
 
-        // Update buttons
+        // 4. Update Navigation Buttons
         const prevBtn = document.getElementById('prevBtn');
         if (prevBtn) prevBtn.disabled = this.currentQuestionIndex === 0;
 
@@ -282,22 +326,6 @@ class TestingEngine {
         if (progressBar) progressBar.style.width = `${percentage}%`;
     }
 
-    markCurrentQuestion() {
-        // Logic to visually mark the current question in sidebar
-        // This requires CSS support for .marked class
-        const sidebarItems = document.querySelectorAll('.question-sidebar-item');
-        if (sidebarItems[this.currentQuestionIndex]) {
-            sidebarItems[this.currentQuestionIndex].classList.toggle('marked');
-        }
-    }
-
-    clearCurrentAnswer() {
-        this.answers.delete(this.currentQuestionIndex);
-        this.renderQuestion();
-        this.renderSidebar();
-        this.updateProgress();
-    }
-
     initEventListeners() {
         const prevBtn = document.getElementById('prevBtn');
         if (prevBtn) {
@@ -329,16 +357,12 @@ class TestingEngine {
         const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) {
             submitBtn.addEventListener('click', () => {
-                // Check if all questions are answered
                 const unanswered = this.questions.length - this.answers.size;
                 if (unanswered > 0) {
-                    // Show confirmation modal instead of simple alert
                     const confirmModal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
                     document.getElementById('unansweredCount').textContent = unanswered;
 
-                    // Setup the confirm button inside the modal
                     const confirmBtn = document.getElementById('confirmSubmitBtn');
-                    // Remove old listeners to prevent multiple submissions
                     const newConfirmBtn = confirmBtn.cloneNode(true);
                     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
@@ -355,9 +379,6 @@ class TestingEngine {
                 }
             });
         }
-
-        // NOTE: We removed the 'toggleSidebarBtn' listener from here
-        // because it is already handled in your HTML file's inline script.
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -377,7 +398,6 @@ class TestingEngine {
         if (this.timerInterval) clearInterval(this.timerInterval);
 
         try {
-            // Convert Map to plain object for JSON
             const answersObj = {};
             this.answers.forEach((value, key) => {
                 answersObj[key] = value;
@@ -402,15 +422,19 @@ class TestingEngine {
 
             const result = await response.json();
 
-            // Show results
+            // Populate Modals with True Scores vs Base Scores
             const scoreEl = document.getElementById('modalScore');
             if (scoreEl) scoreEl.textContent = result.score;
 
             const totalEl = document.getElementById('modalTotal');
-            if (totalEl) totalEl.textContent = result.total;
+            if (totalEl) totalEl.textContent = result.total; // From your backend 'total' key
+
+            const weightedScoreEl = document.getElementById('modalWeightedScore');
+            if (weightedScoreEl) weightedScoreEl.textContent = result.weighted_score;
 
             const pctEl = document.getElementById('modalPercentage');
-            if (pctEl) pctEl.textContent = result.percentage.toFixed(1);
+            const percentage = result.percentage || (result.total > 0 ? (result.score / result.total * 100) : 0);
+            if (pctEl) pctEl.textContent = percentage.toFixed(1);
 
             const passedElement = document.getElementById('modalPassed');
             if (passedElement) {
@@ -419,7 +443,7 @@ class TestingEngine {
             }
 
             const barEl = document.getElementById('scoreProgressBar');
-            if (barEl) barEl.style.width = `${result.percentage}%`;
+            if (barEl) barEl.style.width = `${percentage}%`;
 
             const modalEl = document.getElementById('successModal');
             if (modalEl) {
@@ -434,11 +458,8 @@ class TestingEngine {
     }
 }
 
-// Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Only initialize if the sidebar exists (meaning we are on the testing page)
     if (document.getElementById('questionSidebar')) {
-        // Expose to window for button onclick handlers in HTML
         window.TestingEngine = new TestingEngine();
     }
 });

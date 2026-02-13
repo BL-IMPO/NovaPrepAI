@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/bss-overrides.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
             --primary-color: #0d6efd;
@@ -224,6 +226,26 @@
         .answer-option.selected .option-letter {
             background-color: rgba(255,255,255,0.3);
         }
+        /* Styling for ORT Reading Passages */
+        .ort-passage {
+            font-family: "Times New Roman", Times, serif; /* ORT tests usually use serif fonts */
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: justify;
+
+            /* Create the two-column layout */
+            column-count: 2;
+            column-gap: 3rem;
+            column-rule: 1px solid #dee2e6; /* Optional line between columns */
+        }
+
+        /* On small screens (mobile), switch back to 1 column so it's readable */
+        @media (max-width: 768px) {
+            .ort-passage {
+                column-count: 1;
+                column-rule: none;
+            }
+        }
     </style>
 </head>
 
@@ -334,6 +356,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="question-card p-4 mb-4">
+
+                        <div id="questionMediaContainer" class="text-center mb-4" style="display: none;"></div>
+
                         <div class="question-text" id="questionText">
                             Loading question...
                         </div>
@@ -414,8 +439,11 @@
                         <div class="card-body text-center">
                             <h3 class="mb-3">Your Score</h3>
                             <div class="display-4 fw-bold text-primary mb-2">
-                                <span id="modalScore">0</span>/<span id="modalTotal">0</span>
+                                <span id="modalScore">0</span>/<span id="modalTotal">0</span> <span class="fs-4 text-muted">correct</span>
                             </div>
+                                <h4 class="mb-3 text-success">
+                                    Points: <span id="modalWeightedScore">0.0</span>
+                                </h4>
                             <div class="progress mb-3" style="height: 10px;">
                                 <div class="progress-bar bg-success" id="scoreProgressBar" role="progressbar" style="width: 0%"></div>
                             </div>
@@ -470,7 +498,23 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="readingPassageModal" tabindex="-1" aria-labelledby="readingPassageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="readingPassageModalLabel">Reading Passage</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="readingPassageContent" class="ort-passage text-dark">
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/testing-engine.js"></script>
     <script>
@@ -528,6 +572,7 @@
             }
         });
     </script>
+
 </body>
 
 </html>

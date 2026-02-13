@@ -19,7 +19,10 @@ class TestAttemptResponse(BaseModel):
     user_id: int
     user_username: str
     test_type: str
+
     score: int
+    weighted_score: float
+
     passed: bool
     created_at: str
     details_count: int

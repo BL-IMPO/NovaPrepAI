@@ -89,10 +89,24 @@ async def testing_page(request: Request, test_type: str):
 
 @app.get("/api/test/{test_type}")
 async def get_test_data(test_type: str):
-    """Get test data including questions and time limit"""
+    """Get test data including questions and time limit.
+        Hides complexity scores from frontend"""
     try:
-        test_data = test_ort.get_test_data(test_type)
-        return test_data
+        raw_data = test_ort.get_test_data(test_type)
+
+        # Clean the questions from complexity score
+        cleaned_questions = {}
+        for question_text, options in raw_data["questions"].items():
+            extra_data = options.pop(-1)  # 1. Take out extra_data
+            options.pop(-1)  # 2. Take out the hidden score
+            options.append(extra_data)  # 3. Put extra_data back at the end
+            cleaned_questions[question_text] = options
+
+        return {
+            "time_limit": raw_data["time_limit"],
+            "questions": cleaned_questions,
+        }
+
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -113,13 +127,19 @@ async def submit_test(submission: schemas.TestSubmission):
         test_data = test_ort.get_test_data(test_type)
         questions = list(test_data["questions"].items())
 
-        # Calculate score
-        score = 0
+        # Initializing scores
+        base_score = 0
+        weighted_score = 0.0
+
         details = []
 
-        for idx, (question, answer) in enumerate(questions):
+        for idx, (question, options) in enumerate(questions):
             # 3. Access answers safely
             # Note: JSON keys are always strings, but our loop index is int.
+            options.pop(-1)
+            # Get specific points for answer
+            question_points = float(options[-1])
+
             # We try both just to be safe.
             user_answer_idx = submission.answers.get(str(idx))
             if user_answer_idx is None:
@@ -134,9 +154,15 @@ async def submit_test(submission: schemas.TestSubmission):
             elif not isinstance(user_answer_idx, int):
                 user_answer_idx = None
 
-            if user_answer_idx is not None and user_answer_idx == 0:
+            is_correct = (user_answer_idx is not None and user_answer_idx == 0)
+
+            if is_correct:
+                base_score += 1
+                weighted_score += question_points
+
+            #if user_answer_idx is not None and user_answer_idx == 0:
                 # First answer (index 0) is always the correct one in this engine
-                score += 1
+            #    score += 1
 
             details.append({
                 "question": question,
@@ -147,7 +173,7 @@ async def submit_test(submission: schemas.TestSubmission):
 
         # Calculate if passed (60% threshold)
         total_questions = len(questions)
-        passed = (score / total_questions) >= 0.6 if total_questions > 0 else False
+        passed = (base_score / total_questions) >= 0.6 if total_questions > 0 else False
 
         # --- DB Operations Wrapper ---
         def db_save_attempt():
@@ -165,7 +191,8 @@ async def submit_test(submission: schemas.TestSubmission):
             return TestAttempt.objects.create(
                 user=user,
                 test_type=submission.test_type,
-                score=score,
+                score=base_score,
+                weighted_score=round(weighted_score, 2),
                 passed=passed,
                 details=details,
             )
@@ -175,9 +202,10 @@ async def submit_test(submission: schemas.TestSubmission):
 
         return {
             "success": True,
-            "score": score,
+            "score": base_score,
+            "weighted_score": round(weighted_score, 2),
             "total": total_questions,
-            "percentage": (score / total_questions * 100) if total_questions > 0 else 0,
+            "percentage": (base_score / total_questions * 100) if total_questions > 0 else 0,
             "passed": passed,
             "attempt_id": test_attempt.id
         }
