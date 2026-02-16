@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bss-overrides.css">
     <link rel="stylesheet" href="assets/css/Footer-Dark-icons.css">
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/auth-middleware.js"></script>
     <style>
         .test-card {
             transition: all 0.3s;
@@ -114,7 +116,7 @@
         <div class="row g-4 mb-5">
             <!-- Full Test -->
             <div class="col-md-4">
-                <div class="card test-card" onclick="startTest('full_test')">
+                <div class="card test-card" onclick="location.href='/test-info/full_test'">
                     <div class="card-body d-flex flex-column">
                         <span class="badge bg-primary test-type-badge fs-6">3h</span>
                         <h4 class="card-title mb-3">Full ORT Test</h4>
@@ -136,7 +138,7 @@
             <div class="col-md-8">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="card test-card" onclick="startTest('math_1')">
+                        <div class="card test-card" onclick="location.href='/test-info/math_1'">
                             <div class="card-body">
                                 <h5 class="card-title">Math 1</h5>
                                 <p class="card-text text-muted">First mathematics section - basic arithmetic and algebra</p>
@@ -148,7 +150,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card test-card" onclick="startTest('math_2')">
+                        <div class="card test-card" onclick="location.href='/test-info/math_2'">
                             <div class="card-body">
                                 <h5 class="card-title">Math 2</h5>
                                 <p class="card-text text-muted">Second mathematics section - geometry and advanced topics</p>
@@ -160,7 +162,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card test-card" onclick="startTest('analogy')">
+                        <div class="card test-card" onclick="location.href='/test-info/analogy'">
                             <div class="card-body">
                                 <h5 class="card-title">Analogy</h5>
                                 <p class="card-text text-muted">Analogical reasoning and pattern recognition</p>
@@ -172,7 +174,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card test-card" onclick="startTest('reading')">
+                        <div class="card test-card" onclick="location.href='/test-info/reading'">
                             <div class="card-body">
                                 <h5 class="card-title">Reading & Understanding</h5>
                                 <p class="card-text text-muted">Reading comprehension and analysis</p>
@@ -184,7 +186,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="card test-card" onclick="startTest('grammar')">
+                        <div class="card test-card" onclick="location.href='/test-info/grammar'">
                             <div class="card-body">
                                 <h5 class="card-title">Grammar</h5>
                                 <p class="card-text text-muted">Grammar rules, syntax, and language usage</p>
@@ -210,7 +212,7 @@
         <div class="row g-4">
             <!-- Special Tests Grid -->
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_math')">
+                <div class="card test-card" onclick="location.href='/test-info/special_math'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -226,7 +228,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_physics')">
+                <div class="card test-card" onclick="location.href='/test-info/special_physics'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-info d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -242,7 +244,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_chemistry')">
+                <div class="card test-card" onclick="location.href='/test-info/special_chemistry'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -258,7 +260,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_biology')">
+                <div class="card test-card" onclick="location.href='/test-info/special_biology'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -274,7 +276,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_history')">
+                <div class="card test-card" onclick="location.href='/test-info/special_history'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -290,7 +292,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_english')">
+                <div class="card test-card" onclick="location.href='/test-info/special_english'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-purple d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: #6f42c1;">
@@ -306,7 +308,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_russian_grammar')">
+                <div class="card test-card" onclick="location.href='/test-info/special_russian_grammar'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -322,7 +324,7 @@
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="card test-card" onclick="startTest('special_kyrgyz_grammar')">
+                <div class="card test-card" onclick="location.href='/test-info/special_kyrgyz_grammar'">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">

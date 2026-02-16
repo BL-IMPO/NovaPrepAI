@@ -1,0 +1,86 @@
+{
+    "math_1": {
+        "name": "Math 1",
+        "description": "First mathematics section covering basic arithmetic, algebra, and number theory. This section tests your fundamental mathematical skills and problem-solving abilities.",
+        "questions": 30,
+        "time": 30
+    },
+    "math_2": {
+        "name": "Math 2",
+        "description": "Second mathematics section focusing on geometry, trigonometry, and advanced algebra. Requires deeper understanding of mathematical concepts and spatial reasoning.",
+        "questions": 30,
+        "time": 60
+    },
+    "analogy": {
+        "name": "Analogy",
+        "description": "Test your ability to recognize relationships between words and concepts. This section measures logical reasoning and pattern recognition skills.",
+        "questions": 30,
+        "time": 30
+    },
+    "reading": {
+        "name": "Reading & Understanding",
+        "description": "Reading comprehension passages followed by questions. Evaluates your ability to understand, analyze, and interpret written text.",
+        "questions": 30,
+        "time": 60
+    },
+    "grammar": {
+        "name": "Grammar",
+        "description": "Grammar and language usage questions covering syntax, punctuation, and sentence structure. Essential for writing and communication skills.",
+        "questions": 30,
+        "time": 30
+    },
+    "full_test": {
+        "name": "Full ORT Test",
+        "description": "Complete ORT simulation with all sections: Math 1, Math 2, Analogy, Reading, and Grammar. Experience the full exam under timed conditions.",
+        "questions": 150,
+        "time": 180
+    },
+    "special_math": {
+        "name": "Special Mathematics",
+        "description": "Advanced mathematics test for specialization. Covers complex problems in calculus, linear algebra, and mathematical analysis.",
+        "questions": 40,
+        "time": 90
+    },
+    "special_physics": {
+        "name": "Special Physics",
+        "description": "Physics test covering mechanics, electromagnetism, thermodynamics, and modern physics. Ideal for science-oriented students.",
+        "questions": 40,
+        "time": 90
+    },
+    "special_chemistry": {
+        "name": "Special Chemistry",
+        "description": "Chemistry test including organic, inorganic, and physical chemistry. Tests understanding of chemical reactions and principles.",
+        "questions": 40,
+        "time": 60
+    },
+    "special_biology": {
+        "name": "Special Biology",
+        "description": "Biology test covering cell biology, genetics, ecology, and human anatomy. Essential for medical and life sciences.",
+        "questions": 40,
+        "time": 60
+    },
+    "special_history": {
+        "name": "Special History",
+        "description": "History test covering world history, major events, and historical analysis. Evaluates knowledge and critical thinking.",
+        "questions": 40,
+        "time": 90
+    },
+    "special_english": {
+        "name": "Special English",
+        "description": "Advanced English test focusing on literature, comprehension, and language analysis. For deep understanding of English.",
+        "questions": 50,
+        "time": 60
+    },
+    "special_russian_grammar": {
+        "name": "Special Russian Grammar",
+        "description": "Russian language grammar test covering syntax, morphology, and usage. For advanced Russian language skills.",
+        "questions": 40,
+        "time": 60
+    },
+    "special_kyrgyz_grammar": {
+        "name": "Special Kyrgyz Grammar",
+        "description": "Kyrgyz language grammar test focusing on structure, rules, and proper usage. For mastery of Kyrgyz language.",
+        "questions": 40,
+        "time": 60
+    }
+}

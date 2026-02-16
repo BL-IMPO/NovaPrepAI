@@ -43,3 +43,8 @@ idna==3.11
 tomli==2.4.0
 typer==0.21.1
 watchfiles==1.1.1
+PyJWT
+
+# Tests
+pytest==8.0.0
+pytest-asyncio==0.23.5

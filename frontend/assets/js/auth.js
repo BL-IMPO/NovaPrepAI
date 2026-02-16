@@ -1,6 +1,6 @@
 // assets/js/auth.js
 const API_BASE_URL = '/api';
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_KEY = 'user_data';
 
@@ -198,6 +198,32 @@ async function logoutUser() {
     }
 }
 
+// Replace your existing getCurrentUser() with this:
+async function getCurrentUser() {
+    const token = getAccessToken(); // Now correctly uses 'access_token'
+    if (!token) return { success: false };
+
+    try {
+        // Decode the JWT directly in the browser to check expiration
+        // This avoids making a network request to a missing endpoint!
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+
+        // Check if the current time is past the token's expiration time
+        const isExpired = (Math.floor(Date.now() / 1000)) >= payload.exp;
+
+        if (isExpired) {
+            console.warn("Token has expired.");
+            return { success: false };
+        }
+
+        return { success: true, user: getUserData() };
+    } catch (e) {
+        console.error("Token validation error:", e);
+        return { success: false };
+    }
+}
 // ========== FORM HANDLERS ==========
 //function initRegisterForm() {
 //    const registerForm = document.getElementById('registerForm');

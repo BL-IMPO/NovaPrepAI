@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Test Results - ORT Testing</title>
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/bss-overrides.css">
+    <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/auth-middleware.js"></script>
+    <style>
+        .result-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-left: 5px solid transparent;
+        }
+        .result-card.correct {
+            border-left-color: #198754;
+            background-color: #f0fff4;
+        }
+        .result-card.incorrect {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        .result-card .question-text {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .answer-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .answer-item.correct-answer {
+            background-color: #d1e7dd;
+            border: 1px solid #198754;
+        }
+        .answer-item.user-answer {
+            background-color: #cff4fc;
+            border: 1px solid #0dcaf0;
+        }
+        .answer-item.wrong-answer {
+            background-color: #f8d7da;
+            border: 1px solid #dc3545;
+        }
+        .score-badge {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (same as other pages) -->
+    <nav class="navbar navbar-expand-md bg-dark py-3" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
+                        <!-- icon path -->
+                    </svg>
+                </span>
+                <span>ORT Testing</span>
+            </a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
+                <span class="visually-hidden">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-5">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Tests</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Results</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                </ul>
+                <a class="btn btn-primary ms-md-2" role="button" href="#">Login/Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <!-- Header with score -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-5 mb-3">{{ attempt.test_type|replace('_', ' ')|title }} Results</h1>
+                <div class="d-flex justify-content-center align-items-center gap-4">
+                    <div class="score-badge bg-primary text-white">
+                        Score: {{ attempt.score }} / {{ details|length }}
+                    </div>
+                    <div class="score-badge {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %} text-white">
+                        {{ 'PASSED' if attempt.passed else 'FAILED' }}
+                    </div>
+                </div>
+                <p class="text-muted mt-3">Completed on {{ attempt.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="row">
+            <div class="col-12">
+                {% for item in details %}
+                <div class="result-card {% if item.is_correct %}correct{% else %}incorrect{% endif %} p-4">
+                    <div class="question-text">{{ item.question }}</div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Your Answer:</h6>
+                            <div class="answer-item
+                                {% if item.user_answer is not none %}
+                                    {% if item.is_correct %}user-answer correct-answer{% else %}wrong-answer{% endif %}
+                                {% else %}
+                                    bg-light
+                                {% endif %}">
+                                <strong>
+                                    {% if item.user_answer is not none %}
+                                        Option {{ ['A','B','C','D','E'][item.user_answer] }}:
+                                    {% else %}
+                                        Not answered
+                                    {% endif %}
+                                </strong>
+                                {% if item.user_answer is not none and item.answers is defined and item.answers[item.user_answer] is defined %}
+                                    {{ item.answers[item.user_answer] }}
+                                {% elif item.user_answer is not none %}
+                                    <em>Answer text not available</em>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Correct Answer:</h6>
+                            <div class="answer-item correct-answer">
+                                <strong>Option {{ ['A','B','C','D','E'][item.correct_answer] }}:</strong>
+                                    {% if item.answers is defined and item.answers[item.correct_answer] is defined %}
+                                        {{ item.answers[item.correct_answer] }}
+                                    {% else %}
+                                        <em>Answer text not available</em>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if not item.is_correct and item.user_answer is not none %}
+                    <div class="mt-2 text-danger small">
+                        <i class="bi bi-x-circle"></i> Incorrect
+                    </div>
+                    {% elif not item.is_correct and item.user_answer is none %}
+                    <div class="mt-2 text-warning small">
+                        <i class="bi bi-dash-circle"></i> Not answered
+                    </div>
+                    {% else %}
+                    <div class="mt-2 text-success small">
+                        <i class="bi bi-check-circle"></i> Correct
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="/" class="btn btn-primary btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door me-2" viewBox="0 0 16 16">
+                        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/>
+                    </svg>
+                    Back to Tests
+                </a>
+                <a href="#" class="btn btn-outline-secondary btn-lg ms-3" onclick="window.print()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zm4 3h2V3h-2zm-2 4v5h6V8zm-2 3v1H2v-1zm0-3v1H2V8z"/>
+                    </svg>
+                    Print Results
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (same as other pages) -->
+    <footer class="text-center bg-body mt-5" data-bs-theme="dark">
+        <div class="container py-4 py-lg-5">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">ORT Testing System</h5>
+                    <p class="text-body-secondary">Practice and prepare for your ORT exams with realistic test simulations and instant feedback.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="/">Home</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Results</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Profile</a></li>
+                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Help</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Connect With Us</h5>
+                    <!-- social icons same as before -->
+                </div>
+            </div>
+            <p class="text-body mb-0">Copyright © 2024 ORT Testing System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

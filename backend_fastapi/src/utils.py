@@ -1,5 +1,7 @@
+import json
 from typing import Dict, List
 import random
+import os
 
 
 class TestORT:
@@ -253,7 +255,21 @@ class TestORT:
 
         return test_data
 
+class Description:
+    def __init__(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(base_dir, "default_data_for_tests", "test_descriptions.json")
 
+        try:
+            with open("src/default_data_for_tests/tests_descriptions.json", "r") as f:
+                self.descriptions = json.load(f)
+        except FileNotFoundError:
+            self.descriptions = {}
+            print(f"Warning: Test descriptions file not found at {json_path}")
 
+    def get_test_description(self, test_type: str) -> Dict[str, List[str]]:
+        return self.descriptions[test_type]
 
+    def get_test_types(self) -> list[str]:
+        return self.descriptions.keys()
 

@@ -1,6 +1,12 @@
 // frontend/assets/js/testing-engine.js
 class TestingEngine {
     constructor() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            console.warn("Unauthorized access attempt. Redirecting to login.");
+            window.location.href = '/login'; // Update to your login page URL
+            return; // Stop the engine from initializing
+        }
         // Extract test type from URL path
         const pathParts = window.location.pathname.split('/');
         this.testType = pathParts[pathParts.length - 1];
@@ -367,7 +373,13 @@ class TestingEngine {
                     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
                     newConfirmBtn.addEventListener('click', () => {
+                        // 1. Remove focus from the button so the browser doesn't complain
+                        newConfirmBtn.blur();
+
+                        // 2. Hide the modal
                         confirmModal.hide();
+
+                        // 3. Submit the test
                         this.submitTest();
                     });
 
@@ -398,20 +410,27 @@ class TestingEngine {
         if (this.timerInterval) clearInterval(this.timerInterval);
 
         try {
+            // 1. Prepare the answers
             const answersObj = {};
             this.answers.forEach((value, key) => {
                 answersObj[key] = value;
             });
 
+            // 2. Prepare the submission payload
             const submission = {
                 answers: answersObj,
                 test_type: this.testType
             };
 
+            // 3. Get the token
+            const userToken = localStorage.getItem('access_token');
+
+            // 4. Make ONE single fetch request
             const response = await fetch(`${this.apiBaseUrl}/test/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}` // Send the token here
                 },
                 body: JSON.stringify(submission)
             });
@@ -445,6 +464,15 @@ class TestingEngine {
             const barEl = document.getElementById('scoreProgressBar');
             if (barEl) barEl.style.width = `${percentage}%`;
 
+            // Set the View Results button link
+            const viewResultsBtn = document.getElementById('viewResultsBtn');
+            if (viewResultsBtn) {
+                viewResultsBtn.onclick = () => {
+                window.location.href = `/results/${result.attempt_id}/${this.testType}`;
+                };
+            }
+
+            // Show the modal
             const modalEl = document.getElementById('successModal');
             if (modalEl) {
                 const modal = new bootstrap.Modal(modalEl);

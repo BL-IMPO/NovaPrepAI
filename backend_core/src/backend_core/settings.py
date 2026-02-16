@@ -113,7 +113,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
 
-    'ALGORITHM': 'HS256',
+    'ALGORITHM': os.getenv("ALGORITHM"),
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUDIENCE': None,

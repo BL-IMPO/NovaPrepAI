@@ -1,7 +1,7 @@
-// assets/js/auth-middleware.js
+// frontend/assets/js/auth-middleware.js
 document.addEventListener('DOMContentLoaded', async function() {
-    // Pages that require authentication
-    const protectedPages = ['/dashboard/', '/profile/', '/chat/', '/tests/'];
+    // ADDED '/testing/' to protect the ORT test pages
+    const protectedPages = ['/dashboard/', '/profile/', '/chat/', '/tests/', '/testing/'];
     const currentPath = window.location.pathname;
 
     // Check if current page requires authentication
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!isAuthenticated()) {
             // Redirect to login with return URL
             const returnUrl = encodeURIComponent(currentPath);
-            window.location.href = `/login?next=${returnUrl}`;
+            window.location.href = `/login?next=${returnUrl}`; // Or /login.html depending on your setup
             return;
         }
 
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } catch (error) {
             console.error('Auth verification failed:', error);
             clearTokens();
-            window.location.href = `/login.html?session=expired`;
+            window.location.href = `/login?session=expired`;
         }
     }
 });
