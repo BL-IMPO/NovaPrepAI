@@ -4,13 +4,21 @@ from httpx import AsyncClient, ASGITransport
 from unittest.mock import patch, AsyncMock, MagicMock
 
 from src.app import app
+from unittest.mock import patch, AsyncMock, MagicMock
+from src.dependencies import get_current_user
 
 
-# Create a fixture for the async client
+async def override_get_current_user():
+    mock_user = MagicMock()
+    mock_user.id = 1
+    return mock_user
+
 @pytest_asyncio.fixture
 async def async_client():
+    app.dependency_overrides[get_current_user] = override_get_current_user
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         yield client
+    app.dependency_overrides.clear()
 
 @pytest.mark.asyncio
 async def test_root(async_client: AsyncClient):

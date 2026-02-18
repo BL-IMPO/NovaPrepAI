@@ -43,7 +43,10 @@ def wait(fn):
 
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
-        # Configure Firefox with headless options
+        super().setUp()
+        # BYPASS: Point Selenium directly to your Nginx container!
+        # (If your Nginx container is named something else in docker-compose, change this)
+        self.live_server_url = 'http://nginx'
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -76,9 +79,16 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.implicitly_wait(10)
 
     def tearDown(self):
+        # --- NEW: Print JavaScript console logs on failure ---
+        try:
+            browser_logs = self.browser.get_log('browser')
+            for log in browser_logs:
+                # This will print any JS errors (like 404s or missing tokens) to your terminal
+                print(f"BROWSER CONSOLE LOG: {log}")
+        except Exception:
+            pass
+        # -----------------------------------------------------
+
         if hasattr(self, 'browser'):
-            try:
-                self.browser.quit()
-            except:
-                pass
+            self.browser.quit()
         super().tearDown()

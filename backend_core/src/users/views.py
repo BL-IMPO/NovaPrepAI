@@ -11,11 +11,13 @@ from django.contrib.auth.models import User
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import QueryDict
 
+from main.models import TestAttempt
 from users.models import UserProfile
 from api.serializer import (
     CustomTokenObtainPairSerializer,
     UserSerializer,
-    RegisterSerializer
+    RegisterSerializer,
+    TestAttemptSerializer
 )
 
 
@@ -78,6 +80,11 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
+        if 'email' in request.data and 'username' not in request.data:
+            request.data._mutable = True
+            request.data['username'] = request.data['email']
+            request.data._mutable = False
+
         # Generate tokens for auto-login
         refresh = RefreshToken.for_user(user)
 
@@ -92,6 +99,8 @@ class RegisterView(generics.CreateAPIView):
             'refresh': str(refresh),
             'redirect_url': '/dashboard/'
         }
+
+
 
         # Set cookies
         response = Response(response_data, status=status.HTTP_201_CREATED)
@@ -212,3 +221,11 @@ class VerifyTokenView(APIView):
             'user': UserSerializer(request.user).data
         })
 
+
+class UserTestHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        attempts = TestAttempt.objects.filter(user=request.user).order_by('-id')
+        serializer = TestAttemptSerializer(attempts, many=True)
+        return Response(serializer.data)

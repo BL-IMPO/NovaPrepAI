@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import Token
 
+from main.models import TestAttempt
 from users.models import UserProfile
 
 
@@ -118,4 +119,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
 
         return user
+
+
+class TestAttemptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestAttempt
+        fields = ['id', 'test_type', 'score', 'weighted_score', 'created_at', 'passed']
 

@@ -34,6 +34,9 @@ DEBUG = True
 # SECURITY HOSTS
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
+# !ONLY FOR LOCAL TESTING!
+ALLOWED_HOSTS.append("nginx")
+ALLOWED_HOSTS = ['*']
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
@@ -238,7 +241,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/assets/'
+STATIC_URL = '/django-static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend/assets',

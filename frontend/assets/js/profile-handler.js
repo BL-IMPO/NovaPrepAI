@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     loadProfileData();
+    loadTestHistory();
 
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
@@ -117,4 +118,96 @@ function showMessage(element, text, type) {
     element.textContent = text;
     element.className = `alert alert-${type} mb-3`;
     element.style.display = 'block';
+}
+
+async function loadTestHistory() {
+    try {
+        const token = getAccessToken(); // From your auth.js
+        const response = await fetch('/api/user/tests/', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Failed to load tests');
+
+        const tests = await response.json();
+        const container = document.getElementById('testHistoryContainer');
+        container.innerHTML = ''; // Clear the loading spinner
+
+        if (tests.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <h4 class="text-muted">You haven't taken any tests yet!</h4>
+                    <a href="/index" class="btn btn-primary mt-3">Take a Test</a>
+                </div>`;
+            return;
+        }
+
+        // Generate a clickable block for each test
+        tests.forEach(test => {
+            // Provide a fallback date if your model doesn't have a date field yet
+            const dateStr = test.created_at
+                ? new Date(test.created_at).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                : 'Recently';
+            const statusBadge = test.passed
+                ? '<span class="badge bg-success">Passed</span>'
+                : '<span class="badge bg-danger">Failed</span>';
+
+            const testName = formatTestName(test.test_type);
+
+            const html = `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0"
+                         style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                         onclick="window.location.href='/results/${test.id}/${test.test_type}'"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.classList.add('shadow');"
+                         onmouseout="this.style.transform='translateY(0)'; this.classList.remove('shadow');">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title fw-bold mb-0 text-primary">${testName}</h5>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-muted small mb-3">
+                                📅 Date: ${dateStr}
+                            </p>
+                            <div class="d-flex justify-content-between bg-light p-2 rounded">
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Base Score</small>
+                                    <strong class="fs-5">${test.score}</strong>
+                                </div>
+                                <div class="text-center border-start ps-3">
+                                    <small class="text-muted d-block">Points</small>
+                                    <strong class="fs-5 text-success">${test.weighted_score}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+
+    } catch (error) {
+        console.error("Error loading test history:", error);
+        document.getElementById('testHistoryContainer').innerHTML = `
+            <div class="col-12 text-center text-danger py-5">
+                <p>Failed to load test history. Please try refreshing the page.</p>
+            </div>`;
+    }
+}
+
+// Helper function to make the test types look pretty
+function formatTestName(testType) {
+    const names = {
+        'math_1': 'MATH 1',
+        'math_2': 'MATH 2',
+        'special_chemistry': 'SPECIAL CHEMISTRY',
+        // Add other mappings if needed
+    };
+    return names[testType] || testType.replace('_', ' ').toUpperCase();
 }

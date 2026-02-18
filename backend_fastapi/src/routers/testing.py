@@ -7,7 +7,6 @@ from asgiref.sync import sync_to_async
 
 from ..dependencies import get_current_user
 
-#from ..dependencies import get_current_user
 
 # Now import Django models
 try:
