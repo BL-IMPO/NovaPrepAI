@@ -24,6 +24,16 @@ class TestORT:
             "special_kyrgyz_grammar": 60 * 60,
         }
 
+        self.math_1_tasks = {}
+        try:
+            with open("src/default_data_for_tests/default_math_1_tasks.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                self.math_1_tasks = data.get("math_1", {})
+            print(f"Loaded {len(self.math_1_tasks)} math_1 tasks")
+        except Exception as e:
+            print(f"Could not load math_1 tasks: {e}")
+
+
     def _generate_answers(self, num_answers: int = 4) -> List[str]:
         """Generate answers with first being correct"""
         answers = []
@@ -34,6 +44,7 @@ class TestORT:
             answers.append(f"Option {chr(64 + i)}")
 
         # We need to add more points if question is harder
+        answers.append(0)
         answers.append(self.base_point + random.random())
 
         return answers
@@ -82,15 +93,56 @@ class TestORT:
 
     def standard_math_1_test(self) -> Dict[str, List[str]]:
         test_data = {}
-        for num in range(1, 31):
-            if num % 2 == 0:
-                extra_data = ["SVG_GRAPH", '<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"> <rect x="10" y="10" width="280" height="180"  fill="#f0f0f0" stroke="black" stroke-width="3"/> <line x1="10" y1="10" x2="290" y2="190"  stroke="red" stroke-width="2" stroke-dasharray="5,5" /> <text x="140" y="90" font-family="Arial" font-size="16" fill="black">Diagonal</text> <text x="5" y="25" font-family="Arial" font-size="20" fill="black">A</text> <text x="285" y="205" font-family="Arial" font-size="20" fill="black">C</text> </svg>']
-            else:
-                extra_data = [None]
 
-            answers = self._generate_answers(4)
-            answers.append(extra_data)
-            test_data[f"MATH 1: Question {num}: Some question for test?"] = answers
+        ort_answers = [
+            "Значение в колонке А больше",
+            "Значение в колонке Б больше",
+            "Оба значения равны",
+            "Значения невозможно сравнить",
+        ]
+
+        if self.math_1_tasks:
+            num = 1
+            for qid, inner_dict in self.math_1_tasks.items():
+                for q_text, data in inner_dict.items():
+                    question_text = str(num) + ". " + q_text if q_text != "none" else f"{num}. Сравните значения в колонках А и Б"
+                    num += 1
+
+                    val = str(data[0]).strip()
+                    colA = str(data[1]).strip()
+                    colB = str(data[2]).strip()
+                    points = float(data[5])
+                    extra_data = data[6] if len(data) > 6 else ["None"]
+
+                    if val == "=":
+                        correct_index = 2
+                    elif val.lower() == "none":
+                        correct_index = 3
+                    elif val == colA:
+                        correct_index = 0
+                    elif val == colB:
+                        correct_index = 1
+                    else:
+                        correct_index = 3
+
+                    answers = [colA, colB, "", ""]
+                    answers.append(correct_index)
+                    answers.append(points)
+                    answers.append(extra_data)
+                    test_data[question_text] = answers
+
+        else:
+            for num in range(1, 31):
+                if num % 2 == 0:
+                    extra_data = ["SVG_GRAPH", '<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"> <rect x="10" y="10" width="280" height="180"  fill="#f0f0f0" stroke="black" stroke-width="3"/> <line x1="10" y1="10" x2="290" y2="190"  stroke="red" stroke-width="2" stroke-dasharray="5,5" /> <text x="140" y="90" font-family="Arial" font-size="16" fill="black">Diagonal</text> <text x="5" y="25" font-family="Arial" font-size="20" fill="black">A</text> <text x="285" y="205" font-family="Arial" font-size="20" fill="black">C</text> </svg>']
+                else:
+                    extra_data = [None]
+
+                answers = ort_answers.copy()
+                answers.append(0)  # correct_index
+                answers.append(self.base_point + 0.2)  # points
+                answers.append(extra_data)
+                test_data[f"MATH 1: Question {num}: Some question for test?"] = answers
 
         return test_data
 

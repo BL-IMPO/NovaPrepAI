@@ -25,7 +25,18 @@
             background-color: #f8f9fa;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
-
+        /* Add this inside the <style> tag in testing.html */
+        .ort-comparison-box {
+            border: 1px solid #000; /* Classic black ORT paper border */
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            font-size: 1.5rem;
+            background-color: #fff;
+            overflow-x: auto;
+        }
         .sidebar {
             height: calc(100vh - 73px);
             overflow-y: auto;
@@ -360,9 +371,23 @@
 
                         <div id="questionMediaContainer" class="text-center mb-4" style="display: none;"></div>
 
-                        <div class="question-text" id="questionText">
+                        <div class="question-text fw-bold mb-4" id="questionText">
                             Loading question...
                         </div>
+
+                        <div id="comparisonContainer" class="row text-center mb-2 mt-4" style="display: none;">
+                            <div class="col-6">
+                                <h5 class="fw-bold text-dark text-decoration-underline mb-3">КОЛОНКА А</h5>
+                                <div class="ort-comparison-box" id="columnA">
+                                    </div>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="fw-bold text-dark text-decoration-underline mb-3">КОЛОНКА Б</h5>
+                                <div class="ort-comparison-box" id="columnB">
+                                    </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

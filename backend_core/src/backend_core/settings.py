@@ -35,8 +35,8 @@ DEBUG = True
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 # !ONLY FOR LOCAL TESTING!
-ALLOWED_HOSTS.append("nginx")
-ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS.append("nginx")
+#ALLOWED_HOSTS = ['*']
 
 # CORS
 CORS_ALLOWED_ORIGINS = [

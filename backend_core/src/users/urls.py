@@ -30,7 +30,7 @@ urlpatterns = [
     # JWT Authentication
     path('api/token/', LoginView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
-    path('api/token/verify', VerifyTokenView.as_view(), name='token_verify'),
+    path('api/token/verify/', VerifyTokenView.as_view(), name='token_verify'),
 
     # User Management
     path('api/register/', RegisterView.as_view(), name='register'),
