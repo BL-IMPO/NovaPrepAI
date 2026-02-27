@@ -1,14 +1,14 @@
 // assets/js/login-handler.js
-// assets/js/login-handler.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const loginForm = document.getElementById('loginForm');
     const loginButton = document.getElementById('loginButton');
     const loginMessage = document.getElementById('loginMessage');
 
-    // Check if already logged in
-    if (isAuthenticated()) {
+    // Check if already logged in (await the async function)
+    if (await isAuthenticated()) {
         // Redirect to dashboard if already authenticated
         window.location.href = '/dashboard/';
+        return; // Stop further execution
     }
 
     if (loginForm) {

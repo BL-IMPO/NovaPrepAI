@@ -1,6 +1,8 @@
-// frontend/assets/js/auth-middleware.js
+// assets/js/auth-middleware.js
+// This script should be included on every page to protect routes and update UI.
+
 document.addEventListener('DOMContentLoaded', async function() {
-    // ADDED '/testing/' to protect the ORT test pages
+    // Define protected page prefixes
     const protectedPages = ['/dashboard/', '/profile/', '/chat/', '/tests/', '/testing/'];
     const currentPath = window.location.pathname;
 
@@ -8,31 +10,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     const isProtectedPage = protectedPages.some(page => currentPath.includes(page));
 
     if (isProtectedPage) {
-        if (!isAuthenticated()) {
+        // Use the async isAuthenticated function
+        const authenticated = await isAuthenticated();
+
+        if (!authenticated) {
             // Redirect to login with return URL
             const returnUrl = encodeURIComponent(currentPath);
-            window.location.href = `/login?next=${returnUrl}`; // Or /login.html depending on your setup
+            window.location.href = `/login.html?next=${returnUrl}`;
             return;
         }
 
-        // Verify token on server
-        try {
-            const user = await getCurrentUser();
-            if (!user.success) {
-                throw new Error('Invalid session');
-            }
-
-            // Optional: Update UI with user data
-            const userData = getUserData();
-            if (userData && document.getElementById('user-greeting')) {
-                document.getElementById('user-greeting').textContent =
-                    `Welcome, ${userData.first_name || userData.username}!`;
-            }
-
-        } catch (error) {
-            console.error('Auth verification failed:', error);
-            clearTokens();
-            window.location.href = `/login?session=expired`;
+        // Optionally update UI with user data (e.g., a greeting)
+        const userData = await getCurrentUser();
+        if (userData.success && document.getElementById('user-greeting')) {
+            document.getElementById('user-greeting').textContent =
+                `Welcome, ${userData.user.first_name || userData.user.username || userData.user.email}!`;
         }
     }
 });

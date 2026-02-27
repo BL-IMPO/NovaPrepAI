@@ -24,7 +24,7 @@ function previewImage(input) {
 // 2. Fetch current data from server
 async function loadProfileData() {
     try {
-        // We can use your existing helper for GET requests
+        // Use the updated makeRequest (sends cookies, no manual token)
         const data = await makeRequest('/api/user/', 'GET');
 
         // Populate fields
@@ -33,7 +33,7 @@ async function loadProfileData() {
         }
 
         document.getElementById('email').value = data.email || '';
-        document.getElementById('nickname').value = data.nickname || ''; // Requires 'nickname' in serializer
+        document.getElementById('nickname').value = data.nickname || '';
 
         // Handle avatar if it exists
         if (data.avatar) {
@@ -46,7 +46,7 @@ async function loadProfileData() {
     }
 }
 
-// 3. Send updates to server
+// 3. Send updates to server (with FormData for file upload)
 async function handleProfileUpdate(e) {
     e.preventDefault();
 
@@ -80,16 +80,17 @@ async function handleProfileUpdate(e) {
             formData.append('avatar', fileInput.files[0]);
         }
 
-        // We CANNOT use makeRequest() here because it sets Content-Type: application/json
-        // We must use fetch directly for FormData
-        const token = getAccessToken();
+        // Get CSRF token from cookie (set by Django)
+        const csrfToken = getCSRFToken();
+
+        // Use fetch directly with credentials and CSRF header
         const response = await fetch('/api/user/', {
-            method: 'PATCH', // or PUT
+            method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${token}`
-                // CRITICAL: Do NOT set Content-Type here.
-                // The browser sets it automatically with the boundary for FormData.
+                // Do NOT set Content-Type – browser will set it with boundary
+                'X-CSRFToken': csrfToken
             },
+            credentials: 'same-origin',  // Send cookies (including access_token)
             body: formData
         });
 
@@ -101,7 +102,9 @@ async function handleProfileUpdate(e) {
         const updatedUser = await response.json();
 
         // Update local storage if you are caching user data
-        setUserData(updatedUser);
+        if (typeof setUserData === 'function') {
+            setUserData(updatedUser);
+        }
 
         showMessage(messageDiv, 'Profile updated successfully!', 'success');
 
@@ -122,14 +125,8 @@ function showMessage(element, text, type) {
 
 async function loadTestHistory() {
     try {
-        const token = getAccessToken(); // From your auth.js
-        const response = await fetch('/api/user/tests/', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!response.ok) throw new Error('Failed to load tests');
-
-        const tests = await response.json();
+        // Use makeRequest (cookies automatically sent)
+        const tests = await makeRequest('/api/user/tests/', 'GET');
         const container = document.getElementById('testHistoryContainer');
         container.innerHTML = ''; // Clear the loading spinner
 
@@ -144,7 +141,6 @@ async function loadTestHistory() {
 
         // Generate a clickable block for each test
         tests.forEach(test => {
-            // Provide a fallback date if your model doesn't have a date field yet
             const dateStr = test.created_at
                 ? new Date(test.created_at).toLocaleString('en-US', {
                     year: 'numeric',

@@ -10,6 +10,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import QueryDict
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
 
 from main.models import TestAttempt
 from users.models import UserProfile
@@ -24,7 +26,7 @@ from api.serializer import (
 class IndexView(TemplateView):
     template_name = 'index.html'
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [AllowAny]
@@ -53,7 +55,7 @@ class LoginView(TokenObtainPairView):
                 key='access_token',
                 value=access_token,
                 httponly=True,
-                secure=True,
+                secure=False,
                 samesite='Strict',
                 max_age=15 * 60
             )
@@ -62,14 +64,14 @@ class LoginView(TokenObtainPairView):
                 key='refresh_token',
                 value=refresh_token,
                 httponly=True,
-                secure=True,
+                secure=False,
                 samesite='Strict',
                 max_age=7 * 24 * 60 * 60 # 7 days
             )
 
         return response
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
@@ -80,10 +82,10 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        if 'email' in request.data and 'username' not in request.data:
-            request.data._mutable = True
-            request.data['username'] = request.data['email']
-            request.data._mutable = False
+        #if 'email' in request.data and 'username' not in request.data:
+        #    request.data._mutable = True
+        #    request.data['username'] = request.data['email']
+        #    request.data._mutable = False
 
         # Generate tokens for auto-login
         refresh = RefreshToken.for_user(user)
@@ -108,7 +110,7 @@ class RegisterView(generics.CreateAPIView):
             key='access_token',
             value=str(refresh.access_token),
             httponly=True,
-            secure=True,
+            secure=False,
             samesite='Strict',
             max_age=15 * 60
         )
@@ -117,14 +119,14 @@ class RegisterView(generics.CreateAPIView):
             key='refresh_token',
             value=str(refresh),
             httponly=True,
-            secure=True,
+            secure=False,
             samesite='Strict',
             max_age=7 * 24 * 60 * 60
         )
 
         return response
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
@@ -163,38 +165,37 @@ class UserProfileView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        try:
-            # Get refresh token from request
-            refresh_token = request.data.get('refresh')
-            if refresh_token:
+        refresh_token = request.data.get('refresh') or request.COOKIES.get('refresh_token')
+
+        if refresh_token:
+            try:
                 token = RefreshToken(refresh_token)
                 token.blacklist()
+            except Exception:
+                pass
 
-            # Clear cookies
-            response = Response({
-                'success': True,
-                'message': 'Successfully logged out',
-            }, status=status.HTTP_200_OK)
+        response = Response({'success': True, 'message': 'Logged out'})
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
 
-            response.delete_cookie('access_token')
-            response.delete_cookie('refresh_token')
-
-            return response
-
-        except Exception as e:
-            return Response({
-                'success': False,
-                'error': str(e)
-            }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RefreshTokenView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+
+        if 'refresh' not in request.data and request.COOKIES.get('refresh_token'):
+            if hasattr(request.data, '_mutable'):
+                request.data._mutable = True
+            request.data['refresh'] = request.COOKIES['refresh_token']
+            if hasattr(request.data, '_mutable'):
+                request.data._mutable = False
+
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == 200:

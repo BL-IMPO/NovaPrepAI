@@ -1,13 +1,6 @@
 // frontend/assets/js/testing-engine.js
 class TestingEngine {
     constructor() {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-            console.warn("Unauthorized access attempt. Redirecting to login.");
-            window.location.href = '/login';
-            return;
-        }
-
         const pathParts = window.location.pathname.split('/');
         this.testType = pathParts[pathParts.length - 1];
 
@@ -19,8 +12,12 @@ class TestingEngine {
         this.totalTime = 0;
         this.timerInterval = null;
         this.isPaused = false;
+        this.refreshInterval = null;            // For token refresh
 
         this.apiBaseUrl = '/fastapi/api';
+
+        // Clear refresh interval on page unload
+        window.addEventListener('beforeunload', () => this.unloadHandler());
 
         this.loadTestData();
         this.initEventListeners();
@@ -29,7 +26,9 @@ class TestingEngine {
     async loadTestData() {
         try {
             console.log(`Loading test data for: ${this.testType}`);
-            const response = await fetch(`${this.apiBaseUrl}/test/${this.testType}`);
+            const response = await fetch(`${this.apiBaseUrl}/test/${this.testType}`, {
+                credentials: 'same-origin'  // Include cookies
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -51,6 +50,7 @@ class TestingEngine {
             this.renderQuestion();
             this.updateProgress();
             this.startTimer();
+            this.startTokenRefresh();  // Start silent token refresh
 
             const testName = this.formatTestName(this.testType);
             const titleEl = document.getElementById('testTypeTitle');
@@ -431,8 +431,40 @@ class TestingEngine {
         });
     }
 
+    /**
+     * Start silent token refresh every 50 minutes (10 minutes before 60-min expiry)
+     */
+    startTokenRefresh() {
+        if (this.refreshInterval) clearInterval(this.refreshInterval);
+        this.refreshInterval = setInterval(async () => {
+            try {
+                const refreshed = await refreshAccessToken(); // from auth.js
+                if (!refreshed) {
+                    console.warn('Token refresh failed, will retry later');
+                }
+            } catch (error) {
+                console.error('Token refresh error:', error);
+            }
+        }, 50 * 60 * 1000); // 50 minutes
+    }
+
+    /**
+     * Clear refresh interval on test submission or page unload
+     */
+    clearRefreshInterval() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
+    }
+
+    unloadHandler() {
+        this.clearRefreshInterval();
+    }
+
     async submitTest() {
         if (this.timerInterval) clearInterval(this.timerInterval);
+        this.clearRefreshInterval(); // Stop refreshing when test ends
 
         try {
             const answersObj = {};
@@ -445,14 +477,12 @@ class TestingEngine {
                 test_type: this.testType
             };
 
-            const userToken = localStorage.getItem('access_token');
-
             const response = await fetch(`${this.apiBaseUrl}/test/submit`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userToken}`
+                    'Content-Type': 'application/json'
                 },
+                credentials: 'same-origin',  // Include cookies
                 body: JSON.stringify(submission)
             });
 
