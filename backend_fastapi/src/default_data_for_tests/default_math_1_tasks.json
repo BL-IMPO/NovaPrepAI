@@ -3,123 +3,332 @@
   {
     "question_1":
     {
-      "none": ["3,14", "3,14", "3,134", "=", "none", 1.2, ["None"]]
+      "none": [
+        "3,14",
+        "3,14",
+        "3,134",
+        "=",
+        "none",
+        1.2,
+        ["None"]]
     },
     "question_2":
     {
-      "none": ["4,2", "8,4 : 2,2", "4,2", "=", "none", 1.3, ["None"]]
+      "none": [
+        "4,2",
+        "8,4 : 2,2",
+        "4,2",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_3":
     {
-      "none": ["5", "\\( \\left(\\frac{1}{11}\\right)^{55} \\)", "5", "=", "none", 1.2, ["None"]]
+      "none": [
+        "5",
+        "\\( \\left(\\frac{1}{11}\\right)^{55} \\)",
+        "5",
+        "=",
+        "none",
+        1.2,
+        ["None"]]
     },
     "question_4":
     {
-      "none": ["=", "\\( 4 \\frac{4}{9} : 4 \\)", "\\( 7 \\frac{7}{9} : 7 \\)", "=", "none", 1.3, ["None"]]
+      "none": [
+        "=",
+        "\\( 4 \\frac{4}{9} : 4 \\)", "\\( 7 \\frac{7}{9} : 7 \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_5":
     {
-      "12 + 6x = 21": ["19", "11 + 5x", "19", "=", "none", 1.4, ["None"]]
+      "12 + 6x = 21": [
+        "19",
+        "11 + 5x",
+        "19",
+        "=",
+        "none",
+        1.4,
+        ["None"]]
     },
     "question_6":
     {
-      "none": ["\\( 3 \\cdot (14 + 21 : 7) \\)", "\\( 3 \\cdot (14 + 21 : 7) \\)", "\\( 3 \\cdot 14 + 21 : 7 \\)", "=", "none", 1.3, ["None"]]
+      "none": [
+        "\\( 3 \\cdot (14 + 21 : 7) \\)",
+        "\\( 3 \\cdot (14 + 21 : 7) \\)",
+        "\\( 3 \\cdot 14 + 21 : 7 \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_7":
     {
-      "none": ["\\( \\frac{1}{6} - \\frac{1}{7} \\)", "\\( \\frac{1}{6} - \\frac{1}{7} \\)", "\\( \\frac{1}{7} - \\frac{1}{6} \\)", "=", "none", 1.3, ["None"]]
+      "none": [
+        "\\( \\frac{1}{6} - \\frac{1}{7} \\)",
+        "\\( \\frac{1}{6} - \\frac{1}{7} \\)",
+        "\\( \\frac{1}{7} - \\frac{1}{6} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_8":
     {
-      "MNPQ - прямоугольник.": ["48", "x", "48", "=", "none", 1.3, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 200'><rect x='25' y='25' width='100' height='150' fill='none' stroke='black' stroke-width='1.5'/><line x1='25' y1='25' x2='125' y2='175' stroke='black' stroke-width='1.5'/><line x1='25' y1='175' x2='125' y2='25' stroke='black' stroke-width='1.5'/><text x='10' y='20' font-family='serif' font-size='16' font-style='italic'>N</text><text x='130' y='20' font-family='serif' font-size='16' font-style='italic'>P</text><text x='5' y='190' font-family='serif' font-size='16' font-style='italic'>M</text><text x='130' y='190' font-family='serif' font-size='16' font-style='italic'>Q</text><text x='63' y='75' font-family='serif' font-size='14'>84°</text><text x='32' y='155' font-family='serif' font-size='14'><tspan font-style='italic'>x</tspan>°</text></svg>"]]
+      "MNPQ - прямоугольник.": [
+        "48",
+        "x",
+        "48",
+        "=",
+        "none",
+        1.3,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 200'><rect x='25' y='25' width='100' height='150' fill='none' stroke='black' stroke-width='1.5'/><line x1='25' y1='25' x2='125' y2='175' stroke='black' stroke-width='1.5'/><line x1='25' y1='175' x2='125' y2='25' stroke='black' stroke-width='1.5'/><text x='10' y='20' font-family='serif' font-size='16' font-style='italic'>N</text><text x='130' y='20' font-family='serif' font-size='16' font-style='italic'>P</text><text x='5' y='190' font-family='serif' font-size='16' font-style='italic'>M</text><text x='130' y='190' font-family='serif' font-size='16' font-style='italic'>Q</text><text x='63' y='75' font-family='serif' font-size='14'>84°</text><text x='32' y='155' font-family='serif' font-size='14'><tspan font-style='italic'>x</tspan>°</text></svg>"]]
     },
     "question_9":
     {
-      "none": ["\\( \\frac{2}{5} + \\frac{1}{7} \\)", "\\( \\frac{1}{5} + \\frac{2}{7} \\)", "\\( \\frac{2}{5} + \\frac{1}{7} \\)", "=", "none", 1.3, ["None"]]
+      "none": [
+        "\\( \\frac{2}{5} + \\frac{1}{7} \\)",
+        "\\( \\frac{1}{5} + \\frac{2}{7} \\)",
+        "\\( \\frac{2}{5} + \\frac{1}{7} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_10":
     {
-      "none": ["\\( \\sqrt{8,1} \\)", "\\( \\sqrt{8,1} \\)", "0,9", "=", "none", 1.2, ["None"]]
+      "none": [
+        "\\( \\sqrt{8,1} \\)",
+        "\\( \\sqrt{8,1} \\)",
+        "0,9",
+        "=",
+        "none",
+        1.2,
+        ["None"]]
     },
     "question_11":
     {
-      "\\( \\alpha \\) - угол между часовой и минутной стрелками часов в 14 часов 30 минут, \\( \\beta \\) - угол между часовой и минутной стрелками часов в 20 часов 00 минут.": ["\\( \\beta \\)", "\\( \\alpha \\)", "\\( \\beta \\)", "=", "none", 1.2, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='black' stroke-width='2'/><circle cx='50' cy='50' r='2' fill='black'/><line x1='50' y1='50' x2='50' y2='20' stroke='black' stroke-width='2'/><line x1='50' y1='50' x2='25' y2='65' stroke='black' stroke-width='3'/><text x='46' y='18' font-family='sans-serif' font-size='7'>12</text><text x='66' y='24' font-family='sans-serif' font-size='7'>1</text><text x='79' y='37' font-family='sans-serif' font-size='7'>2</text><text x='84' y='53' font-family='sans-serif' font-size='7'>3</text><text x='79' y='69' font-family='sans-serif' font-size='7'>4</text><text x='66' y='82' font-family='sans-serif' font-size='7'>5</text><text x='48' y='87' font-family='sans-serif' font-size='7'>6</text><text x='31' y='82' font-family='sans-serif' font-size='7'>7</text><text x='18' y='69' font-family='sans-serif' font-size='7'>8</text><text x='13' y='53' font-family='sans-serif' font-size='7'>9</text><text x='17' y='37' font-family='sans-serif' font-size='7'>10</text><text x='29' y='24' font-family='sans-serif' font-size='7'>11</text></svg>"]]
+      "\\( \\alpha \\) - угол между часовой и минутной стрелками часов в 14 часов 30 минут, \\( \\beta \\) - угол между часовой и минутной стрелками часов в 20 часов 00 минут.": [
+        "\\( \\beta \\)",
+        "\\( \\alpha \\)",
+        "\\( \\beta \\)",
+        "=",
+        "none",
+        1.2,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='black' stroke-width='2'/><circle cx='50' cy='50' r='2' fill='black'/><line x1='50' y1='50' x2='50' y2='20' stroke='black' stroke-width='2'/><line x1='50' y1='50' x2='25' y2='65' stroke='black' stroke-width='3'/><text x='46' y='18' font-family='sans-serif' font-size='7'>12</text><text x='66' y='24' font-family='sans-serif' font-size='7'>1</text><text x='79' y='37' font-family='sans-serif' font-size='7'>2</text><text x='84' y='53' font-family='sans-serif' font-size='7'>3</text><text x='79' y='69' font-family='sans-serif' font-size='7'>4</text><text x='66' y='82' font-family='sans-serif' font-size='7'>5</text><text x='48' y='87' font-family='sans-serif' font-size='7'>6</text><text x='31' y='82' font-family='sans-serif' font-size='7'>7</text><text x='18' y='69' font-family='sans-serif' font-size='7'>8</text><text x='13' y='53' font-family='sans-serif' font-size='7'>9</text><text x='17' y='37' font-family='sans-serif' font-size='7'>10</text><text x='29' y='24' font-family='sans-serif' font-size='7'>11</text></svg>"]]
     },
     "question_12":
     {
-      "Oxyz - прямоугольная система координат.": ["abc", "abc", "0", "=", "none", 1.5, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 180'><line x1='30' y1='90' x2='180' y2='90' stroke='black' stroke-width='1.2'/><path d='M180 90 L173 87 L173 93 Z' fill='black'/><text x='185' y='95' font-family='serif' font-size='14' font-style='italic'>y</text><line x1='100' y1='160' x2='100' y2='20' stroke='black' stroke-width='1.2'/><path d='M100 20 L97 27 L103 27 Z' fill='black'/><text x='90' y='18' font-family='serif' font-size='14' font-style='italic'>z</text><line x1='150' y1='40' x2='50' y2='140' stroke='black' stroke-width='1.2'/><path d='M50 140 L58 138 L54 133 Z' fill='black'/><text x='55' y='155' font-family='serif' font-size='14' font-style='italic'>x</text><text x='105' y='105' font-family='serif' font-size='14' font-style='italic'>O</text><circle cx='75' cy='90' r='2' fill='black'/><text x='70' y='85' font-family='serif' font-size='14' font-style='italic'>a</text><circle cx='100' cy='70' r='2' fill='black'/><text x='88' y='75' font-family='serif' font-size='14' font-style='italic'>c</text><circle cx='125' cy='65' r='2' fill='black'/><text x='118' y='60' font-family='serif' font-size='14' font-style='italic'>b</text></svg>"]]
+      "Oxyz - прямоугольная система координат.": [
+        "abc",
+        "abc",
+        "0",
+        "=",
+        "none",
+        1.5,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 180'><line x1='30' y1='90' x2='180' y2='90' stroke='black' stroke-width='1.2'/><path d='M180 90 L173 87 L173 93 Z' fill='black'/><text x='185' y='95' font-family='serif' font-size='14' font-style='italic'>y</text><line x1='100' y1='160' x2='100' y2='20' stroke='black' stroke-width='1.2'/><path d='M100 20 L97 27 L103 27 Z' fill='black'/><text x='90' y='18' font-family='serif' font-size='14' font-style='italic'>z</text><line x1='150' y1='40' x2='50' y2='140' stroke='black' stroke-width='1.2'/><path d='M50 140 L58 138 L54 133 Z' fill='black'/><text x='55' y='155' font-family='serif' font-size='14' font-style='italic'>x</text><text x='105' y='105' font-family='serif' font-size='14' font-style='italic'>O</text><circle cx='75' cy='90' r='2' fill='black'/><text x='70' y='85' font-family='serif' font-size='14' font-style='italic'>a</text><circle cx='100' cy='70' r='2' fill='black'/><text x='88' y='75' font-family='serif' font-size='14' font-style='italic'>c</text><circle cx='125' cy='65' r='2' fill='black'/><text x='118' y='60' font-family='serif' font-size='14' font-style='italic'>b</text></svg>"]]
     },
     "question_13":
     {
-      "6 + 2x < 4": ["6 - 2x", "6 - 2x", "4", "=", "none", 1.3, ["None"]]
+      "6 + 2x < 4": [
+        "6 - 2x",
+        "6 - 2x",
+        "4",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_14":
     {
-      "none": ["z - y", "x + y", "z - y", "=", "none", 1.3, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60'><line x1='10' y1='30' x2='290' y2='30' stroke='black' stroke-width='1.5'/><path d='M290 30 L280 25 V35 Z' fill='black'/><line x1='40' y1='25' x2='40' y2='35' stroke='black' stroke-width='1.5'/><text x='35' y='52' font-family='serif' font-size='16' font-style='italic'>x</text><line x1='90' y1='25' x2='90' y2='35' stroke='black' stroke-width='1.5'/><text x='85' y='52' font-family='serif' font-size='16' font-style='italic'>y</text><line x1='150' y1='25' x2='150' y2='35' stroke='black' stroke-width='1.5'/><text x='145' y='52' font-family='serif' font-size='16'>0</text><line x1='230' y1='25' x2='230' y2='35' stroke='black' stroke-width='1.5'/><text x='225' y='52' font-family='serif' font-size='16' font-style='italic'>z</text></svg>"]]
+      "none": [
+        "z - y",
+        "x + y",
+        "z - y",
+        "=",
+        "none",
+        1.3,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60'><line x1='10' y1='30' x2='290' y2='30' stroke='black' stroke-width='1.5'/><path d='M290 30 L280 25 V35 Z' fill='black'/><line x1='40' y1='25' x2='40' y2='35' stroke='black' stroke-width='1.5'/><text x='35' y='52' font-family='serif' font-size='16' font-style='italic'>x</text><line x1='90' y1='25' x2='90' y2='35' stroke='black' stroke-width='1.5'/><text x='85' y='52' font-family='serif' font-size='16' font-style='italic'>y</text><line x1='150' y1='25' x2='150' y2='35' stroke='black' stroke-width='1.5'/><text x='145' y='52' font-family='serif' font-size='16'>0</text><line x1='230' y1='25' x2='230' y2='35' stroke='black' stroke-width='1.5'/><text x='225' y='52' font-family='serif' font-size='16' font-style='italic'>z</text></svg>"]]
     },
     "question_15":
     {
-      "Функция задана формулой f(x) = kx - 2, f(2) = 2.": ["1", "f(1)", "1", "=", "none", 1.3, ["None"]]
+      "Функция задана формулой f(x) = kx - 2, f(2) = 2.": [
+        "1",
+        "f(1)",
+        "1",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_16":
     {
-      "none": ["90% от числа 45", "90% от числа 45", "40", "=", "none", 1.3, ["None"]]
+      "none": [
+        "90% от числа 45",
+        "90% от числа 45",
+        "40",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_17":
     {
-      "Последовательность задана формулой \\( a_n = (-2)^n \\)": ["\\( a_{18} \\)", "\\( a_{18} \\)", "\\( a_{19} \\)", "=", "none", 1.3, ["None"]]
+      "Последовательность задана формулой \\( a_n = (-2)^n \\)": [
+        "\\( a_{18} \\)",
+        "\\( a_{18} \\)",
+        "\\( a_{19} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_18":
     {
-      "Новое математическое действие \\( \\otimes \\) определяется с помощью формулы a \\( \\otimes b = \\frac{\\sqrt{a}}{b} \\).": ["\\( 5 \\otimes 3 \\)", "\\( 3 \\otimes 5 \\)", "\\( 5 \\otimes 3 \\)", "=", "none", 1.3, ["None"]]
+      "Новое математическое действие \\( \\otimes \\) определяется с помощью формулы a \\( \\otimes b = \\frac{\\sqrt{a}}{b} \\).": [
+        "\\( 5 \\otimes 3 \\)",
+        "\\( 3 \\otimes 5 \\)",
+        "\\( 5 \\otimes 3 \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_19":
     {
-      "0 < t < 1": ["\\( t^{2020} \\)", "\\( t^{2021} \\)", "\\( t^{2020} \\)", "=", "none", 1.3, ["None"]]
+      "0 < t < 1": [
+        "\\( t^{2020} \\)",
+        "\\( t^{2021} \\)",
+        "\\( t^{2020} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_20":
     {
-      "|x| + x = 1": ["|x| - x", "|x| - x", "-1", "=", "none", 1.3, ["None"]]
+      "|x| + x = 1": [
+        "|x| - x",
+        "|x| - x",
+        "-1",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_21":
     {
-      "\\( \\frac{p}{m} = \\frac{1}{7} \\)": ["\\( \\frac{7}{24} \\)", "\\( \\frac{7p + m}{7m + p} \\)", "\\( \\frac{7}{24} \\)", "=", "none", 1.3, ["None"]]
+      "\\( \\frac{p}{m} = \\frac{1}{7} \\)": [
+        "\\( \\frac{7}{24} \\)",
+        "\\( \\frac{7p + m}{7m + p} \\)",
+        "\\( \\frac{7}{24} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_22":
     {
-      "AB = BC": ["\\( \\alpha \\)", "\\( \\alpha \\)", "70", "=", "none", 1.5, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 310'><polygon points='50,250 150,30 250,250' fill='none' stroke='black' stroke-width='1.5'/><line x1='50' y1='250' x2='212' y2='164' stroke='black' stroke-width='1.5'/><text x='30' y='265' font-family='serif' font-size='18' font-style='italic'>A</text><text x='145' y='25' font-family='serif' font-size='18' font-style='italic'>B</text><text x='255' y='265' font-family='serif' font-size='18' font-style='italic'>C</text><text x='218' y='160' font-family='serif' font-size='18' font-style='italic'>D</text><text x='85' y='222' font-family='serif' font-size='14'>36°</text><text x='110' y='245' font-family='serif' font-size='14'>34°</text><text x='188' y='188' font-family='serif' font-size='14'>α°</text></svg>"]]
+      "AB = BC": [
+        "\\( \\alpha \\)",
+        "\\( \\alpha \\)",
+        "70",
+        "=",
+        "none",
+        1.5,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 310'><polygon points='50,250 150,30 250,250' fill='none' stroke='black' stroke-width='1.5'/><line x1='50' y1='250' x2='212' y2='164' stroke='black' stroke-width='1.5'/><text x='30' y='265' font-family='serif' font-size='18' font-style='italic'>A</text><text x='145' y='25' font-family='serif' font-size='18' font-style='italic'>B</text><text x='255' y='265' font-family='serif' font-size='18' font-style='italic'>C</text><text x='218' y='160' font-family='serif' font-size='18' font-style='italic'>D</text><text x='85' y='222' font-family='serif' font-size='14'>36°</text><text x='110' y='245' font-family='serif' font-size='14'>34°</text><text x='188' y='188' font-family='serif' font-size='14'>α°</text></svg>"]]
     },
     "question_23":
     {
-      "Сумма внутренних углов выпуклого n - угольника вычисляется по формуле \\( 180^\\circ \\cdot (n - 2) \\). Каждый из внутренних углов n - угольника равен \\( 108^\\circ \\) .": ["6", "n", "6", "=", "none", 1.3, ["None"]]
+      "Сумма внутренних углов выпуклого n - угольника вычисляется по формуле \\( 180^\\circ \\cdot (n - 2) \\). Каждый из внутренних углов n - угольника равен \\( 108^\\circ \\) .": [
+        "6",
+        "n",
+        "6",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_24":
     {
-      "none": ["=", "\\( \\frac{3^(9) + 3^(8)}{3^(7)} \\)", "12", "=", "none", 1.3, ["None"]]
+      "none": [
+        "=",
+        "\\( \\frac{3^(9) + 3^(8)}{3^(7)} \\)",
+        "12",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_25":
     {
-      "Чтобы вычислить размах ряда чисел, нужно найти разность между наибольшим и наименьшим числом этого ряда.": ["Размах числового ряда: -1; 5; 0; 3; 10; -5; 9.", "Размах числового ряда: -1; 5; 0; 3; 10; -5; 9.", "5", "=", "none", 1.3, ["None"]]
+      "Чтобы вычислить размах ряда чисел, нужно найти разность между наибольшим и наименьшим числом этого ряда.": [
+        "Размах числового ряда: -1; 5; 0; 3; 10; -5; 9.",
+        "Размах числового ряда: -1; 5; 0; 3; 10; -5; 9.",
+        "5",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_26":
     {
-      "ABCD - трапеция": ["none", "AB", "CD", "=", "none", 1.3, ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 210'><polygon points='40,180 70,40 230,40 280,180' fill='none' stroke='black' stroke-width='1.5'/><line x1='40' y1='180' x2='230' y2='40' stroke='black' stroke-width='1.5'/><text x='25' y='195' font-family='serif' font-size='18' font-style='italic'>A</text><text x='60' y='30' font-family='serif' font-size='18' font-style='italic'>B</text><text x='235' y='30' font-family='serif' font-size='18' font-style='italic'>C</text><text x='285' y='195' font-family='serif' font-size='18' font-style='italic'>D</text><text x='65' y='145' font-family='serif' font-size='14'>α°</text><text x='85' y='175' font-family='serif' font-size='14'>α°</text></svg>"]]
+      "ABCD - трапеция": [
+        "none",
+        "AB",
+        "CD",
+        "=",
+        "none",
+        1.3,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 210'><polygon points='40,180 70,40 230,40 280,180' fill='none' stroke='black' stroke-width='1.5'/><line x1='40' y1='180' x2='230' y2='40' stroke='black' stroke-width='1.5'/><text x='25' y='195' font-family='serif' font-size='18' font-style='italic'>A</text><text x='60' y='30' font-family='serif' font-size='18' font-style='italic'>B</text><text x='235' y='30' font-family='serif' font-size='18' font-style='italic'>C</text><text x='285' y='195' font-family='serif' font-size='18' font-style='italic'>D</text><text x='65' y='145' font-family='serif' font-size='14'>α°</text><text x='85' y='175' font-family='serif' font-size='14'>α°</text></svg>"]]
     },
     "question_27":
     {
-      "none": ["\\( 12^{16} \\)", "\\( 16^{12} \\)", "\\( 12^{16} \\)", "=", "none", 1.3, ["None"]]
+      "none": [
+        "\\( 12^{16} \\)",
+        "\\( 16^{12} \\)",
+        "\\( 12^{16} \\)",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_28":
     {
-      "E, F, K, L - середины сторон прямоугольника ABCD. Периметр четырёхугольника EFKL равен 10.": ["20", "Площадь прямоугольника ABCD", "20", "=", "none", 1.3, ["None", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'><rect x='50' y='40' width='220' height='140' fill='none' stroke='black' stroke-width='1.5'/><polygon points='50,110 160,40 270,110 160,180' fill='none' stroke='black' stroke-width='1.5'/><text x='32' y='185' font-family='serif' font-size='18' font-style='italic'>A</text><text x='32' y='45' font-family='serif' font-size='18' font-style='italic'>B</text><text x='275' y='45' font-family='serif' font-size='18' font-style='italic'>C</text><text x='275' y='185' font-family='serif' font-size='18' font-style='italic'>D</text><text x='30' y='115' font-family='serif' font-size='18' font-style='italic'>E</text><text x='155' y='32' font-family='serif' font-size='18' font-style='italic'>F</text><text x='278' y='115' font-family='serif' font-size='18' font-style='italic'>K</text><text x='155' y='200' font-family='serif' font-size='18' font-style='italic'>L</text></svg>"]]
+      "E, F, K, L - середины сторон прямоугольника ABCD. Периметр четырёхугольника EFKL равен 10.": [
+        "20",
+        "Площадь прямоугольника ABCD",
+        "20",
+        "=",
+        "none",
+        1.3,
+        ["SVG_GRAPH", "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'><rect x='50' y='40' width='220' height='140' fill='none' stroke='black' stroke-width='1.5'/><polygon points='50,110 160,40 270,110 160,180' fill='none' stroke='black' stroke-width='1.5'/><text x='32' y='185' font-family='serif' font-size='18' font-style='italic'>A</text><text x='32' y='45' font-family='serif' font-size='18' font-style='italic'>B</text><text x='275' y='45' font-family='serif' font-size='18' font-style='italic'>C</text><text x='275' y='185' font-family='serif' font-size='18' font-style='italic'>D</text><text x='30' y='115' font-family='serif' font-size='18' font-style='italic'>E</text><text x='155' y='32' font-family='serif' font-size='18' font-style='italic'>F</text><text x='278' y='115' font-family='serif' font-size='18' font-style='italic'>K</text><text x='155' y='200' font-family='serif' font-size='18' font-style='italic'>L</text></svg>"]]
     },
     "question_29":
     {
-      "0 < a < b, c < d < 0": ["ad", "ad", "bc", "=", "none", 1.3, ["None"]]
+      "0 < a < b, c < d < 0": [
+        "ad",
+        "ad",
+        "bc",
+        "=",
+        "none",
+        1.3,
+        ["None"]]
     },
     "question_30":
     {
-      "B - середина ребра AK, C - середина ребра AL.": ["Объём пирамиды DAKL", "Объём пирамиды DAKL", "Объём призмы ADCDEF", "=", "none", 1.3, ["None", "<svg version='1.0' xmlns='http://www.w3.org/2000/svg'  width='401.000000pt' height='337.000000pt' viewBox='0 0 401.000000 337.000000'  preserveAspectRatio='xMidYMid meet'> <g transform='translate(0.000000,337.000000) scale(0.100000,-0.100000)' fill='#000000' stroke='none'> <path d='M420 3183 c-7 -32 -18 -64 -23 -71 -13 -16 -2 -26 19 -18 9 4 14 9 11 12 -2 3 1 29 9 57 16 60 17 77 6 77 -5 0 -15 -26 -22 -57z'/> <path d='M488 3225 c15 -11 22 -26 22 -48 0 -41 -8 -53 -45 -68 -24 -10 -26 -13 -12 -16 26 -7 62 20 77 58 12 27 11 36 -1 58 -8 15 -25 27 -39 29 l-25 3 23 -16z'/> <path d='M2120 3220 c0 -5 5 -10 10 -10 6 0 10 5 10 10 0 6 -4 10 -10 10 -5 0 -10 -4 -10 -10z'/> <path d='M2154 3214 c3 -8 6 -18 6 -20 0 -2 5 -4 10 -4 16 0 11 27 -6 34 -12 5 -15 2 -10 -10z'/> <path d='M2076 3177 c-4 -23 -13 -55 -21 -71 -9 -16 -13 -31 -11 -34 8 -7 38 7 33 15 -3 5 -1 18 4 31 9 24 44 30 52 10 4 -8 6 -7 6 4 1 9 4 25 8 35 6 17 6 17 -14 1 -31 -28 -43 -23 -32 14 11 41 12 38 -5 38 -9 0 -16 -16 -20 -43z'/> <path d='M527 3113 c-4 -3 -7 -290 -7 -637 l0 -631 52 -55 c50 -53 476 -494 778 -805 80 -82 213 -220 295 -305 83 -86 199 -206 260 -269 l110 -113 154 159 c659 676 966 990 1164 1191 126 127 222 232 213 232 -9 0 -85 28 -169 61 -328 132 -449 181 -637 254 -107 42 -238 94 -290 115 -52 22 -113 46 -135 54 -22 7 -98 37 -168 66 l-127 52 0 319 0 319 -743 0 c-409 0 -747 -3 -750 -7z m1367 -106 c-49 -50 -179 -186 -289 -302 -110 -115 -230 -241 -268 -280 l-67 -70 -42 45 c-103 110 -424 446 -537 563 -69 70 -123 128 -121 129 7 4 1404 14 1409 10 3 -1 -36 -44 -85 -95z m-1116 -372 c141 -265 155 -291 276 -525 65 -124 121 -232 127 -240 5 -8 25 -45 44 -82 l35 -68 0 -307 -1 -308 -87 92 c-48 50 -210 217 -359 371 l-273 280 0 621 0 621 76 -147 c43 -82 115 -220 162 -308z m1222 -158 l0 -613 -252 -268 c-231 -246 -253 -266 -265 -249 -8 10 -56 100 -108 200 -92 175 -95 184 -95 247 l0 66 30 0 c17 0 30 5 30 10 0 6 -13 10 -30 10 l-30 0 0 228 0 228 291 304 c160 168 321 338 358 377 36 40 67 73 68 73 2 0 3 -276 3 -613z m-1156 298 c105 -110 241 -252 303 -316 l113 -115 0 -290 -1 -289 -24 45 c-18 36 -20 46 -9 48 22 5 16 22 -8 22 -17 1 -29 12 -43 43 -12 23 -90 173 -175 332 -84 160 -172 326 -195 370 -104 197 -203 382 -219 410 -21 34 -34 47 258 -260z m1299 -364 c131 -53 377 -150 847 -336 466 -184 494 -196 507 -208 8 -9 -28 -52 -156 -182 -92 -93 -347 -354 -566 -580 -220 -225 -476 -487 -569 -582 -94 -96 -173 -179 -177 -185 -10 -16 -7 -22 -81 122 -91 176 -386 735 -419 795 l-28 49 52 56 c381 409 471 500 499 500 15 0 28 5 28 10 0 6 -13 10 -30 10 l-29 0 -3 290 c-2 160 -2 290 0 290 2 0 58 -22 125 -49z m-708 -1017 l43 -82 -99 -106 -99 -106 0 292 0 293 56 -105 c31 -58 75 -142 99 -186z m113 -216 c32 -62 77 -147 99 -188 35 -66 152 -287 290 -550 37 -71 40 -80 17 -55 -15 17 -138 145 -273 285 -135 140 -279 290 -320 332 l-73 77 98 105 c54 59 99 106 100 106 1 0 29 -51 62 -112z'/> <path d='M630 3072 c0 -14 52 -34 62 -24 6 6 -3 14 -23 21 -38 13 -39 13 -39 3z'/> <path d='M730 3030 c0 -10 33 -30 49 -30 22 0 10 18 -19 29 -17 5 -30 6 -30 1z'/> <path d='M820 2991 c0 -11 40 -31 61 -31 16 0 10 17 -8 23 -10 2 -26 8 -35 12 -11 4 -18 3 -18 -4z'/> <path d='M1766 2962 c-3 -5 1 -9 9 -9 8 0 12 4 9 9 -3 4 -7 8 -9 8 -2 0 -6 -4 -9 -8z'/> <path d='M920 2951 c0 -6 14 -17 30 -26 25 -13 30 -13 30 -1 0 7 -8 16 -17 20 -10 3 -24 9 -30 12 -7 3 -13 1 -13 -5z'/> <path d='M1010 2906 c0 -9 61 -38 68 -32 3 4 1 10 -4 15 -11 12 -64 25 -64 17z'/> <path d='M867 2874 c-3 -3 -3 -13 0 -22 5 -11 3 -13 -8 -7 -12 8 -12 6 0 -8 18 -22 17 -22 17 13 0 32 0 33 -9 24z'/> <path d='M1116 2872 c-12 -12 -5 -20 25 -31 39 -13 39 -13 39 -2 0 12 -57 41 -64 33z'/> <path d='M1210 2822 c0 -11 51 -35 58 -27 3 3 1 9 -4 14 -14 14 -54 23 -54 13z'/> <path d='M1306 2782 c-5 -9 34 -32 54 -32 17 0 11 17 -7 24 -10 3 -23 8 -30 12 -6 3 -14 1 -17 -4z'/> <path d='M1405 2740 c-4 -6 6 -15 20 -20 32 -12 35 -12 35 -2 0 14 -48 33 -55 22z'/> <path d='M1500 2701 c0 -11 32 -31 49 -31 17 0 13 17 -6 24 -10 3 -24 9 -30 12 -7 3 -13 1 -13 -5z'/> <path d='M1449 2638 c-5 -16 -4 -46 2 -42 4 2 7 13 6 24 -1 17 -5 26 -8 18z'/> <path d='M1160 2531 c0 -6 4 -13 10 -16 6 -3 7 1 4 9 -7 18 -14 21 -14 7z'/> <path d='M550 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M645 1870 c-4 -6 8 -10 29 -10 20 0 36 5 36 10 0 6 -13 10 -29 10 -17 0 -33 -4 -36 -10z'/> <path d='M750 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M860 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M960 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1070 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M840 1606 c0 -2 8 -10 18 -17 15 -13 16 -12 3 4 -13 16 -21 21 -21 13z'/> <path d='M1665 2691 c-3 -5 -2 -12 3 -15 5 -3 9 1 9 9 0 17 -3 19 -12 6z'/> <path d='M1600 2652 c0 -11 51 -35 58 -27 3 3 1 9 -4 14 -14 14 -54 23 -54 13z'/> <path d='M1690 2612 c0 -12 58 -37 67 -28 10 9 -8 24 -39 31 -17 4 -28 3 -28 -3z'/> <path d='M1790 2572 c0 -12 51 -34 59 -27 7 8 -28 35 -46 35 -7 0 -13 -4 -13 -8z'/> <path d='M1890 2530 c0 -10 32 -30 49 -30 20 0 11 17 -14 28 -31 14 -35 15 -35 2z'/> <path d='M1496 2498 c3 -5 10 -6 15 -3 13 9 11 12 -6 12 -8 0 -12 -4 -9 -9z'/> <path d='M1355 2340 c7 -23 -22 -120 -36 -120 -5 0 -9 -4 -9 -8 0 -15 110 -8 120 8 16 25 11 34 -8 17 -10 -10 -31 -17 -46 -17 -23 0 -27 3 -21 18 3 9 11 36 18 60 9 34 16 42 34 42 13 0 23 -5 23 -11 0 -5 5 -7 10 -4 6 3 10 13 10 21 0 10 -13 14 -51 14 -46 0 -50 -2 -44 -20z'/> <path d='M1403 2298 c-12 -15 -13 -48 -2 -48 8 0 22 50 16 56 -2 3 -9 -1 -14 -8z'/> <path d='M1385 1870 c-4 -6 8 -10 29 -10 20 0 36 5 36 10 0 6 -13 10 -29 10 -17 0 -33 -4 -36 -10z'/> <path d='M1490 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1590 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1700 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1800 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1910 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2196 1922 c-3 -4 4 -9 15 -9 23 -2 25 3 4 10 -8 4 -16 3 -19 -1z'/> <path d='M2120 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2230 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2330 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2430 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2540 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2650 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2750 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2860 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2960 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M3070 1870 c0 -5 16 -10 36 -10 21 0 33 4 29 10 -3 6 -19 10 -36 10 -16 0 -29 -4 -29 -10z'/> <path d='M3170 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M3280 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M3390 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2038 1795 c-33 -18 -54 -75 -38 -104 23 -43 72 -50 102 -14 11 14 9 14 -14 -1 -38 -25 -68 -8 -68 40 0 60 74 114 87 63 4 -16 8 -17 14 -7 5 7 9 18 9 23 0 17 -62 16 -92 0z'/> <path d='M3628 1952 c9 -7 9 -19 -4 -58 -8 -27 -20 -57 -25 -67 -9 -17 -5 -18 43 -15 51 3 53 4 55 33 2 26 2 27 -7 8 -8 -21 -46 -40 -57 -29 -9 8 18 106 34 121 13 13 10 15 -19 15 -20 0 -28 -3 -20 -8z'/> <path d='M430 1758 c-24 -35 -53 -71 -64 -80 l-21 -18 26 0 c19 0 26 5 25 17 0 9 8 22 19 27 11 6 19 18 17 28 -2 9 2 19 7 23 14 8 15 -50 1 -74 -8 -16 -5 -18 16 -18 15 0 22 3 17 8 -6 6 -6 38 -1 76 4 37 6 68 4 70 -1 2 -22 -25 -46 -59z'/> <path d='M1180 989 c0 -27 -21 -101 -32 -113 -15 -18 -9 -22 33 -21 50 1 85 34 69 65 -7 13 -5 21 5 30 19 16 19 34 0 50 -19 16 -32 5 -16 -14 9 -11 8 -17 -4 -30 -27 -26 -38 -19 -32 19 4 26 2 35 -9 35 -8 0 -14 -9 -14 -21z m48 -84 c1 -12 -6 -25 -19 -33 -27 -17 -33 -11 -24 28 8 35 38 39 43 5z'/> <path d='M1986 265 c7 -17 -24 -117 -40 -127 -6 -4 5 -8 24 -8 19 0 30 4 23 8 -12 7 -6 62 7 62 10 0 31 -50 25 -61 -4 -5 8 -9 25 -9 l31 0 -33 41 c-32 40 -32 41 -13 56 11 8 31 23 45 33 l25 19 -28 1 c-16 0 -26 -4 -23 -9 6 -9 -41 -57 -49 -50 -2 3 2 17 10 32 13 26 13 27 -10 27 -17 0 -23 -4 -19 -15z'/> </g> </svg>"]]
+      "B - середина ребра AK, C - середина ребра AL.": [
+        "Объём пирамиды DAKL",
+        "Объём пирамиды DAKL",
+        "Объём призмы ADCDEF",
+        "=",
+        "none",
+        1.3,
+        ["SVG_GRAPH", "<svg version='1.0' xmlns='http://www.w3.org/2000/svg'  width='401.000000pt' height='337.000000pt' viewBox='0 0 401.000000 337.000000'  preserveAspectRatio='xMidYMid meet'> <g transform='translate(0.000000,337.000000) scale(0.100000,-0.100000)' fill='#000000' stroke='none'> <path d='M420 3183 c-7 -32 -18 -64 -23 -71 -13 -16 -2 -26 19 -18 9 4 14 9 11 12 -2 3 1 29 9 57 16 60 17 77 6 77 -5 0 -15 -26 -22 -57z'/> <path d='M488 3225 c15 -11 22 -26 22 -48 0 -41 -8 -53 -45 -68 -24 -10 -26 -13 -12 -16 26 -7 62 20 77 58 12 27 11 36 -1 58 -8 15 -25 27 -39 29 l-25 3 23 -16z'/> <path d='M2120 3220 c0 -5 5 -10 10 -10 6 0 10 5 10 10 0 6 -4 10 -10 10 -5 0 -10 -4 -10 -10z'/> <path d='M2154 3214 c3 -8 6 -18 6 -20 0 -2 5 -4 10 -4 16 0 11 27 -6 34 -12 5 -15 2 -10 -10z'/> <path d='M2076 3177 c-4 -23 -13 -55 -21 -71 -9 -16 -13 -31 -11 -34 8 -7 38 7 33 15 -3 5 -1 18 4 31 9 24 44 30 52 10 4 -8 6 -7 6 4 1 9 4 25 8 35 6 17 6 17 -14 1 -31 -28 -43 -23 -32 14 11 41 12 38 -5 38 -9 0 -16 -16 -20 -43z'/> <path d='M527 3113 c-4 -3 -7 -290 -7 -637 l0 -631 52 -55 c50 -53 476 -494 778 -805 80 -82 213 -220 295 -305 83 -86 199 -206 260 -269 l110 -113 154 159 c659 676 966 990 1164 1191 126 127 222 232 213 232 -9 0 -85 28 -169 61 -328 132 -449 181 -637 254 -107 42 -238 94 -290 115 -52 22 -113 46 -135 54 -22 7 -98 37 -168 66 l-127 52 0 319 0 319 -743 0 c-409 0 -747 -3 -750 -7z m1367 -106 c-49 -50 -179 -186 -289 -302 -110 -115 -230 -241 -268 -280 l-67 -70 -42 45 c-103 110 -424 446 -537 563 -69 70 -123 128 -121 129 7 4 1404 14 1409 10 3 -1 -36 -44 -85 -95z m-1116 -372 c141 -265 155 -291 276 -525 65 -124 121 -232 127 -240 5 -8 25 -45 44 -82 l35 -68 0 -307 -1 -308 -87 92 c-48 50 -210 217 -359 371 l-273 280 0 621 0 621 76 -147 c43 -82 115 -220 162 -308z m1222 -158 l0 -613 -252 -268 c-231 -246 -253 -266 -265 -249 -8 10 -56 100 -108 200 -92 175 -95 184 -95 247 l0 66 30 0 c17 0 30 5 30 10 0 6 -13 10 -30 10 l-30 0 0 228 0 228 291 304 c160 168 321 338 358 377 36 40 67 73 68 73 2 0 3 -276 3 -613z m-1156 298 c105 -110 241 -252 303 -316 l113 -115 0 -290 -1 -289 -24 45 c-18 36 -20 46 -9 48 22 5 16 22 -8 22 -17 1 -29 12 -43 43 -12 23 -90 173 -175 332 -84 160 -172 326 -195 370 -104 197 -203 382 -219 410 -21 34 -34 47 258 -260z m1299 -364 c131 -53 377 -150 847 -336 466 -184 494 -196 507 -208 8 -9 -28 -52 -156 -182 -92 -93 -347 -354 -566 -580 -220 -225 -476 -487 -569 -582 -94 -96 -173 -179 -177 -185 -10 -16 -7 -22 -81 122 -91 176 -386 735 -419 795 l-28 49 52 56 c381 409 471 500 499 500 15 0 28 5 28 10 0 6 -13 10 -30 10 l-29 0 -3 290 c-2 160 -2 290 0 290 2 0 58 -22 125 -49z m-708 -1017 l43 -82 -99 -106 -99 -106 0 292 0 293 56 -105 c31 -58 75 -142 99 -186z m113 -216 c32 -62 77 -147 99 -188 35 -66 152 -287 290 -550 37 -71 40 -80 17 -55 -15 17 -138 145 -273 285 -135 140 -279 290 -320 332 l-73 77 98 105 c54 59 99 106 100 106 1 0 29 -51 62 -112z'/> <path d='M630 3072 c0 -14 52 -34 62 -24 6 6 -3 14 -23 21 -38 13 -39 13 -39 3z'/> <path d='M730 3030 c0 -10 33 -30 49 -30 22 0 10 18 -19 29 -17 5 -30 6 -30 1z'/> <path d='M820 2991 c0 -11 40 -31 61 -31 16 0 10 17 -8 23 -10 2 -26 8 -35 12 -11 4 -18 3 -18 -4z'/> <path d='M1766 2962 c-3 -5 1 -9 9 -9 8 0 12 4 9 9 -3 4 -7 8 -9 8 -2 0 -6 -4 -9 -8z'/> <path d='M920 2951 c0 -6 14 -17 30 -26 25 -13 30 -13 30 -1 0 7 -8 16 -17 20 -10 3 -24 9 -30 12 -7 3 -13 1 -13 -5z'/> <path d='M1010 2906 c0 -9 61 -38 68 -32 3 4 1 10 -4 15 -11 12 -64 25 -64 17z'/> <path d='M867 2874 c-3 -3 -3 -13 0 -22 5 -11 3 -13 -8 -7 -12 8 -12 6 0 -8 18 -22 17 -22 17 13 0 32 0 33 -9 24z'/> <path d='M1116 2872 c-12 -12 -5 -20 25 -31 39 -13 39 -13 39 -2 0 12 -57 41 -64 33z'/> <path d='M1210 2822 c0 -11 51 -35 58 -27 3 3 1 9 -4 14 -14 14 -54 23 -54 13z'/> <path d='M1306 2782 c-5 -9 34 -32 54 -32 17 0 11 17 -7 24 -10 3 -23 8 -30 12 -6 3 -14 1 -17 -4z'/> <path d='M1405 2740 c-4 -6 6 -15 20 -20 32 -12 35 -12 35 -2 0 14 -48 33 -55 22z'/> <path d='M1500 2701 c0 -11 32 -31 49 -31 17 0 13 17 -6 24 -10 3 -24 9 -30 12 -7 3 -13 1 -13 -5z'/> <path d='M1449 2638 c-5 -16 -4 -46 2 -42 4 2 7 13 6 24 -1 17 -5 26 -8 18z'/> <path d='M1160 2531 c0 -6 4 -13 10 -16 6 -3 7 1 4 9 -7 18 -14 21 -14 7z'/> <path d='M550 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M645 1870 c-4 -6 8 -10 29 -10 20 0 36 5 36 10 0 6 -13 10 -29 10 -17 0 -33 -4 -36 -10z'/> <path d='M750 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M860 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M960 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1070 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M840 1606 c0 -2 8 -10 18 -17 15 -13 16 -12 3 4 -13 16 -21 21 -21 13z'/> <path d='M1665 2691 c-3 -5 -2 -12 3 -15 5 -3 9 1 9 9 0 17 -3 19 -12 6z'/> <path d='M1600 2652 c0 -11 51 -35 58 -27 3 3 1 9 -4 14 -14 14 -54 23 -54 13z'/> <path d='M1690 2612 c0 -12 58 -37 67 -28 10 9 -8 24 -39 31 -17 4 -28 3 -28 -3z'/> <path d='M1790 2572 c0 -12 51 -34 59 -27 7 8 -28 35 -46 35 -7 0 -13 -4 -13 -8z'/> <path d='M1890 2530 c0 -10 32 -30 49 -30 20 0 11 17 -14 28 -31 14 -35 15 -35 2z'/> <path d='M1496 2498 c3 -5 10 -6 15 -3 13 9 11 12 -6 12 -8 0 -12 -4 -9 -9z'/> <path d='M1355 2340 c7 -23 -22 -120 -36 -120 -5 0 -9 -4 -9 -8 0 -15 110 -8 120 8 16 25 11 34 -8 17 -10 -10 -31 -17 -46 -17 -23 0 -27 3 -21 18 3 9 11 36 18 60 9 34 16 42 34 42 13 0 23 -5 23 -11 0 -5 5 -7 10 -4 6 3 10 13 10 21 0 10 -13 14 -51 14 -46 0 -50 -2 -44 -20z'/> <path d='M1403 2298 c-12 -15 -13 -48 -2 -48 8 0 22 50 16 56 -2 3 -9 -1 -14 -8z'/> <path d='M1385 1870 c-4 -6 8 -10 29 -10 20 0 36 5 36 10 0 6 -13 10 -29 10 -17 0 -33 -4 -36 -10z'/> <path d='M1490 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1590 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1700 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1800 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M1910 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2196 1922 c-3 -4 4 -9 15 -9 23 -2 25 3 4 10 -8 4 -16 3 -19 -1z'/> <path d='M2120 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2230 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2330 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2430 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2540 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2650 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2750 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2860 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M2960 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M3070 1870 c0 -5 16 -10 36 -10 21 0 33 4 29 10 -3 6 -19 10 -36 10 -16 0 -29 -4 -29 -10z'/> <path d='M3170 1870 c0 -5 16 -10 35 -10 19 0 35 5 35 10 0 6 -16 10 -35 10 -19 0 -35 -4 -35 -10z'/> <path d='M3280 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M3390 1870 c0 -5 14 -10 30 -10 17 0 30 5 30 10 0 6 -13 10 -30 10 -16 0 -30 -4 -30 -10z'/> <path d='M2038 1795 c-33 -18 -54 -75 -38 -104 23 -43 72 -50 102 -14 11 14 9 14 -14 -1 -38 -25 -68 -8 -68 40 0 60 74 114 87 63 4 -16 8 -17 14 -7 5 7 9 18 9 23 0 17 -62 16 -92 0z'/> <path d='M3628 1952 c9 -7 9 -19 -4 -58 -8 -27 -20 -57 -25 -67 -9 -17 -5 -18 43 -15 51 3 53 4 55 33 2 26 2 27 -7 8 -8 -21 -46 -40 -57 -29 -9 8 18 106 34 121 13 13 10 15 -19 15 -20 0 -28 -3 -20 -8z'/> <path d='M430 1758 c-24 -35 -53 -71 -64 -80 l-21 -18 26 0 c19 0 26 5 25 17 0 9 8 22 19 27 11 6 19 18 17 28 -2 9 2 19 7 23 14 8 15 -50 1 -74 -8 -16 -5 -18 16 -18 15 0 22 3 17 8 -6 6 -6 38 -1 76 4 37 6 68 4 70 -1 2 -22 -25 -46 -59z'/> <path d='M1180 989 c0 -27 -21 -101 -32 -113 -15 -18 -9 -22 33 -21 50 1 85 34 69 65 -7 13 -5 21 5 30 19 16 19 34 0 50 -19 16 -32 5 -16 -14 9 -11 8 -17 -4 -30 -27 -26 -38 -19 -32 19 4 26 2 35 -9 35 -8 0 -14 -9 -14 -21z m48 -84 c1 -12 -6 -25 -19 -33 -27 -17 -33 -11 -24 28 8 35 38 39 43 5z'/> <path d='M1986 265 c7 -17 -24 -117 -40 -127 -6 -4 5 -8 24 -8 19 0 30 4 23 8 -12 7 -6 62 7 62 10 0 31 -50 25 -61 -4 -5 8 -9 25 -9 l31 0 -33 41 c-32 40 -32 41 -13 56 11 8 31 23 45 33 l25 19 -28 1 c-16 0 -26 -4 -23 -9 6 -9 -41 -57 -49 -50 -2 3 2 17 10 32 13 26 13 27 -10 27 -17 0 -23 -4 -19 -15z'/> </g> </svg>"]]
     }
   }
 }
