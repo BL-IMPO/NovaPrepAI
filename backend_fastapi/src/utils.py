@@ -3,6 +3,8 @@ from typing import Dict, List
 import random
 import os
 
+from tasks_generation import generate_question_from_template, generate_text
+
 
 class TestORT:
     def __init__(self):
@@ -24,15 +26,58 @@ class TestORT:
             "special_kyrgyz_grammar": 60 * 60,
         }
 
-        self.math_1_tasks = {}
-        try:
-            with open("src/default_data_for_tests/default_math_1_tasks.json", "r", encoding="utf-8") as f:
-                data = json.load(f)
-                self.math_1_tasks = data.get("math_1", {})
-            print(f"Loaded {len(self.math_1_tasks)} math_1 tasks")
-        except Exception as e:
-            print(f"Could not load math_1 tasks: {e}")
+    def initialize_default_file(self, test_type):
+        default_files = {'analogy':'default_analogy_tasks.json',
+                         'math_1': 'default_math_1_tasks.json',
+                         'math_2': 'default_math_2_tasks.json',
+                         'reading': 'default_reading_tasks.json',
+                         'russian_grammar': 'default_russian_grammar_tasks.json',
+                         'texts': 'default_texts_reading_tasks.json'}
 
+        try:
+            with open("src/default_data_for_tests/" + default_files[test_type], "r", encoding="utf-8") as f:
+                data = json.load(f)
+                test = data.get(test_type, {})
+            print(f"Loaded {len(test)} {test_type}")
+        except Exception as e:
+            print(f"Could not load {test_type} tasks: {e}")
+
+        return test
+
+    def _generate_tasks(self, qid: int, q_text: str, data: List, q_type="default"):
+        """Generates single tasks by given example."""
+        try:
+            print(f"Generating AI version for {qid}...")
+
+            if q_type == "math_2":
+                ai_result = generate_question_from_template(qid, q_text, data)
+            else:
+                ai_result = generate_question_from_template(qid, q_text, data, "math_2")
+
+            new_q_text = list(ai_result[qid].keys())[0]
+            new_data = ai_result[qid][new_q_text]
+
+            q_text = new_q_text
+            data = new_data
+
+            print(f"Success for {qid}!")
+
+        except Exception as e:
+            print(f"AI generation failed for {qid}, using default. Error: {e}")
+
+        return q_text, data
+
+    def _prepare_answers(self, data: List, q_num, q_type):
+        """Preparing answers for tasks."""
+        val = str(data[0]).strip()
+        answers = [str(data[i]).strip() for i in range(1, q_num+1)]
+        print(val, answers)
+        points = float(data[q_num+1])
+        extra_data = data[q_num+2] if len(data) > 6 else ["None"]
+        print(val, answers, points, extra_data)
+        correct_index = answers.index(val)
+
+        return answers + [points, extra_data, correct_index] if q_type != "math_1" else [answers[0], answers[1], "", "", correct_index, points, extra_data]
 
     def _generate_answers(self, num_answers: int = 4) -> List[str]:
         """Generate answers with first being correct"""
@@ -92,109 +137,123 @@ class TestORT:
             }
 
     def standard_math_1_test(self) -> Dict[str, List[str]]:
+        math_1_tasks = self.initialize_default_file('math_1')
         test_data = {}
 
-        ort_answers = [
-            "Значение в колонке А больше",
-            "Значение в колонке Б больше",
-            "Оба значения равны",
-            "Значения невозможно сравнить",
-        ]
+        num = 1
+        for qid, inner_dict in math_1_tasks.items():
+            for q_text, data in inner_dict.items():
 
-        if self.math_1_tasks:
-            num = 1
-            for qid, inner_dict in self.math_1_tasks.items():
-                for q_text, data in inner_dict.items():
-                    question_text = str(num) + ". " + q_text if q_text != "none" else f"{num}. Сравните значения в колонках А и Б"
-                    num += 1
+                if num == 1 or num == 12:
+                    q_text, data = self._generate_tasks(qid, q_text, data)
 
-                    val = str(data[0]).strip()
-                    colA = str(data[1]).strip()
-                    colB = str(data[2]).strip()
-                    points = float(data[5])
-                    extra_data = data[6] if len(data) > 6 else ["None"]
+                question_text = str(num) + ". " + q_text if q_text != "none" else f"{num}. Сравните значения в колонках А и Б"
 
-                    if val == "=":
-                        correct_index = 2
-                    elif val.lower() == "none":
-                        correct_index = 3
-                    elif val == colA:
-                        correct_index = 0
-                    elif val == colB:
-                        correct_index = 1
-                    else:
-                        correct_index = 3
+                answers = self._prepare_answers(data, 4, "math_1")
 
-                    answers = [colA, colB, "", ""]
-                    answers.append(correct_index)
-                    answers.append(points)
-                    answers.append(extra_data)
-                    test_data[question_text] = answers
+                test_data[question_text] = answers
 
-        else:
-            for num in range(1, 31):
-                if num % 2 == 0:
-                    extra_data = ["SVG_GRAPH", '<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"> <rect x="10" y="10" width="280" height="180"  fill="#f0f0f0" stroke="black" stroke-width="3"/> <line x1="10" y1="10" x2="290" y2="190"  stroke="red" stroke-width="2" stroke-dasharray="5,5" /> <text x="140" y="90" font-family="Arial" font-size="16" fill="black">Diagonal</text> <text x="5" y="25" font-family="Arial" font-size="20" fill="black">A</text> <text x="285" y="205" font-family="Arial" font-size="20" fill="black">C</text> </svg>']
-                else:
-                    extra_data = [None]
+               # yield question_text, answers
 
-                answers = ort_answers.copy()
-                answers.append(0)  # correct_index
-                answers.append(self.base_point + 0.2)  # points
-                answers.append(extra_data)
-                test_data[f"MATH 1: Question {num}: Some question for test?"] = answers
+                num += 1
 
         return test_data
 
     def standard_math_2_test(self) -> Dict[str, List[str]]:
         test_data = {}
-        for num in range(1, 31):
-            if num % 2 == 0:
-                extra_data = ["SVG_GRAPH",'<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"> <rect x="10" y="10" width="280" height="180"  fill="#f0f0f0" stroke="black" stroke-width="3"/> <line x1="10" y1="10" x2="290" y2="190"  stroke="red" stroke-width="2" stroke-dasharray="5,5" /> <text x="140" y="90" font-family="Arial" font-size="16" fill="black">Diagonal</text> <text x="5" y="25" font-family="Arial" font-size="20" fill="black">A</text> <text x="285" y="205" font-family="Arial" font-size="20" fill="black">C</text> </svg>']
-            else:
-                extra_data = [None]
+        math_2_tasks = self.initialize_default_file('math_2')
 
-            answers = self._generate_answers(4)
-            answers.append(extra_data)
-            test_data[f"MATH 2: Question {num}: Some question for test?"] = answers
+        num = 1
+        for qid, inner_dict in math_2_tasks.items():
+            for q_text, data in inner_dict.items():
 
+                if num==1 or num==12:
+                    q_text, data = self._generate_tasks(qid, q_text, data)
+                print(q_text, data)
+                question_text = str(num) + ". " + q_text
+
+                answers = self._prepare_answers(data, 5, "math_2")
+
+                num += 1
+
+                test_data[question_text] = answers
 
         return test_data
 
     def standard_analogy_test(self) -> Dict[str, List[str]]:
         test_data = {}
-        extra_data = [None]
-        for num in range(1, 31):
-            answers = self._generate_answers(4)
-            answers.append(extra_data)
-            test_data[f"ANALOGY: Question {num}: Some question for test?"] = answers
+        analogy_tasks = self.initialize_default_file('analogy')
+
+        num = 1
+        for qid, inner_dict in analogy_tasks.items():
+            for q_text, data in inner_dict.items():
+
+                if num == 1 or num == 12:
+                    q_text, data = self._generate_tasks(qid, q_text, data)
+
+                question_text = str(num) + ". " + q_text
+
+                answers = self._prepare_answers(data, 4, "analogy")
+
+                num += 1
+
+                test_data[question_text] = answers
+
 
         return test_data
 
     def standard_reading_test(self) -> Dict[str, List[str]]:
-        import temporary_tests
         test_data = {}
-        for num in range(1, 31):
-            if num > 0 and num < 11:
-                extra_data = ["TEXT_BLOCK_LARGE", temporary_tests.text_1]
-            if num > 10 and num < 21:
-                extra_data = ["TEXT_BLOCK_LARGE", temporary_tests.text_2]
-            if num > 20 and num < 31:
-                extra_data = ["TEXT_BLOCK_LARGE", temporary_tests.text_3]
+        reading_tasks = self.initialize_default_file('reading')
+        texts = self.initialize_default_file('texts')
 
-            answers = self._generate_answers(4)
-            answers.append(extra_data)
-            test_data[f"READING: Question {num}: Some question for test?"] = answers
+        generated_texts = {}
+
+        for text_num, text in texts.items():
+            print(f"Generating new reading passage for {text_num}")
+            generated_texts[text_num] = generate_text(text)
+
+        num = 1
+        for qid, inner_dict in reading_tasks.items():
+            for q_text, data in inner_dict.items():
+
+                original_text_num = data[6][1]
+                #extra_data = ["TEXT_BLOCK_LARGE", texts.get(original_text_num, "")]
+
+                if num == 1 or num == 12:
+                    data_for_ai = data.copy()
+                    data_for_ai[6] = ["TEXT_BLOCK_LARGE", generated_texts[original_text_num]]
+                    q_text, data = self._generate_tasks(qid, q_text, data_for_ai)
+
+
+                question_text = str(num) + ". " + q_text
+
+                answers = self._prepare_answers(data, 4, "reading")
+
+                num += 1
+
+                test_data[question_text] = answers
 
         return test_data
 
     def standard_grammar_test(self) -> Dict[str, List[str]]:
         test_data = {}
-        extra_data = ["TEXT_BLOCK", "There was a big fire Some Times."]
-        for num in range(1, 31):
-            answers = self._generate_answers(4)
-            answers.append(extra_data)
-            test_data[f"GRAMMAR: Question {num}: Some question for test?"] = answers
+        grammar_tasks = self.initialize_default_file('russian_grammar')
+
+        num = 1
+        for qid, inner_dict in grammar_tasks.items():
+            for q_text, data in inner_dict.items():
+
+                if num == 1 or num == 12:
+                    q_text, data = self._generate_tasks(qid, q_text, data)
+
+                question_text = str(num) + ". " + q_text
+
+                answers = self._prepare_answers(data, 4, "russian_grammar")
+
+                num += 1
+
+                test_data[question_text] = answers
 
         return test_data
 

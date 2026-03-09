@@ -219,7 +219,48 @@ class TestingEngine {
                         `;
                         const modalContent = document.getElementById('readingPassageContent');
                         if (modalContent) {
-                            modalContent.innerHTML = content.replace(/\n/g, '<br>');
+                            let formattedHtml = '';
+                            let lineNumber = 1;
+                            let isNumbering = false;
+
+                            const lines = content.split('\n');
+
+                            lines.forEach(line => {
+                                // Toggle numbering based on markers
+                                if (line.includes('_start_')) {
+                                    isNumbering = true;
+                                    line = line.replace('_start_', '');
+                                }
+                                if (line.includes('_continue_')) {
+                                    isNumbering = true;
+                                    line = line.replace('_continue_', '');
+                                }
+                                if (line.includes('_pause_')) {
+                                    isNumbering = false;
+                                    line = line.replace('_pause_', '');
+                                }
+
+                                let numDisplay = '';
+                                if (isNumbering) {
+                                    if (lineNumber === 1) {
+                                        numDisplay = '<span style="font-size: 0.7em;">строка</span>';
+                                    } else if (lineNumber % 5 === 0) {
+                                        numDisplay = lineNumber;
+                                    }
+                                    lineNumber++;
+                                }
+
+                                // Handle tabs for paragraph indentation
+                                let textHtml = line.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+
+                                formattedHtml += `
+                                <div class="ort-line">
+                                    <div class="ort-line-number">${numDisplay}</div>
+                                    <div class="ort-line-text">${textHtml}</div>
+                                </div>`;
+                            });
+
+                            modalContent.innerHTML = formattedHtml;
                         }
                         break;
                 }
@@ -283,13 +324,14 @@ class TestingEngine {
             // Re-trigger MathJax for Questions and Columns
             if (window.MathJax) {
                 const questionTextEl = document.getElementById('questionText');
-                MathJax.typesetPromise([questionTextEl, comparisonContainer, container]).catch((err) => console.log('MathJax error:', err));
+                const mediaContainerEl = document.getElementById('questionMediaContainer');
+                MathJax.typesetPromise([questionTextEl, comparisonContainer, container, mediaContainerEl]).catch((err) => console.log('MathJax error:', err));
             }
 
         } else {
             if (comparisonContainer) comparisonContainer.style.display = 'none';
 
-            const answerLetters = ['A', 'B', 'C', 'D', 'E'];
+            const answerLetters = ['А', 'Б', 'В', 'Г', 'Д'];
             actualAnswers.forEach((answer, index) => {
                 const col = document.createElement('div');
                 col.className = 'col-md-6 mb-3';
@@ -319,7 +361,8 @@ class TestingEngine {
             // Re-trigger MathJax for standard tests
             if (window.MathJax) {
                 const questionTextEl = document.getElementById('questionText');
-                MathJax.typesetPromise([questionTextEl, container]).catch((err) => console.log('MathJax error:', err));
+                const mediaContainerEl = document.getElementById('questionMediaContainer');
+                MathJax.typesetPromise([questionTextEl, container, mediaContainerEl]).catch((err) => console.log('MathJax error:', err));
             }
         }
 

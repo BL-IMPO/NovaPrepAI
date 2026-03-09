@@ -19,6 +19,7 @@ sqlparse==0.5.5
 
 # Database
 psycopg2-binary==2.9.11
+redis
 
 # Templates
 jinja2==3.1.6
@@ -44,6 +45,8 @@ tomli==2.4.0
 typer==0.21.1
 watchfiles==1.1.1
 PyJWT
+google-genai
+google
 
 # Tests
 pytest==8.0.0

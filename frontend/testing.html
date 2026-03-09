@@ -242,13 +242,33 @@
         .ort-passage {
             font-family: "Times New Roman", Times, serif; /* ORT tests usually use serif fonts */
             font-size: 1.1rem;
-            line-height: 1.6;
+            line-height: 1.4;
             text-align: justify;
 
             /* Create the two-column layout */
             column-count: 2;
             column-gap: 3rem;
-            column-rule: 1px solid #dee2e6; /* Optional line between columns */
+            column-rule: 1px solid #dee2e6;
+        }
+
+        .ort-line {
+            display: flex;
+            break-inside: avoid; /* Prevents a line from being split across columns */
+        }
+
+        .ort-line-number {
+            width: 45px;
+            flex-shrink: 0;
+            text-align: right;
+            padding-right: 10px;
+            font-size: 0.85rem;
+            color: #555;
+            user-select: none;
+            font-style: italic;
+        }
+
+        .ort-line-text {
+            flex-grow: 1;
         }
 
         /* On small screens (mobile), switch back to 1 column so it's readable */

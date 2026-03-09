@@ -1,4 +1,9 @@
+import asyncio
+import json
 from pathlib import Path
+import redis
+import os
+from dotenv import load_dotenv
 
 from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
@@ -31,6 +36,9 @@ templates = Jinja2Templates(directory=frontend_path)
 
 # Initialize test utils
 test_ort = utils.TestORT()
+
+redis_url = os.environ.get("REDIS_URL")
+redis_client = redis.Redis.from_url(redis_url, decode_responses=True)
 
 router = APIRouter()
 
@@ -65,28 +73,32 @@ async def get_test_types():
 @router.get("/testing/{test_type}", response_class=HTMLResponse)
 async def testing_page(request: Request, test_type: str):
     """Serve the testing interface for a specific test type"""
-    try:
-        # Validate test type exists
-        test_data = test_ort.get_test_data(test_type)
+    if test_type not in test_ort.test_time_limits:
+        raise HTTPException(status_code=404, detail="Test type not found")
 
-        return templates.TemplateResponse("testing.html",
-                                      {"request": request,
-                                       "test_type": test_type,
-                                       "test_name": test_type.replace('_', ' ').title()})
-    except ValueError as e:
-        # Return 404 if test type not found
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        print(f"Error serving testing page: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    return templates.TemplateResponse("testing.html",
+                                      {
+                                          "request": request,
+                                          "test_type": test_type,
+                                          "test_name": test_type.replace('_', ' ')
+                                      })
 
 
 @router.get("/api/test/{test_type}")
-async def get_test_data(test_type: str):
+async def get_test_data(test_type: str, current_user = Depends(get_current_user)):
     """Get test data including questions and time limit.
         Hides complexity scores from frontend"""
     try:
-        raw_data = test_ort.get_test_data(test_type)
+
+        cache_key = f"ort_test:{current_user.id}:{test_type}"
+        cached_data = redis_client.get(cache_key)
+
+
+        raw_data = await asyncio.to_thread(test_ort.get_test_data, test_type)
+
+        ttl = raw_data.get("time_limit", 3600) + 3600
+        redis_client.setex(cache_key, ttl, json.dumps(raw_data))
+
 
         # Clean the questions from complexity score
         cleaned_questions = {}
@@ -102,17 +114,25 @@ async def get_test_data(test_type: str):
             "questions": cleaned_questions,
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 
 @router.post("/api/test/submit")
 async def submit_test(submission: schemas.TestSubmission, current_user = Depends(get_current_user)):
     try:
         test_type = submission.test_type
-        raw_data = test_ort.get_test_data(test_type)
+        cache_key = f"ort_test:{current_user.id}:{test_type}"
+
+        cached_data = redis_client.get(cache_key)
+
+        if cached_data:
+            raw_data = json.loads(cached_data)
+            redis_client.delete(cache_key)
+        else:
+            raw_data = test_ort.get_test_data(test_type)
+
         questions = list(raw_data["questions"].items())
 
         base_score = 0
