@@ -14,6 +14,9 @@ class TestAttempt(models.Model):
     weighted_score = models.FloatField(default=0.0)
 
     passed = models.BooleanField(default=False)
+
+    mark = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     details = models.JSONField(default=list)

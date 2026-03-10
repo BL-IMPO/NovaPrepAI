@@ -50,7 +50,7 @@ class AIQuestionOutput8(BaseModel):
     task_array: TaskArray8
 
 
-def generate_text(example_text: str):
+async def generate_text(example_text: str):
     prompt = f"""
     You are an expert ORT (Общереспубликанское тестирование) exam creator.
     Your task is to generate EXACTLY ONE NEW, UNIQUE text that tests the same underlying skill as the example, but uses completely DIFFERENT data.
@@ -64,7 +64,7 @@ def generate_text(example_text: str):
     {example_text}"""
 
     response = client.models.generate_content(
-        model="gemini-3-flash-preview",
+        model="gemini-2.5-pro",
         contents=prompt,
         config={
             "temperature": 0.7,
@@ -73,9 +73,7 @@ def generate_text(example_text: str):
 
     return response.text
 
-
-
-def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type = "default") -> dict:
+async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type = "default") -> dict:
     """Clones a specific question using Structured Outputs and the TaskArray RootModel."""
     example_dict = {example_q_text: example_array}
     example_json_str = json.dumps(example_dict, ensure_ascii=False, indent=2)
@@ -110,8 +108,8 @@ def generate_question_from_template(question_id: str, example_q_text: str, examp
     EXAMPLE TO MIMIC AND VARY:
     {example_json_str}
     """
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
+    response = await client.aio.models.generate_content(
+        model="gemini-2.5-pro",
         contents=prompt,
         config={
             'response_mime_type': "application/json",

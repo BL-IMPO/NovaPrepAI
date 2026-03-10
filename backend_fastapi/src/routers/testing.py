@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from asgiref.sync import sync_to_async
 
 from ..dependencies import get_current_user
@@ -89,30 +89,38 @@ async def get_test_data(test_type: str, current_user = Depends(get_current_user)
     """Get test data including questions and time limit.
         Hides complexity scores from frontend"""
     try:
+        data = await test_ort.get_test_data(test_type)
+        time_limit = data["time_limit"]
+        tasks = data["tasks"]
+        total_questions = len(tasks)
 
-        cache_key = f"ort_test:{current_user.id}:{test_type}"
-        cached_data = redis_client.get(cache_key)
+        async def stream_generator():
+            # Send metadata first
+            yield json.dumps({"type": "meta", "time_limit": time_limit, "total_questions": total_questions}) + "\n"
 
+            # Prepare array to save to Redis for submission
+            cached_questions = [None] * total_questions
 
-        raw_data = await asyncio.to_thread(test_ort.get_test_data, test_type)
+            # as_completed yields tasks immediately as they finish (out of order!)
+            for coro in asyncio.as_completed(tasks):
+                try:
+                    res = await coro
+                    idx = res["index"]
+                    cached_questions[idx] = {"question": res["question"], "options": res["answers"]}
 
-        ttl = raw_data.get("time_limit", 3600) + 3600
-        redis_client.setex(cache_key, ttl, json.dumps(raw_data))
+                    yield json.dumps({
+                        "type": "question",
+                        "index": idx,
+                        "question": res["question"],
+                        "answers": res["answers"]
+                    }) + "\n"
+                except Exception as e:
+                    print(f"Error in question stream: {e}")
 
+            cache_key = f"ort_test:{current_user.id}:{test_type}"
+            redis_client.setex(cache_key, 14400, json.dumps(cached_questions))
 
-        # Clean the questions from complexity score
-        cleaned_questions = {}
-        for question_text, options in raw_data["questions"].items():
-            extra_data = options.pop(-1)  # 1. Take out extra_data
-            options.pop(-1)  # 2. Take out the hidden score
-            correct_index = options.pop(-1) # remove correct_index
-            options.append(extra_data)  # 3. Put extra_data back at the end
-            cleaned_questions[question_text] = options
-
-        return {
-            "time_limit": raw_data["time_limit"],
-            "questions": cleaned_questions,
-        }
+        return StreamingResponse(stream_generator(), media_type="application/x-ndjson")
 
     except Exception as e:
         import traceback
@@ -124,32 +132,33 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
     try:
         test_type = submission.test_type
         cache_key = f"ort_test:{current_user.id}:{test_type}"
-
         cached_data = redis_client.get(cache_key)
 
-        if cached_data:
-            raw_data = json.loads(cached_data)
-            redis_client.delete(cache_key)
-        else:
-            raw_data = test_ort.get_test_data(test_type)
+        if not cached_data:
+            raise HTTPException(status_code=400, detail="Test session expired or not found.")
 
-        questions = list(raw_data["questions"].items())
+        questions = json.loads(cached_data)
+        redis_client.delete(cache_key)
 
         base_score = 0
         weighted_score = 0.0
         details = []
 
-        for idx, (question, options) in enumerate(questions):
-            # options = [ans0, ans1, ans2, ans3, correct_index, points, extra_data]
-            correct_index = options[-3]       # third last
-            points = options[-2]               # second last
-            answer_options = options[:4]       # first four are the displayed answers
+        marked_questions = getattr(submission, 'marked_questions', [])
+        has_marks = len(marked_questions) > 0
 
-            # Get user answer
-            user_answer_idx = submission.answers.get(str(idx))
-            if user_answer_idx is None:
-                user_answer_idx = submission.answers.get(idx)
+        for idx, q_data in enumerate(questions):
+            if not q_data:
+                continue
 
+            question = q_data["question"]
+            options = q_data["options"]
+
+            correct_index = options[-3]
+            points = options[-2]
+            answer_options = options[:-3]
+
+            user_answer_idx = submission.answers.get(str(idx), submission.answers.get(idx))
             if isinstance(user_answer_idx, str):
                 try:
                     user_answer_idx = int(user_answer_idx)
@@ -168,6 +177,7 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
                 "correct_answer": correct_index,
                 "answers": answer_options,
                 "is_correct": is_correct,
+                "is_marked": idx in marked_questions
             })
 
         total = len(questions)
@@ -182,6 +192,7 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
                 weighted_score=round(weighted_score, 2),
                 passed=passed,
                 details=details,
+                mark=has_marks
             )
         test_attempt = await sync_to_async(db_save)()
 

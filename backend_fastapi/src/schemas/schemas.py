@@ -11,6 +11,7 @@ class TestDataResponse(BaseModel):
 class TestSubmission(BaseModel):
     answers: Dict[str, int] # question_index -> answer_index
     test_type: str
+    marked_questions: list[int] = []
     user_id: Optional[int] = None # Optional, will be set from auth in production
 
 
