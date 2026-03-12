@@ -52,16 +52,69 @@
             padding: 10px 20px;
             border-radius: 50px;
         }
+
+        /* --- AI Chat Sidebar Styles --- */
+        .chat-message {
+            padding: 10px 14px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            max-width: 85%;
+            word-wrap: break-word;
+            font-size: 0.95rem;
+        }
+        .chat-message.user {
+            background-color: #0d6efd;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-message.assistant {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            color: #212529;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .chat-container {
+            background-color: #f4f6f9;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .typing-indicator {
+            display: none;
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        /* --- Sidebar Resizer Styles --- */
+        .offcanvas-resizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            cursor: ew-resize;
+            background-color: transparent;
+            z-index: 1055;
+            transition: background-color 0.2s;
+        }
+        .offcanvas-resizer:hover, .offcanvas-resizer.is-resizing {
+            background-color: #0d6efd;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
-    <!-- Navbar (same as other pages) -->
     <nav class="navbar navbar-expand-md bg-dark py-3" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
-                        <!-- icon path -->
+                        <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5v-1zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
+                        <path d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5v-1zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z"/>
                     </svg>
                 </span>
                 <span>ORT Testing</span>
@@ -81,9 +134,7 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container py-5">
-        <!-- Header with score -->
         <div class="row mb-4">
             <div class="col-12 text-center">
                 <h1 class="display-5 mb-3">{{ attempt.test_type|replace('_', ' ')|title }} Results</h1>
@@ -99,7 +150,6 @@
             </div>
         </div>
 
-        <!-- Questions -->
         <div class="row">
             <div class="col-12">
                 {% for item in details %}
@@ -155,12 +205,29 @@
                         <i class="bi bi-check-circle"></i> Correct
                     </div>
                     {% endif %}
+
+                    {% if not item.is_correct %}
+                    <hr class="my-3 text-muted" style="opacity: 0.2;">
+                    <div class="text-end">
+                        <button class="btn btn-sm btn-outline-primary ask-ai-btn"
+                            data-attempt-id="{{ attempt.id }}"
+                            data-task-id="task_{{ loop.index0 }}"
+                            data-question="{{ item.question | e }}"
+                            data-user-answer="{% if item.user_answer is not none and item.answers is defined %}{{ item.answers[item.user_answer] | e }}{% else %}Not answered{% endif %}"
+                            data-correct-answer="{% if item.answers is defined %}{{ item.answers[item.correct_answer] | e }}{% else %}Unknown{% endif %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot me-1" viewBox="0 0 16 16">
+                                <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/>
+                            </svg>
+                            Ask AI Tutor
+                        </button>
+                    </div>
+                    {% endif %}
+
                 </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Action buttons -->
         <div class="row mt-5">
             <div class="col-12 text-center">
                 <a href="/" class="btn btn-primary btn-lg">
@@ -180,7 +247,64 @@
         </div>
     </div>
 
-    <!-- Footer (same as other pages) -->
+    <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="chatSidebar" aria-labelledby="chatSidebarLabel" style="width: 400px; transition: transform 0.3s ease-in-out;">
+
+        <div class="offcanvas-resizer" id="chatResizer"></div>
+
+        <div class="offcanvas-header bg-light border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="chatSidebarLabel">
+                <i class="bi bi-robot text-primary me-2"></i>AI Tutor
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-0">
+            <div id="chatMessages" class="chat-container flex-grow-1 p-3 d-flex flex-column">
+                </div>
+
+            <div id="aiTypingIndicator" class="typing-indicator px-3 pt-2">AI is typing...</div>
+
+            <div class="p-3 border-top bg-white">
+                <form id="chatForm" class="d-flex gap-2">
+                    <input type="text" id="chatInput" class="form-control rounded-pill px-3" placeholder="Ask why your answer is wrong..." autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm" id="chatSendBtn" style="width: 45px; height: 45px; padding: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exportChatModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Chat Limit Reached</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This quick-help session has reached its 10-message limit. To continue deep-diving into this topic without losing context, copy the transcript below and paste it into ChatGPT or Gemini.</p>
+                    <textarea id="exportChatText" class="form-control mb-3 font-monospace" rows="6" readonly style="font-size: 0.85rem;"></textarea>
+
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-dark w-100 fw-bold" id="copyChatBtn">
+                                <i class="bi bi-clipboard me-2"></i>Copy Transcript
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <a href="https://chat.openai.com" target="_blank" class="btn btn-outline-secondary w-100">ChatGPT <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+                        </div>
+                        <div class="col-6">
+                            <a href="https://gemini.google.com" target="_blank" class="btn btn-outline-primary w-100">Gemini <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="text-center bg-body mt-5" data-bs-theme="dark">
         <div class="container py-4 py-lg-5">
             <div class="row">
@@ -199,7 +323,6 @@
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5 class="text-white mb-3">Connect With Us</h5>
-                    <!-- social icons same as before -->
                 </div>
             </div>
             <p class="text-body mb-0">Copyright © 2024 ORT Testing System. All rights reserved.</p>
@@ -207,5 +330,212 @@
     </footer>
 
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Configuration ---
+        // Updated to explicitly hit the FastAPI proxy route
+        const API_BASE_URL = '/fastapi/api/chat';
+
+        // --- State ---
+        let currentAttemptId = null;
+        let currentTaskId = null;
+        let currentTaskContext = "";
+        let currentThreadId = null;
+
+        // --- DOM Elements ---
+        const chatSidebarEl = document.getElementById('chatSidebar');
+        const chatSidebar = new bootstrap.Offcanvas(chatSidebarEl);
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const aiTypingIndicator = document.getElementById('aiTypingIndicator');
+
+        const exportModalEl = document.getElementById('exportChatModal');
+        const exportModal = new bootstrap.Modal(exportModalEl);
+        const exportChatText = document.getElementById('exportChatText');
+        const copyChatBtn = document.getElementById('copyChatBtn');
+
+        // --- 1. Open Sidebar & Load History ---
+        document.querySelectorAll('.ask-ai-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                // Grab data from the button
+                currentAttemptId = btn.getAttribute('data-attempt-id');
+                currentTaskId = btn.getAttribute('data-task-id');
+
+                // Construct the blueprint context
+                const q = btn.getAttribute('data-question');
+                const ua = btn.getAttribute('data-user-answer');
+                const ca = btn.getAttribute('data-correct-answer');
+                currentTaskContext = `Question: ${q}\nStudent Answered: ${ua}\nCorrect Answer: ${ca}`;
+
+                // Reset UI
+                chatMessages.innerHTML = '';
+                chatInput.disabled = false;
+                chatSidebar.show();
+
+                // Fetch History
+                try {
+                    const response = await fetch(`${API_BASE_URL}/history?attempt_id=${currentAttemptId}&task_id=${currentTaskId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.messages.length === 0) {
+                            // --- NEW: Auto-Send Logic ---
+                            chatInput.value = "I made a mistake on this question. Can you explain the logic to find the correct answer?";
+
+                            // Programmatically trigger the form submission
+                            chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+
+                        } else {
+                            // Load existing history
+                            data.messages.forEach(msg => {
+                                appendMessage(msg.role, msg.content);
+                            });
+                        }
+                        scrollToBottom();
+                    }
+                } catch (error) {
+                    console.error("Error fetching history:", error);
+                    appendSystemMessage("Failed to load chat history.");
+                }
+            });
+        });
+
+        // --- 2. Send Message ---
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // Instantly show user message
+            appendMessage('user', text);
+            chatInput.value = '';
+            chatInput.disabled = true;
+            aiTypingIndicator.style.display = 'block';
+            scrollToBottom();
+
+            const payload = {
+                attempt_id: parseInt(currentAttemptId),
+                task_id: currentTaskId,
+                user_message: text,
+                task_context: currentTaskContext
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                currentThreadId = data.thread_id; // Save for export
+
+                if (data.status === "limit_reached") {
+                    triggerExportFlow();
+                } else if (data.status === "success") {
+                    appendMessage('assistant', data.reply);
+                } else {
+                    appendSystemMessage("An error occurred.");
+                }
+            } catch (error) {
+                console.error("Error sending message:", error);
+                appendSystemMessage("Network error. Please try again.");
+            } finally {
+                aiTypingIndicator.style.display = 'none';
+                chatInput.disabled = false;
+                chatInput.focus();
+                scrollToBottom();
+            }
+        });
+
+        // --- 3. The Export Handoff ---
+        async function triggerExportFlow() {
+            chatSidebar.hide();
+            appendSystemMessage("Limit reached. Please export chat.");
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${currentThreadId}/export`);
+                const data = await response.json();
+
+                exportChatText.value = data.clipboard_text;
+                exportModal.show();
+            } catch (error) {
+                console.error("Failed to export chat:", error);
+                alert("Failed to export chat history.");
+            }
+        }
+
+        // Copy button logic
+        copyChatBtn.addEventListener('click', () => {
+            exportChatText.select();
+            document.execCommand('copy');
+
+            const originalText = copyChatBtn.innerHTML;
+            copyChatBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Copied!';
+            copyChatBtn.classList.replace('btn-dark', 'btn-success');
+
+            setTimeout(() => {
+                copyChatBtn.innerHTML = originalText;
+                copyChatBtn.classList.replace('btn-success', 'btn-dark');
+            }, 2000);
+        });
+
+        // --- Helpers ---
+        function appendMessage(role, content) {
+            const div = document.createElement('div');
+            div.className = `chat-message ${role}`;
+
+            // Convert line breaks to <br> for HTML rendering
+            const formattedContent = content.replace(/\n/g, '<br>');
+            div.innerHTML = formattedContent;
+
+            chatMessages.appendChild(div);
+        }
+
+        function appendSystemMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'text-center text-muted small my-2';
+            div.textContent = text;
+            chatMessages.appendChild(div);
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // --- Sidebar Resizing Logic ---
+        const resizer = document.getElementById('chatResizer');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            resizer.classList.add('is-resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            // Calculate width based on mouse position from the right side of the screen
+            let newWidth = window.innerWidth - e.clientX;
+
+            // Limit to min 300px and max 80% of window width
+            if (newWidth > 300 && newWidth < (window.innerWidth * 0.8)) {
+                chatSidebarEl.style.width = `${newWidth}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizer.classList.remove('is-resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        });
+    });
+    </script>
 </body>
 </html>

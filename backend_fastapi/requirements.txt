@@ -45,8 +45,9 @@ tomli==2.4.0
 typer==0.21.1
 watchfiles==1.1.1
 PyJWT
-google-genai
-google
+#google-genai
+#google
+openai>=1.40
 
 # Tests
 pytest==8.0.0

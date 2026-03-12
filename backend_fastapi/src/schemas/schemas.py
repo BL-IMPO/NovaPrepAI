@@ -29,7 +29,21 @@ class TestAttemptResponse(BaseModel):
     details_count: int
 
 
+class ChatRequest(BaseModel):
+    attempt_id: int
+    task_id: str
+    user_message: str
+    task_context: str
+
+class ChatResponse(BaseModel):
+    status: str
+    reply: Optional[str] = None
+    thread_id: int
+    message_count: int
+
+
 class HealthResponse(BaseModel):
     status: str
     database: str
     django: str
+
