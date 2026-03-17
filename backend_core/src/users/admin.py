@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from users.models import UserProfile
-from main.models import TestAttempt
+from users.models import UserProfile, ContactUs
+from main.models import TestAttempt, ChatMessage
 
 
 # Register your models here.
@@ -16,3 +16,7 @@ class TestAttemptAdmin(admin.ModelAdmin):
     list_filter = ('passed', 'test_type')
     search_fields = ('user__username',)
 
+@admin.register(ContactUs)
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('nickname', 'email', 'theme', 'message')
+    search_fields = ('name', 'name')

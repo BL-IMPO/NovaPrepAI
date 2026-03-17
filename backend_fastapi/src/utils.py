@@ -4,7 +4,7 @@ import os
 import asyncio
 from typing import Dict, List, Any
 
-from tasks_generation import generate_question_from_template, generate_text
+from tasks_generation import generate_question_from_template, generate_text, strict_structure_validation, ai_validate_question, validate_reading_text
 
 
 class TestORT:
@@ -48,20 +48,41 @@ class TestORT:
 
     async def _generate_tasks(self, qid: str, q_text: str, data: List, q_type="default"):
         """Asynchronously generates single tasks by given example."""
-        try:
-            print(f"Generating AI version for {qid}...")
+        MAX_ATTEMPTS = 6
 
-            ai_result = await generate_question_from_template(qid, q_text, data, q_type)
+        for attempt in range(MAX_ATTEMPTS):
 
-            new_q_text = list(ai_result[qid].keys())[0]
-            new_data = ai_result[qid][new_q_text]
+            try:
+                print(f"Generating AI version for {qid}...")
 
-            print(f"Success for {qid}!")
-            return new_q_text, new_data
+                ai_result = await generate_question_from_template(qid, q_text, data, q_type)
 
-        except Exception as e:
-            print(f"AI generation failed for {qid}, using default. Error: {e}")
-            return q_text, data
+                new_q_text = list(ai_result[qid].keys())[0]
+                new_data = ai_result[qid][new_q_text]
+
+                # structure check
+                ok, reason = strict_structure_validation(new_data, q_type)
+
+                if not ok:
+                    print(f"Missed structure for {qid}!")
+                    continue
+
+                # ai validation
+                val1 = await ai_validate_question(new_q_text, new_data, q_type)
+
+                if not val1.valid:
+                    print(f"Problem on first validation for {qid}!")
+                    print(f"PROBLEM: {val1.reason}")
+                    continue
+
+                print(f"Success for {qid}!")
+
+                return new_q_text, new_data
+
+            except Exception as e:
+                print(f"AI generation failed for {qid}, using default. Error: {e}")
+
+        return q_text, data
 
     def _prepare_answers(self, data: List, q_num: int, q_type: str):
         """Preparing answers for tasks."""
@@ -135,10 +156,8 @@ class TestORT:
     async def _process_standard_q(self, global_idx: int, local_num: int, qid: str, q_text: str, data: List,
                                   test_category: str):
         """Helper to process individual standard questions asynchronously"""
-        if local_num == 1 or local_num == 12 and test_category != "math_1":
-            q_text, data = await self._generate_tasks(qid, q_text, data, test_category)
-        else:
-            q_text, data = await self._generate_tasks(qid, q_text, data, test_category)
+
+        q_text, data = await self._generate_tasks(qid, q_text, data, test_category)
 
         if test_category == "math_1" and q_text.lower() == "none":
             question_text = f"{global_idx + 1}. Сравните значения в колонках А и Б"
@@ -194,8 +213,7 @@ class TestORT:
                 local_num += 1
         return tasks
 
-    async def _process_reading_q(self, global_idx: int, local_num: int, qid: str, q_text: str, data: List,
-                                 generated_texts: dict):
+    async def _process_reading_q(self, global_idx: int, local_num: int, qid: str, q_text: str, data: List, generated_texts: dict):
         """Helper to process reading questions with generated passages"""
         original_text_num = data[6][1]
         data_for_ai = data.copy()
@@ -205,8 +223,8 @@ class TestORT:
                                                generated_texts.get(str(original_text_num), "Text generation error"))
         data_for_ai[6] = ["TEXT_BLOCK_LARGE", new_text_content]
 
-        if local_num == 1 or local_num == 12:
-            q_text, data_for_ai = await self._generate_tasks(qid, q_text, data_for_ai, "reading")
+
+        q_text, data_for_ai = await self._generate_tasks(qid, q_text, data_for_ai, "reading")
 
         question_text = f"{global_idx + 1}. {q_text}"
         answers = self._prepare_answers(data_for_ai, 4, "reading")
@@ -218,7 +236,18 @@ class TestORT:
 
         async def fetch_text(k, v):
             print(f"Generating new reading passage for {k}")
-            return k, await generate_text(v)
+            MAX_ATTEMPTS = 3
+            for _ in range(MAX_ATTEMPTS):
+                new_text = await generate_text(v)
+
+                # check validation
+                val = await validate_reading_text(new_text)
+
+                if not val.valid:
+                    print(f"Text validation failed for {k}!")
+                    continue
+
+                return k, new_text
 
         # Generate texts concurrently
         text_coros = [fetch_text(k, v) for k, v in texts.items()]
@@ -371,7 +400,7 @@ class Description:
             self.descriptions = {}
             print(f"Warning: Test descriptions file not found at {json_path}")
 
-    def get_test_description(self, test_type: str) -> Dict[str, List[str]]:
+    def get_test_description(self, test_type: str) -> Dict[str, Any]:
         return self.descriptions.get(test_type, {})
 
     def get_test_types(self) -> list[str]:

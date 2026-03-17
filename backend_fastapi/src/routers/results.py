@@ -69,7 +69,7 @@ async def get_chat_history(attempt_id: int, task_id: str):
         def db_get_chat_history():
             thread = ChatThread.objects.get(attempt_id=attempt_id, task_id=task_id)
 
-            messages = thread.messages.all().oreder_by('created_at')
+            messages = thread.messages.all().order_by('created_at')
 
             return [{"role": msg.role, "content": msg.content} for msg in messages]
 

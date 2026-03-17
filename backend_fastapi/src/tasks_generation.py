@@ -1,5 +1,7 @@
 import json
 import os
+
+from click import prompt
 from dotenv import load_dotenv
 
 from openai import AsyncOpenAI
@@ -13,6 +15,11 @@ load_dotenv()
 client = AsyncOpenAI(api_key=os.getenv('OPEN_AI_GPT_5_MINI_API_KEY'))
 
 
+class ValidationResult(BaseModel):
+    valid: bool
+    reason: str
+
+
 class TaskDetails7(BaseModel):
     correct_answer: str = Field(description="Correct answer (e. g., '5.')")
     answer_a: str = Field(description="Answer A")
@@ -24,8 +31,10 @@ class TaskDetails7(BaseModel):
 
 
 class AIQuestionOutput7(BaseModel):
-    question_text: str = Field(description="The actual text of newly generated question.")
+    question_text: str = Field(description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
     task_details: TaskDetails7
+
+
 
 class TaskDetails8(BaseModel):
     correct_answer: str = Field(description="Correct answer (e. g., '5.')")
@@ -39,7 +48,7 @@ class TaskDetails8(BaseModel):
 
 
 class AIQuestionOutput8(BaseModel):
-    question_text: str = Field(description="The actual text of newly generated question.")
+    question_text: str = Field(description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
     task_details: TaskDetails8
 
 
@@ -67,80 +76,116 @@ async def generate_text(example_text: str):
 
     return response.choices[0].message.content
 
-async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type = "default") -> dict:
-    """Clones a specific question using Structured Outputs and the TaskArray RootModel."""
+async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type="default") -> dict:
+    """Clones a specific question using Structured Outputs and tailored rules per test type."""
     example_dict = {example_q_text: example_array}
     example_json_str = json.dumps(example_dict, ensure_ascii=False, indent=2)
 
-    required_points = next(item for item in reversed(example_array) if isinstance(item, float))
-
-    selected_schema = AIQuestionOutput7
-
-    # Dynamically select the schema
+    # Determine schema based on required number of options
     if test_type == "math_2":
         selected_schema = AIQuestionOutput8
-        rule_six = "You MUST generate 5 answers (A,B,C,D,E)."
-    elif test_type == "math_1":
-        rule_six = """
-        CRITICAL TASK CONCEPT: QUANTITATIVE COMPARISON (Количественное сравнение)
-        This is NOT a standard multiple-choice question. Do not ask a direct question.
-        The student's goal is to compare the value of Column A against the value of Column B.
-
-        STRICT FIELD MAPPING FOR MATH_1:
-        - 'question_text': This is the SHARED CONTEXT or CONDITION (e.g., "x > 5 and y < 10", or describing a geometric figure). It is NEVER a direct question. If the example's question_text is "none", your generated question_text MUST exactly be "none".
-        - 'answer_a': This represents "Колонка А" (Column A). It must be an expression, formula, or statement to be evaluated (e.g., "90% от числа 45"). DO NOT put the final calculated number here if the challenge is to calculate it.
-        - 'answer_b': This represents "Колонка Б" (Column B). It must be the second expression to be compared against Column A.
-        - 'answer_c' and 'answer_d': These will hold the remaining text or distractors as formatted in the example.
-
-        THE RULE: The puzzle is in the columns. You provide the context in 'question_text', and the two expressions to compare in 'answer_a' and 'answer_b'.
-                """
     else:
-        rule_six = "You MUST generate exactly 4 answer options."
+        selected_schema = AIQuestionOutput7
+
+    # --- DOMAIN-SPECIFIC RULES ENGINE ---
+    type_specific_rules = ""
+
+    if test_type == "analogy":
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: VERBAL ANALOGIES & SENTENCE COMPLETION (Аналогии и дополнение предложений)
+            - STRICT STRUCTURAL CLONE RULE: You MUST analyze the format of the example and mimic its exact task type:
+              * IF the example is a word pair (e.g., "слово : другое слово"), generate a new word pair analogy. NO NUMBERS OR MATH ALLOWED.
+              * IF the example is a text/sentence with missing words (e.g., "_____ пошел в _____"), generate a sentence completion task testing vocabulary/logic.
+            - Use Russian words. Maintain the exact formatting of the example.
+            - The relationship (synonyms, antonyms) or contextual fit must be logically sound and unambiguous.
+            - You MUST generate exactly 4 answer options.
+            """
+
+    elif test_type == "russian_grammar":
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: RUSSIAN GRAMMAR & SPELLING (Практическая грамматика)
+            - STRICT STRUCTURAL CLONE RULE: Identify the specific grammatical rule tested in the example (e.g., commas, prefixes, finding the incorrect sentence, missing letters). Your generated question MUST test the EXACT SAME grammatical rule and use the SAME format.
+            - Focus purely on Russian syntax, punctuation, spelling, or vocabulary context.
+            - Keep the difficulty appropriate for high school graduation exams.
+            - You MUST generate exactly 4 answer options.
+            """
+    elif test_type == "reading":
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: READING COMPREHENSION (Чтение и понимание)
+            - STRICT STRUCTURAL CLONE RULE: Your question MUST match the exact sub-type of the example (e.g., if the example asks for the "main idea", you ask for the main idea; if it asks for "the meaning of a word in line X", you ask for a word's meaning in a specific line).
+            - The generated question MUST relate directly to the provided TEXT_BLOCK in the extra_data.
+            - Do not ask general knowledge questions; the answer must be derived purely from the text.
+            - You MUST generate exactly 4 answer options.
+            """
+    elif test_type == "math_1":
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: QUANTITATIVE COMPARISON (Количественное сравнение)
+            - This is NOT a standard multiple-choice question. Do not ask a direct question.
+            - STRICT FIELD MAPPING:
+              - 'question_text': The SHARED CONTEXT (e.g., "x > 5"). If the example's question_text is "none", your question_text MUST exactly be "none".
+              - 'answer_a': ONLY the raw mathematical expression for Column A.
+              - 'answer_b': ONLY the raw mathematical expression for Column B.
+              - 'answer_c' & 'answer_d': Remaining distractors/text (usually "=" or empty).
+            - STRICT ZERO-BOILERPLATE FOR COLUMNS: DO NOT label the columns. NEVER write "Колонка А:" или "Колонка Б:" in the generated answers.
+              - BAD answer_a: "Колонка А: 5/7"
+              - GOOD answer_a: "5/7"
+            - You MUST generate exactly 4 options.
+            CRITICAL SVG GENERATION RULES:
+            1. You MUST calculate the extreme bounds (min X, min Y, max X, max Y) of all elements you draw, including text labels and strokes.
+            2. Set the `viewBox` attribute on the <svg> tag to encompass ALL elements with at least a 20px padding on all sides. 
+                 - Example: If your lowest element is at y=250 and highest at y=10, your viewBox height should be at least 280, and min-y should be -10.
+            3. NEVER hardcode absolute `width` and `height` like width="500". ALWAYS use width="100%" height="100%" alongside the accurate `viewBox`.
+            4. Add `overflow="visible"` to the <svg> tag as a fallback.
+            """
+    elif test_type == "math_2":
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: STANDARD MATHEMATICS (Математика)
+            - STRICT STRUCTURAL CLONE RULE: Identify the mathematical sub-topic in the example (e.g., percentages, geometry, equations, probability). Your generated question MUST test the EXACT SAME sub-topic.
+            - Generate a standard math word problem, algebraic equation, or geometry task matching the example's structure.
+            - You MUST generate exactly 5 answer options (A, B, C, D, E).
+            - Ensure calculations are accurate and only one correct option exists.
+            CRITICAL SVG GENERATION RULES:
+            1. You MUST calculate the extreme bounds (min X, min Y, max X, max Y) of all elements you draw, including text labels and strokes.
+            2. Set the `viewBox` attribute on the <svg> tag to encompass ALL elements with at least a 20px padding on all sides. 
+                - Example: If your lowest element is at y=250 and highest at y=10, your viewBox height should be at least 280, and min-y should be -10.
+            3. NEVER hardcode absolute `width` and `height` like width="500". ALWAYS use width="100%" height="100%" alongside the accurate `viewBox`.
+            4. Add `overflow="visible"` to the <svg> tag as a fallback.
+            """
+    else:
+        type_specific_rules = """
+            CRITICAL TASK CONCEPT: GENERAL MULTIPLE CHOICE
+            - STRICT STRUCTURAL CLONE RULE: Generate a question matching the exact subject, sub-topic, and structure of the example.
+            - You MUST generate exactly 4 answer options.
+            """
 
     prompt = f"""
-You are an expert ORT exam creator.
+    You are an expert ORT exam creator.
 
-Your task is to generate ONE new question based on the example.
+    Your task is to generate ONE new question based on the example.
 
-IMPORTANT GENERATION PROCESS:
+    IMPORTANT GENERATION PROCESS:
+    Step 1 — Analyze the example question's core skill, format (e.g., analogy vs. fill-in-the-blank), and difficulty.
+    Step 2 — Decide if the task requires extra_data (SVG_GRAPH, HTML_TABLE, TEXT_BLOCK, FORMULA).
+    Step 3 — If extra_data exists, modify the values so it matches the new question.
+    Step 4 — Write the new question, recalculate the correct answer, and create plausible distractors.
 
-Step 1 — Analyze the example question.
-Step 2 — Decide if the task requires extra_data
-    Possible types:
-    SVG_GRAPH
-    HTML_TABLE
-    TEXT_BLOCK
-    FORMULA
-    IMAGE_URL
-    LARGE_TEXT
+    CRITICAL RULES:
+    1. STRUCTURAL CLONE: You MUST NOT change the fundamental type of task. If the example is a sentence-completion task, your output must be a sentence-completion task. If it is a geometry problem, make a geometry problem.
+    2. Change all core variables, numbers, or words to create a truly unique question.
+    3. Ensure exactly ONE correct answer.
+    4. If extra_data is used, the question MUST depend on it. If it is removed, the problem must become unsolvable.
+    5. ZERO-BOILERPLATE POLICY: DO NOT add conversational instructions.
+       - BAD: "Выберите правильный вариант: кошка : мяукать"
+       - GOOD: "кошка : мяукать"
+       - BAD: "Решите уравнение: 2x = 4"
+       - GOOD: "2x = 4"
+       Match the exact brevity and style of the example string.
 
-Step 3 — If extra_data exists:
-Modify the values so it matches the new question.
+    {type_specific_rules}
 
-Examples:
-SVG_GRAPH → change coordinates, numbers, labels
-HTML_TABLE → change <td> numeric values
-FORMULA → modify variables or constants
-
-Step 4 — Write the question referencing the extra data.
-
-CRITICAL RULES:
-
-1. Change ALL numbers and variables.
-2. Recalculate correct answer and distractors.
-3. Points MUST remain exactly: {required_points}
-4. Keep the exact tuple format for task_array.
-5. extra_data structure must stay the same.
-
-If extra_data is used, the question MUST depend on it.
-
-If the diagram/table is removed, the problem must become unsolvable.
-
-{rule_six}
-
-EXAMPLE QUESTION:
-{example_json_str}
-    """
+    EXAMPLE QUESTION:
+    {example_json_str}
+        """
     response = await client.beta.chat.completions.parse(
         model="gpt-5-mini",
         messages=[{"role": "user", "content": prompt}],
@@ -204,3 +249,93 @@ async def ai_chat_response(task_context: str, chat_history_list: list):
     )
 
     return response.choices[0].message.content
+
+
+def strict_structure_validation(task_array, test_type):
+    # Determine expected array length based on test type
+    if test_type == "math_2":
+        expected_length = 8  # correct, A, B, C, D, E, points, extra_data
+    else:
+        expected_length = 7  # correct, A, B, C, D, points, extra_data
+
+    # 1. Check if the array has the correct number of elements
+    if len(task_array) != expected_length:
+        return False, f"wrong array length. Expected {expected_length}, got {len(task_array)}"
+
+    # 2. Check if points is a float
+    if not isinstance(task_array[-2], float):
+        # Attempt to cast it if the AI returned an int or string by accident
+        try:
+            task_array[-2] = float(task_array[-2])
+        except (ValueError, TypeError):
+            return False, "points could not be converted to float"
+
+    # 3. Check if extra_data is a list
+    if not isinstance(task_array[-1], list):
+        return False, "extra_data is not a list"
+
+    return True, "ok"
+
+
+async def ai_validate_question(question, task_array, test_type="default"):
+    # Cleanly extract the components for the AI
+    correct_ans = task_array[0]
+    options = task_array[1:-2]
+    extra_data = task_array[-1]
+
+    options_formatted = "\n".join([f"- {opt}" for opt in options])
+
+    prompt = f"""
+You are a practical ORT exam reviewer. Your ONLY job is to check if a student can solve this task.
+
+QUESTION:
+{question}
+
+OPTIONS:
+{options_formatted}
+
+INTENDED CORRECT ANSWER:
+{correct_ans}
+
+EXTRA DATA (Graphs/Tables/Text):
+{extra_data}
+
+RULES FOR VALIDATION:
+1. Solvability: Is the problem mathematically/logically solvable based on the question and extra data?
+2. Extra Data Integration: If EXTRA DATA is present, does it correctly align with the question?
+3. DO NOT fail the question for minor formatting issues, typos, or duplicate placeholder options (e.g., multiple '=' signs). 
+4. If test_type is "math_1", the question text might be 'none'. This is perfectly valid.
+
+If the core logic is sound and a student could figure it out, return valid=true.
+Return JSON.
+"""
+    response = await client.beta.chat.completions.parse(
+        model="gpt-5-mini",
+        messages=[{"role": "user", "content": prompt}],
+        response_format=ValidationResult
+    )
+
+    return response.choices[0].message.parsed
+
+
+async def validate_reading_text(text):
+
+    prompt = f"""
+Check this reading passage.
+
+{text}
+
+Reject if:
+- nonsense
+- grammar errors
+- unreadable
+
+Return JSON valid true/false.
+"""
+    response = await client.beta.chat.completions.parse(
+        model="gpt-5-mini",
+        messages=[{"role": "user", "content": prompt}],
+        response_format=ValidationResult
+    )
+
+    return response.choices[0].message.parsed

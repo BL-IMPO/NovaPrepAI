@@ -10,3 +10,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email} Profile"
+
+
+class ContactUs(models.Model):
+    nickname = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=False)
+    theme = models.CharField(max_length=200)
+    message = models.TextField()
+
+    def __str__(self):
+        return f"{self.nickname} Message"

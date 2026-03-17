@@ -19,7 +19,8 @@ from api.serializer import (
     CustomTokenObtainPairSerializer,
     UserSerializer,
     RegisterSerializer,
-    TestAttemptSerializer
+    TestAttemptSerializer,
+    ContactUsSerializer
 )
 
 
@@ -55,16 +56,16 @@ class LoginView(TokenObtainPairView):
                 key='access_token',
                 value=access_token,
                 httponly=True,
-                secure=False,
+                secure=True,
                 samesite='Strict',
-                max_age=15 * 60
+                max_age=4 * 60 * 60
             )
 
             response.set_cookie(
                 key='refresh_token',
                 value=refresh_token,
                 httponly=True,
-                secure=False,
+                secure=True,
                 samesite='Strict',
                 max_age=7 * 24 * 60 * 60 # 7 days
             )
@@ -110,16 +111,16 @@ class RegisterView(generics.CreateAPIView):
             key='access_token',
             value=str(refresh.access_token),
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='Strict',
-            max_age=15 * 60
+            max_age=4 * 60 * 60
         )
 
         response.set_cookie(
             key='refresh_token',
             value=str(refresh),
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='Strict',
             max_age=7 * 24 * 60 * 60
         )
@@ -206,7 +207,7 @@ class RefreshTokenView(TokenRefreshView):
                 httponly=True,
                 secure=True,
                 samesite='Strict',
-                max_age=15 * 60
+                max_age=4 * 60 * 60
             )
 
         return response
@@ -230,3 +231,17 @@ class UserTestHistoryView(APIView):
         attempts = TestAttempt.objects.filter(user=request.user).order_by('-id')
         serializer = TestAttemptSerializer(attempts, many=True)
         return Response(serializer.data)
+
+class ContactMessageView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ContactUsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'success': True,
+                'message': 'Your message has been sent.'
+            }, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

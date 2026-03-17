@@ -154,8 +154,14 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
             question = q_data["question"]
             options = q_data["options"]
 
-            correct_index = options[-3]
-            points = options[-2]
+            # Safely unpack based on how utils.py orders the metadata
+            if test_type == "math_1":
+                correct_index = int(options[-3])
+                points = float(options[-2])
+            else:
+                correct_index = int(options[-1])
+                points = float(options[-3])
+
             answer_options = options[:-3]
 
             user_answer_idx = submission.answers.get(str(idx), submission.answers.get(idx))

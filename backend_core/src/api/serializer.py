@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import Token
 
 from main.models import TestAttempt
-from users.models import UserProfile
+from users.models import UserProfile, ContactUs
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -126,3 +126,8 @@ class TestAttemptSerializer(serializers.ModelSerializer):
         model = TestAttempt
         fields = ['id', 'test_type', 'score', 'weighted_score', 'created_at', 'passed']
 
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs
+        fields = ['nickname', 'email', 'theme', 'message']

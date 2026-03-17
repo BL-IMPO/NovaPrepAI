@@ -48,6 +48,7 @@ PyJWT
 #google-genai
 #google
 openai>=1.40
+prometheus-fastapi-instrumentator
 
 # Tests
 pytest==8.0.0

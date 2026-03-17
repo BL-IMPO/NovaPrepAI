@@ -1,224 +1,348 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+<html data-bs-theme="light" lang="ru">
 <head>
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Test Results - ORT Testing</title>
+    <title>Результаты — NovaPrep AI</title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/bss-overrides.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/auth-middleware.js"></script>
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
-        .result-card {
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            border-left: 5px solid transparent;
-        }
-        .result-card.correct {
-            border-left-color: #198754;
-            background-color: #f0fff4;
-        }
-        .result-card.incorrect {
-            border-left-color: #dc3545;
-            background-color: #fff5f5;
-        }
-        .result-card .question-text {
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        .answer-item {
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-        }
-        .answer-item.correct-answer {
-            background-color: #d1e7dd;
-            border: 1px solid #198754;
-        }
-        .answer-item.user-answer {
-            background-color: #cff4fc;
-            border: 1px solid #0dcaf0;
-        }
-        .answer-item.wrong-answer {
-            background-color: #f8d7da;
-            border: 1px solid #dc3545;
-        }
-        .score-badge {
-            font-size: 1.5rem;
-            padding: 10px 20px;
-            border-radius: 50px;
+        :root {
+            --bg-color: #f8f9fc;
+            --primary-color: #6610f2; /* НОВЫЙ ФИОЛЕТОВЫЙ ЦВЕТ */
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #f59f00;
+            --surface-color: #ffffff;
         }
 
-        /* --- AI Chat Sidebar Styles --- */
+        body {
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #2b3035;
+        }
+
+        /* --- Header Stats --- */
+        .stats-dashboard {
+            background: var(--surface-color);
+            border-radius: 1.5rem;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        .stats-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: var(--primary-color);
+        }
+        .stat-box {
+            background-color: #f8f9fa;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: 100%;
+            border: 1px solid #f1f3f5;
+        }
+
+        /* --- Result Cards & Layout --- */
+        .results-container {
+            padding-bottom: 5rem; /* Отступ снизу страницы, чтобы не прилипало */
+        }
+
+        .result-card {
+            background-color: var(--surface-color);
+            border-radius: 1.25rem;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            margin-bottom: 2.5rem; /* Увеличенный отступ между карточками */
+            overflow: hidden;
+        }
+
+        .question-header {
+            background-color: #fbfbfc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #212529;
+            font-weight: 500;
+            padding: 1.5rem;
+        }
+
+        /* --- Answer Boxes --- */
+        .answer-wrapper {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .answer-box {
+            padding: 1.25rem;
+            border-radius: 1rem;
+            height: 100%;
+            display: flex;
+            align-items: flex-start;
+            font-size: 1rem;
+        }
+
+        .correct-variant {
+            background-color: rgba(25, 135, 84, 0.05);
+            border: 1px solid rgba(25, 135, 84, 0.15);
+            color: #146c43;
+        }
+
+        .wrong-variant {
+            background-color: rgba(220, 53, 69, 0.04);
+            border: 1px solid rgba(220, 53, 69, 0.15);
+            color: #b02a37;
+        }
+
+        .neutral-variant {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            color: #6c757d;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .correct-variant .option-letter { background-color: var(--success-color); color: white; }
+        .wrong-variant .option-letter { background-color: var(--danger-color); color: white; }
+
+        /* --- AI Chat Sidebar --- */
         .chat-message {
-            padding: 10px 14px;
-            border-radius: 15px;
+            padding: 12px 16px;
+            border-radius: 1.2rem;
             margin-bottom: 12px;
             max-width: 85%;
             word-wrap: break-word;
             font-size: 0.95rem;
+            line-height: 1.5;
         }
         .chat-message.user {
-            background-color: #0d6efd;
+            background-color: var(--primary-color);
             color: white;
             margin-left: auto;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 0.3rem;
+            box-shadow: 0 3px 10px rgba(102, 16, 242, 0.15);
         }
         .chat-message.assistant {
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
+            background-color: var(--surface-color);
+            border: 1px solid #e9ecef;
             color: #212529;
             margin-right: auto;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-bottom-left-radius: 0.3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         .chat-container {
-            background-color: #f4f6f9;
+            background-color: var(--bg-color);
             overflow-y: auto;
             scroll-behavior: smooth;
         }
         .typing-indicator {
             display: none;
-            color: #6c757d;
-            font-style: italic;
+            color: #adb5bd;
             font-size: 0.85rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding-left: 10px;
         }
 
-        /* --- Sidebar Resizer Styles --- */
         .offcanvas-resizer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 8px;
-            height: 100%;
+            top: 0; left: 0; width: 6px; height: 100%;
             cursor: ew-resize;
             background-color: transparent;
             z-index: 1055;
             transition: background-color 0.2s;
         }
         .offcanvas-resizer:hover, .offcanvas-resizer.is-resizing {
-            background-color: #0d6efd;
-            opacity: 0.5;
+            background-color: var(--primary-color);
+            opacity: 0.3;
+        }
+
+        .ask-ai-btn {
+            transition: all 0.2s ease;
+        }
+        .ask-ai-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 16, 242, 0.15);
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-md bg-dark py-3" data-bs-theme="dark">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
-                        <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5v-1zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
-                        <path d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5v-1zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z"/>
+    <nav class="navbar navbar-expand-md bg-dark py-3 shadow-sm sticky-top" data-bs-theme="dark">
+        <div class="container-fluid px-md-4">
+            <a class="navbar-brand d-flex align-items-center" href="/index">
+                <span class="d-flex justify-content-center align-items-center me-2 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                     </svg>
                 </span>
-                <span>ORT Testing</span>
+                <span class="fw-bold tracking-wide">NovaPrep AI</span>
             </a>
             <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
-                <span class="visually-hidden">Toggle navigation</span>
-                <span class="navbar-toggler-icon"></span>
+                <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navcol-5">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Tests</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Results</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/tests">Тесты</a></li>
+                    <li class="nav-item"><a class="nav-link fs-6" href="/about">О нас</a></li>
                 </ul>
-                <a class="btn btn-primary ms-md-2" role="button" href="#">Login/Register</a>
+
+                <div data-auth="true" style="display: none;">
+                    <a class="ms-md-4 d-flex align-items-center text-decoration-none" href="/profile">
+                        <img id="navbarAvatar" src="/assets/img/default-avatar.webp" class="rounded-circle border border-2 border-secondary shadow-sm" alt="Профиль" style="width: 42px; height: 42px; object-fit: cover;">
+                    </a>
+                </div>
+
+                <a class="btn btn-outline-light ms-md-4 px-4" data-guest="true" role="button" href="/login">Войти</a>
             </div>
         </div>
     </nav>
 
-    <div class="container py-5">
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h1 class="display-5 mb-3">{{ attempt.test_type|replace('_', ' ')|title }} Results</h1>
-                <div class="d-flex justify-content-center align-items-center gap-4">
-                    <div class="score-badge bg-primary text-white">
-                        Score: {{ attempt.score }} / {{ details|length }}
+    <div class="container results-container py-5">
+        <div class="row mb-5 justify-content-center">
+            <div class="col-lg-10">
+                <div class="stats-dashboard p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="display-6 fw-bold mb-2 text-dark" id="testNameDisplay">Результаты тестирования</h2>
+                        <p class="text-muted fs-5">Завершен {{ attempt.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
                     </div>
-                    <div class="score-badge {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %} text-white">
-                        {{ 'PASSED' if attempt.passed else 'FAILED' }}
+
+                    <div class="row g-4 justify-content-center align-items-stretch">
+                        <div class="col-md-5">
+                            <div class="stat-box text-center">
+                                <h6 class="text-uppercase text-muted fw-bold small mb-3">Ваш результат</h6>
+                                <div class="display-4 fw-bolder text-primary">
+                                    {{ attempt.score }} <span class="fs-3 text-muted mx-1">/</span> <span class="fs-3 text-muted">{{ details|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="stat-box text-center d-flex flex-column justify-content-center">
+                                <h6 class="text-uppercase text-muted fw-bold small mb-3">Статус прохождения</h6>
+                                <div>
+                                    {% if attempt.passed %}
+                                    <span class="badge bg-success px-4 py-3 rounded-pill fs-5 shadow-sm w-100">УСПЕШНО</span>
+                                    {% else %}
+                                    <span class="badge bg-danger px-4 py-3 rounded-pill fs-5 shadow-sm w-100">ТРЕБУЕТСЯ ПРАКТИКА</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <p class="text-muted mt-3">Completed on {{ attempt.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                {% for item in details %}
-                <div class="result-card {% if item.is_correct %}correct{% else %}incorrect{% endif %} p-4">
-                    <div class="question-text">{{ item.question }}</div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h4 class="fw-bold mb-4 ps-2">Детальный разбор</h4>
 
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Your Answer:</h6>
-                            <div class="answer-item
-                                {% if item.user_answer is not none %}
-                                    {% if item.is_correct %}user-answer correct-answer{% else %}wrong-answer{% endif %}
+                {% for item in details %}
+
+                {# Подготавливаем безопасные переменные для Jinja #}
+                {% set u_ans = item.user_answer %}
+                {% set c_ans = item.correct_answer %}
+                {% set answers = item.answers | default([]) %}
+
+                <div class="result-card">
+                    <div class="question-header">
+                        <span class="fw-bold text-muted text-uppercase small">Вопрос {{ loop.index }}</span>
+                        <div>
+                            {% if item.is_correct %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> Верно
+                                </span>
+                            {% elif u_ans is none %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill fw-bold text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/></svg> Пропущен
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg> Ошибка
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="question-text">
+                        {{ item.question }}
+                    </div>
+
+                    <div class="answer-wrapper">
+                        <div class="row g-4 d-flex align-items-stretch">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h6 class="text-muted small fw-bold text-uppercase mb-2 ps-1">Ваш выбор</h6>
+                                {% if u_ans is not none %}
+                                    <div class="answer-box {% if item.is_correct %}correct-variant{% else %}wrong-variant{% endif %}">
+                                        <span class="option-letter">{{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else '?' }}</span>
+                                        <span class="pt-1 fw-medium">
+                                            {% if answers and u_ans < answers|length %}
+                                                {{ answers[u_ans] }}
+                                            {% else %}
+                                                Вариант {{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else u_ans }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
                                 {% else %}
-                                    bg-light
-                                {% endif %}">
-                                <strong>
-                                    {% if item.user_answer is not none %}
-                                        Option {{ ['A','B','C','D','E'][item.user_answer] }}:
-                                    {% else %}
-                                        Not answered
-                                    {% endif %}
-                                </strong>
-                                {% if item.user_answer is not none and item.answers is defined and item.answers[item.user_answer] is defined %}
-                                    {{ item.answers[item.user_answer] }}
-                                {% elif item.user_answer is not none %}
-                                    <em>Answer text not available</em>
+                                    <div class="answer-box neutral-variant d-flex align-items-center justify-content-center">
+                                        <span class="fst-italic"><i class="bi bi-dash me-1"></i>Ответ не был выбран</span>
+                                    </div>
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Correct Answer:</h6>
-                            <div class="answer-item correct-answer">
-                                <strong>Option {{ ['A','B','C','D','E'][item.correct_answer] }}:</strong>
-                                    {% if item.answers is defined and item.answers[item.correct_answer] is defined %}
-                                        {{ item.answers[item.correct_answer] }}
-                                    {% else %}
-                                        <em>Answer text not available</em>
-                                    {% endif %}
+
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h6 class="text-muted small fw-bold text-uppercase mb-2 ps-1">Правильный ответ</h6>
+                                <div class="answer-box correct-variant">
+                                    <span class="option-letter">{{ ['А','Б','В','Г','Д'][c_ans] if c_ans is not none and c_ans < 5 else '?' }}</span>
+                                    <span class="pt-1 fw-medium">
+                                        {% if answers and c_ans is not none and c_ans < answers|length %}
+                                            {{ answers[c_ans] }}
+                                        {% else %}
+                                            Информации о правильном ответе нет
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {% if not item.is_correct and item.user_answer is not none %}
-                    <div class="mt-2 text-danger small">
-                        <i class="bi bi-x-circle"></i> Incorrect
-                    </div>
-                    {% elif not item.is_correct and item.user_answer is none %}
-                    <div class="mt-2 text-warning small">
-                        <i class="bi bi-dash-circle"></i> Not answered
-                    </div>
-                    {% else %}
-                    <div class="mt-2 text-success small">
-                        <i class="bi bi-check-circle"></i> Correct
-                    </div>
-                    {% endif %}
-
                     {% if not item.is_correct %}
-                    <hr class="my-3 text-muted" style="opacity: 0.2;">
-                    <div class="text-end">
-                        <button class="btn btn-sm btn-outline-primary ask-ai-btn"
+                    <div class="bg-light px-4 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <span class="text-muted small">Не поняли, почему такой ответ?</span>
+                        <button class="btn btn-outline-primary rounded-pill px-4 fw-bold ask-ai-btn shadow-sm"
                             data-attempt-id="{{ attempt.id }}"
                             data-task-id="task_{{ loop.index0 }}"
                             data-question="{{ item.question | e }}"
-                            data-user-answer="{% if item.user_answer is not none and item.answers is defined %}{{ item.answers[item.user_answer] | e }}{% else %}Not answered{% endif %}"
-                            data-correct-answer="{% if item.answers is defined %}{{ item.answers[item.correct_answer] | e }}{% else %}Unknown{% endif %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot me-1" viewBox="0 0 16 16">
-                                <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/>
-                            </svg>
-                            Ask AI Tutor
+                            data-user-answer="{% if u_ans is not none and answers and u_ans < answers|length %}{{ answers[u_ans] | e }}{% else %}Пропущен{% endif %}"
+                            data-correct-answer="{% if c_ans is not none and answers and c_ans < answers|length %}{{ answers[c_ans] | e }}{% else %}Вариант {{ ['А','Б','В','Г','Д'][c_ans] }}{% endif %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-robot me-2" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
+                            Объяснить с ИИ
                         </button>
                     </div>
                     {% endif %}
@@ -228,46 +352,48 @@
             </div>
         </div>
 
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <a href="/" class="btn btn-primary btn-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door me-2" viewBox="0 0 16 16">
-                        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/>
-                    </svg>
-                    Back to Tests
+        <div class="row mt-4 mb-5">
+            <div class="col-12 text-center d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/tests" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
+                    К списку тестов
                 </a>
-                <a href="#" class="btn btn-outline-secondary btn-lg ms-3" onclick="window.print()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16">
+                <button class="btn btn-outline-secondary btn-lg rounded-pill px-4 bg-white" onclick="window.print()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16">
                         <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
                         <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zm4 3h2V3h-2zm-2 4v5h6V8zm-2 3v1H2v-1zm0-3v1H2V8z"/>
                     </svg>
-                    Print Results
-                </a>
+                    Распечатать
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="chatSidebar" aria-labelledby="chatSidebarLabel" style="width: 400px; transition: transform 0.3s ease-in-out;">
-
+    <div class="offcanvas offcanvas-end shadow-lg border-0" tabindex="-1" id="chatSidebar" aria-labelledby="chatSidebarLabel" style="width: 450px; transition: transform 0.3s ease-in-out;">
         <div class="offcanvas-resizer" id="chatResizer"></div>
 
-        <div class="offcanvas-header bg-light border-bottom">
-            <h5 class="offcanvas-title fw-bold" id="chatSidebarLabel">
-                <i class="bi bi-robot text-primary me-2"></i>AI Tutor
+        <div class="offcanvas-header bg-white border-bottom py-3">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="chatSidebarLabel">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3 d-flex align-items-center justify-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
+                </div>
+                ИИ-Репетитор
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
         </div>
+
         <div class="offcanvas-body d-flex flex-column p-0">
-            <div id="chatMessages" class="chat-container flex-grow-1 p-3 d-flex flex-column">
+            <div id="chatMessages" class="chat-container flex-grow-1 p-3 p-md-4 d-flex flex-column">
                 </div>
 
-            <div id="aiTypingIndicator" class="typing-indicator px-3 pt-2">AI is typing...</div>
+            <div id="aiTypingIndicator" class="typing-indicator">
+                <div class="spinner-grow spinner-grow-sm text-primary me-2" role="status"></div> Анализирую ответ...
+            </div>
 
             <div class="p-3 border-top bg-white">
                 <form id="chatForm" class="d-flex gap-2">
-                    <input type="text" id="chatInput" class="form-control rounded-pill px-3" placeholder="Ask why your answer is wrong..." autocomplete="off" required>
-                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm" id="chatSendBtn" style="width: 45px; height: 45px; padding: 0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                    <input type="text" id="chatInput" class="form-control rounded-pill px-4 bg-light border-0 shadow-none" placeholder="Задайте вопрос..." autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" id="chatSendBtn" style="width: 48px; height: 48px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send-fill ms-1" viewBox="0 0 16 16">
                             <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
                         </svg>
                     </button>
@@ -278,126 +404,177 @@
 
     <div class="modal fade" id="exportChatModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Chat Limit Reached</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-warning bg-opacity-10 border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
-                <div class="modal-body">
-                    <p>This quick-help session has reached its 10-message limit. To continue deep-diving into this topic without losing context, copy the transcript below and paste it into ChatGPT or Gemini.</p>
-                    <textarea id="exportChatText" class="form-control mb-3 font-monospace" rows="6" readonly style="font-size: 0.85rem;"></textarea>
+                <div class="modal-body px-4 pb-5 text-center">
+                    <div class="bg-warning text-white d-inline-flex p-3 rounded-circle mb-4 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-hourglass-bottom" viewBox="0 0 16 16"><path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5zm2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.492v.7c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.35v-.7c0-.701.478-1.236 1.011-1.492A3.5 3.5 0 0 0 11.5 3V2h-7z"/></svg>
+                    </div>
+                    <h4 class="fw-bold mb-3">Лимит сообщений исчерпан</h4>
+                    <p class="text-muted mb-4">Эта сессия быстрой помощи достигла лимита в 10 сообщений. Чтобы продолжить разбор без потери контекста, скопируйте историю ниже и вставьте её в ChatGPT или Gemini.</p>
 
-                    <div class="row g-2">
+                    <textarea id="exportChatText" class="form-control mb-4 bg-light font-monospace rounded-3" rows="5" readonly style="font-size: 0.85rem; resize: none;"></textarea>
+
+                    <div class="row g-3">
                         <div class="col-12">
-                            <button type="button" class="btn btn-dark w-100 fw-bold" id="copyChatBtn">
-                                <i class="bi bi-clipboard me-2"></i>Copy Transcript
+                            <button type="button" class="btn btn-dark w-100 fw-bold rounded-pill py-2" id="copyChatBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard me-2" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                                Скопировать текст
                             </button>
-                        </div>
-                        <div class="col-6">
-                            <a href="https://chat.openai.com" target="_blank" class="btn btn-outline-secondary w-100">ChatGPT <i class="bi bi-box-arrow-up-right ms-1"></i></a>
-                        </div>
-                        <div class="col-6">
-                            <a href="https://gemini.google.com" target="_blank" class="btn btn-outline-primary w-100">Gemini <i class="bi bi-box-arrow-up-right ms-1"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="text-center bg-body mt-5" data-bs-theme="dark">
-        <div class="container py-4 py-lg-5">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">ORT Testing System</h5>
-                    <p class="text-body-secondary">Practice and prepare for your ORT exams with realistic test simulations and instant feedback.</p>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="/">Home</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Results</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Profile</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Help</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">Connect With Us</h5>
+    <div class="modal fade" id="cookieModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-dark text-white d-flex align-items-center justify-content-center p-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
+                                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                                <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/>
+                            </svg>
+                        </div>
+                        <div class="col-md-8 p-4 p-md-5">
+                            <h4 class="fw-bold text-dark mb-3">Ваша конфиденциальность</h4>
+                            <p class="text-muted mb-4" style="font-size: 0.95rem;">
+                                Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
+                            </p>
+                            <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                                <button type="button" class="btn btn-primary fw-bold px-4 py-2 flex-grow-1 shadow-sm" id="acceptAllCookies">Принять все</button>
+                                <button type="button" class="btn btn-light fw-medium px-4 py-2 flex-grow-1 text-muted border" id="acceptEssentialCookies">Только технические</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <p class="text-body mb-0">Copyright © 2024 ORT Testing System. All rights reserved.</p>
+        </div>
+    <footer class="text-center bg-dark text-light py-4 mt-auto">
+        <div class="container py-3">
+            <ul class="list-inline mb-3">
+                <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/about">О платформе</a></li>
+                <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/tests">Тесты</a></li>
+                <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/contact">Контакты</a></li>
+            </ul>
+            <p class="text-light opacity-50 mb-0 fs-6">Copyright © 2026 NovaPrep AI. Все права защищены.</p>
         </div>
     </footer>
 
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем, есть ли уже сохраненный выбор в localStorage
+    const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
 
+    // Инициализируем модальное окно Bootstrap
+    const cookieModalElement = document.getElementById('cookieModal');
+    const cookieModal = new bootstrap.Modal(cookieModalElement);
+
+    if (!cookieConsent) {
+        // Если выбора нет, показываем окно
+        cookieModal.show();
+    } else if (cookieConsent === 'all') {
+        // Здесь вы можете вызвать функцию загрузки Google Analytics
+        // loadGoogleAnalytics();
+    }
+
+    // Обработка кнопки "Принять все"
+    document.getElementById('acceptAllCookies').addEventListener('click', function() {
+        localStorage.setItem('novaPrepCookieConsent', 'all');
+        cookieModal.hide();
+        // Включаем аналитику
+        // loadGoogleAnalytics();
+    });
+
+    // Обработка кнопки "Только технические"
+    document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
+        localStorage.setItem('novaPrepCookieConsent', 'essential');
+        cookieModal.hide();
+        // Аналитику не загружаем
+    });
+});
+</script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- Configuration ---
-        // Updated to explicitly hit the FastAPI proxy route
-        const API_BASE_URL = '/fastapi/api/chat';
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Подгрузка аватара в Navbar
+        try {
+            if (typeof makeRequest === 'function') {
+                const data = await makeRequest('/api/user/', 'GET', null, false);
+                if (data && data.avatar) {
+                    const navAvatar = document.getElementById('navbarAvatar');
+                    if (navAvatar) navAvatar.src = data.avatar;
+                }
+            }
+        } catch (error) { console.log('Гостевой режим'); }
 
-        // --- State ---
+        // --- Chat Configuration ---
+        const API_BASE_URL = '/fastapi/api/chat';
         let currentAttemptId = null;
         let currentTaskId = null;
         let currentTaskContext = "";
         let currentThreadId = null;
 
-        // --- DOM Elements ---
         const chatSidebarEl = document.getElementById('chatSidebar');
         const chatSidebar = new bootstrap.Offcanvas(chatSidebarEl);
         const chatMessages = document.getElementById('chatMessages');
         const chatForm = document.getElementById('chatForm');
         const chatInput = document.getElementById('chatInput');
         const aiTypingIndicator = document.getElementById('aiTypingIndicator');
-
         const exportModalEl = document.getElementById('exportChatModal');
         const exportModal = new bootstrap.Modal(exportModalEl);
         const exportChatText = document.getElementById('exportChatText');
         const copyChatBtn = document.getElementById('copyChatBtn');
 
+        // Formats test name for JS logic if needed
+        const testNameDisplay = document.getElementById('testNameDisplay');
+        if(testNameDisplay) {
+            let rawText = "{{ attempt.test_type }}";
+            let formatted = rawText.replace(/_/g, ' ').toUpperCase();
+            if(rawText === "math_1") formatted = "МАТЕМАТИКА (ОСНОВНОЙ)";
+            if(rawText === "math_2") formatted = "МАТЕМАТИКА 2";
+            if(rawText === "reading") formatted = "ЧТЕНИЕ И ПОНИМАНИЕ";
+            if(rawText === "grammar") formatted = "ПРАКТИЧЕСКАЯ ГРАММАТИКА";
+            if(rawText === "analogy") formatted = "АНАЛОГИИ";
+            if(rawText === "full_test") formatted = "ПОЛНЫЙ ТЕСТ ОРТ";
+            testNameDisplay.textContent = `Разбор теста: ${formatted}`;
+        }
+
         // --- 1. Open Sidebar & Load History ---
         document.querySelectorAll('.ask-ai-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                // Grab data from the button
                 currentAttemptId = btn.getAttribute('data-attempt-id');
                 currentTaskId = btn.getAttribute('data-task-id');
 
-                // Construct the blueprint context
                 const q = btn.getAttribute('data-question');
                 const ua = btn.getAttribute('data-user-answer');
                 const ca = btn.getAttribute('data-correct-answer');
-                currentTaskContext = `Question: ${q}\nStudent Answered: ${ua}\nCorrect Answer: ${ca}`;
+                currentTaskContext = `Вопрос: ${q}\nСтудент ответил: ${ua}\nПравильный ответ: ${ca}`;
 
-                // Reset UI
                 chatMessages.innerHTML = '';
                 chatInput.disabled = false;
                 chatSidebar.show();
 
-                // Fetch History
                 try {
                     const response = await fetch(`${API_BASE_URL}/history?attempt_id=${currentAttemptId}&task_id=${currentTaskId}`);
                     if (response.ok) {
                         const data = await response.json();
 
                         if (data.messages.length === 0) {
-                            // --- NEW: Auto-Send Logic ---
-                            chatInput.value = "I made a mistake on this question. Can you explain the logic to find the correct answer?";
-
-                            // Programmatically trigger the form submission
+                            // Начальный промпт на русском
+                            chatInput.value = "Я ошибся в этом вопросе. Можешь подробно объяснить логику решения?";
                             chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-
                         } else {
-                            // Load existing history
-                            data.messages.forEach(msg => {
-                                appendMessage(msg.role, msg.content);
-                            });
+                            data.messages.forEach(msg => appendMessage(msg.role, msg.content));
                         }
                         scrollToBottom();
                     }
                 } catch (error) {
-                    console.error("Error fetching history:", error);
-                    appendSystemMessage("Failed to load chat history.");
+                    console.error("Ошибка загрузки истории:", error);
+                    appendSystemMessage("Не удалось загрузить историю чата.");
                 }
             });
         });
@@ -408,7 +585,6 @@
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // Instantly show user message
             appendMessage('user', text);
             chatInput.value = '';
             chatInput.disabled = true;
@@ -430,18 +606,18 @@
                 });
 
                 const data = await response.json();
-                currentThreadId = data.thread_id; // Save for export
+                currentThreadId = data.thread_id;
 
                 if (data.status === "limit_reached") {
                     triggerExportFlow();
                 } else if (data.status === "success") {
                     appendMessage('assistant', data.reply);
                 } else {
-                    appendSystemMessage("An error occurred.");
+                    appendSystemMessage("Произошла ошибка на сервере.");
                 }
             } catch (error) {
-                console.error("Error sending message:", error);
-                appendSystemMessage("Network error. Please try again.");
+                console.error("Ошибка отправки:", error);
+                appendSystemMessage("Ошибка сети. Проверьте подключение.");
             } finally {
                 aiTypingIndicator.style.display = 'none';
                 chatInput.disabled = false;
@@ -450,32 +626,26 @@
             }
         });
 
-        // --- 3. The Export Handoff ---
+        // --- 3. Export Flow ---
         async function triggerExportFlow() {
             chatSidebar.hide();
-            appendSystemMessage("Limit reached. Please export chat.");
-
             try {
                 const response = await fetch(`${API_BASE_URL}/${currentThreadId}/export`);
                 const data = await response.json();
-
                 exportChatText.value = data.clipboard_text;
                 exportModal.show();
             } catch (error) {
                 console.error("Failed to export chat:", error);
-                alert("Failed to export chat history.");
+                alert("Не удалось экспортировать историю чата.");
             }
         }
 
-        // Copy button logic
         copyChatBtn.addEventListener('click', () => {
             exportChatText.select();
             document.execCommand('copy');
-
             const originalText = copyChatBtn.innerHTML;
-            copyChatBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Copied!';
+            copyChatBtn.innerHTML = 'Скопировано!';
             copyChatBtn.classList.replace('btn-dark', 'btn-success');
-
             setTimeout(() => {
                 copyChatBtn.innerHTML = originalText;
                 copyChatBtn.classList.replace('btn-success', 'btn-dark');
@@ -486,17 +656,14 @@
         function appendMessage(role, content) {
             const div = document.createElement('div');
             div.className = `chat-message ${role}`;
-
-            // Convert line breaks to <br> for HTML rendering
-            const formattedContent = content.replace(/\n/g, '<br>');
-            div.innerHTML = formattedContent;
-
+            // Простая конвертация переносов строк
+            div.innerHTML = content.replace(/\n/g, '<br>');
             chatMessages.appendChild(div);
         }
 
         function appendSystemMessage(text) {
             const div = document.createElement('div');
-            div.className = 'text-center text-muted small my-2';
+            div.className = 'text-center text-muted small my-3 fw-bold';
             div.textContent = text;
             chatMessages.appendChild(div);
         }
@@ -505,7 +672,7 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // --- Sidebar Resizing Logic ---
+        // --- Sidebar Resizer ---
         const resizer = document.getElementById('chatResizer');
         let isResizing = false;
 
@@ -518,11 +685,8 @@
 
         document.addEventListener('mousemove', (e) => {
             if (!isResizing) return;
-            // Calculate width based on mouse position from the right side of the screen
             let newWidth = window.innerWidth - e.clientX;
-
-            // Limit to min 300px and max 80% of window width
-            if (newWidth > 300 && newWidth < (window.innerWidth * 0.8)) {
+            if (newWidth > 350 && newWidth < (window.innerWidth * 0.8)) {
                 chatSidebarEl.style.width = `${newWidth}px`;
             }
         });

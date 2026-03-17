@@ -1,235 +1,288 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+<html data-bs-theme="light" lang="ru">
 
 <head>
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>{{ test_info.name }} - ORT Testing</title>
+    <title>{{ test_info.name }} — NovaPrep AI</title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/bss-overrides.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/auth-middleware.js"></script>
     <style>
+                /* Отключаем прокрутку и прыжки для всего окна браузера */
+        body {
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            background-color: #212529; /* Темный фон на случай микро-лагов */
+        }
+
+        /* Navbar всегда остается сверху */
+        .navbar {
+            flex-shrink: 0;
+            z-index: 1030;
+        }
+
+        /* Это наш новый контейнер, который будет скроллиться */
+        .scrollable-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: var(--bg-color, #f8f9fc); /* Возвращаем светлый фон контенту */
+
+            /* Сохраняем инерцию и резинку для iOS, но не передаем ее браузеру */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+        }
+
+        /* Footer (если вынесете его наружу) будет всегда приклеен к низу */
+        footer {
+            flex-shrink: 0;
+        }
+                /* Small custom tweak for smooth hovering on our new feature cards */
+                .feature-icon-wrapper {
+                    transition: transform 0.3s ease;
+                }
+                .feature-block:hover .feature-icon-wrapper {
+                    transform: translateY(-5px);
+                }
         .info-card {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            margin-bottom: 30px;
+            border-radius: 1.5rem;
+            border: 1px solid #e9ecef;
+            background-color: #ffffff;
         }
-        .info-card .card-body {
-            padding: 3rem;
-        }
-        .info-card h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .info-card p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        .details-card {
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border: none;
-            margin-bottom: 30px;
-        }
-        .detail-item {
-            padding: 1.5rem;
-            border-bottom: 1px solid #eee;
-        }
-        .detail-item:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            font-weight: 600;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-        }
-        .detail-value {
-            font-size: 1.3rem;
-            font-weight: 500;
-        }
-        .btn-start {
-            padding: 1rem 3rem;
-            font-size: 1.3rem;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            transition: transform 0.3s;
-        }
-        .btn-start:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-        .instructions {
+        .stats-badge {
             background-color: #f8f9fa;
-            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 1rem;
             padding: 1.5rem;
-            margin-top: 2rem;
         }
     </style>
 </head>
 
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-md bg-dark py-3" data-bs-theme="dark">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
-                        <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
-                        <path d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z"></path>
+<body class="bg-light d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-md bg-dark py-3 shadow-sm sticky-top" data-bs-theme="dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center m-0" href="/index">
+                <span class="d-flex justify-content-center align-items-center me-2 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                     </svg>
                 </span>
-                <span>ORT Testing</span>
+                <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
             </a>
             <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
-                <span class="visually-hidden">Toggle navigation</span>
-                <span class="navbar-toggler-icon"></span>
+                <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navcol-5">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Tests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Results</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link fs-6" href="/tests">Тесты</a></li>
+                    <li class="nav-item"><a class="nav-link fs-6" href="/about">О нас</a></li>
                 </ul>
-                <a class="btn btn-primary ms-md-2" role="button" href="/login">Login/Register</a>
+
+                <div data-auth="true" style="display: none;">
+                    <a class="ms-md-4 d-flex align-items-center text-decoration-none" href="/profile">
+                        <img id="navbarAvatar" src="/assets/img/default-avatar.webp" class="rounded-circle border border-2 border-secondary shadow-sm" alt="Профиль" style="width: 42px; height: 42px; object-fit: cover; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    </a>
+                </div>
+
+                <a class="btn btn-outline-light ms-md-4 px-4" data-guest="true" role="button" href="/login">Войти</a>
+                <a class="btn btn-primary ms-md-2 px-4" data-guest="true" role="button" href="/registration">Регистрация</a>
             </div>
         </div>
     </nav>
+    <div class="scrollable-content">
+    <div class="container py-5 flex-grow-1">
 
-    <!-- Main Content -->
-    <div class="container py-5">
-        <!-- Info Card -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card info-card">
-                    <div class="card-body text-center">
-                        <h1>{{ test_info.name }}</h1>
-                        <p class="lead">{{ test_info.description }}</p>
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/tests" class="text-decoration-none">Тесты</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ test_info.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card info-card shadow-sm mb-5 overflow-hidden position-relative">
+                    <div class="position-absolute top-0 start-0 w-100 bg-primary" style="height: 5px;"></div>
+                    <div class="card-body p-5">
+                        <div class="text-center mb-5">
+                            <h1 class="display-5 fw-bold text-dark mb-3">{{ test_info.name }}</h1>
+                            <p class="fs-5 text-muted mx-auto" style="max-width: 800px;">
+                                {{ test_info.description }}
+                            </p>
+                        </div>
+
+                        <div class="row g-4 text-center mb-5">
+                            <div class="col-md-4">
+                                <div class="stats-badge h-100">
+                                    <div class="text-primary mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-ui-checks" viewBox="0 0 16 16">
+                                            <path d="M7 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zM2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm0 8a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2zm.854-3.646a.5.5 0 0 1-.708 0l-1-1a.5.5 0 1 1 .708-.708l.646.647 1.646-1.647a.5.5 0 1 1 .708.708l-2 2zm0 8a.5.5 0 0 1-.708 0l-1-1a.5.5 0 0 1 .708-.708l.646.647 1.646-1.647a.5.5 0 0 1 .708.708l-2 2zM7 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">{{ test_info.questions }}</h5>
+                                    <span class="text-muted small text-uppercase">Вопросов</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-badge h-100">
+                                    <div class="text-primary mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                            <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z"/>
+                                            <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64a.715.715 0 0 1 .012-.013l.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354a.512.512 0 0 1-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3"/>
+                                        </svg>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">{{ test_info.time }} мин</h5>
+                                    <span class="text-muted small text-uppercase">На выполнение</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-badge h-100">
+                                    <div class="text-primary mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
+                                        </svg>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Генерация ИИ</h5>
+                                    <span class="text-muted small text-uppercase">Уникальный вариант</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-primary bg-opacity-10 rounded-4 p-4 p-md-5 mb-5">
+                            <h4 class="fw-bold mb-4 text-center">Правила раздела</h4>
+                            <div class="row justify-content-center">
+                                <div class="col-md-10">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for rule in test_info.rules %}
+                                        <li class="mb-3 d-flex align-items-start">
+                                            <span class="text-primary me-3 mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                                </svg>
+                                            </span>
+                                            <span class="text-dark fs-6">{{ rule }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="/testing/{{ test_type }}" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm" id="startTestBtn" style="border-radius: 50px;">
+                                Начать тестирование
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                                </svg>
+                            </a>
+                            <div id="authWarning" class="text-danger mt-3" style="display: none;">
+                                <small><i class="bi bi-exclamation-triangle-fill"></i> Вы должны войти в аккаунт, чтобы начать тест.</small>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Test Details -->
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <div class="card details-card">
-                    <div class="card-body p-0">
-                        <div class="detail-item d-flex justify-content-between align-items-center">
-                            <span class="detail-label">Number of Questions</span>
-                            <span class="detail-value">{{ test_info.questions }}</span>
-                        </div>
-                        <div class="detail-item d-flex justify-content-between align-items-center">
-                            <span class="detail-label">Time Limit</span>
-                            <span class="detail-value">{{ test_info.time }} minutes</span>
-                        </div>
-                        <div class="detail-item d-flex justify-content-between align-items-center">
-                            <span class="detail-label">Passing Score</span>
-                            <span class="detail-value">60%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Instructions -->
-        <div class="row mt-4">
-            <div class="col-md-8 mx-auto">
-                <div class="instructions">
-                    <h4 class="mb-3">Test Instructions</h4>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><span class="badge bg-primary me-2">1</span> Read each question carefully before answering.</li>
-                        <li class="mb-2"><span class="badge bg-primary me-2">2</span> You can change your answers anytime before submitting.</li>
-                        <li class="mb-2"><span class="badge bg-primary me-2">3</span> The timer starts as soon as you begin the test.</li>
-                        <li class="mb-2"><span class="badge bg-primary me-2">4</span> Once submitted, you cannot change your answers.</li>
-                        <li class="mb-2"><span class="badge bg-primary me-2">5</span> Your results will be shown immediately after submission.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Start Button -->
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <a href="/testing/{{ test_type }}" class="btn btn-primary btn-start" id="startTestBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-fill me-2" viewBox="0 0 16 16">
-                        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
-                    </svg>
-                    Start Test
-                </a>
-                <p class="text-muted mt-3">Make sure you have {{ test_info.time }} minutes of uninterrupted time.</p>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center bg-body mt-5" data-bs-theme="dark">
-        <div class="container py-4 py-lg-5">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">ORT Testing System</h5>
-                    <p class="text-body-secondary">Practice and prepare for your ORT exams with realistic test simulations and instant feedback.</p>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="/">Home</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Results</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Profile</a></li>
-                        <li class="mb-2"><a class="link-body-emphasis text-decoration-none" href="#">Help</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">Connect With Us</h5>
-                    <ul class="list-inline">
-                        <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-facebook text-body" style="font-size: 1.5rem;">
-                                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"></path>
-                                </svg></a></li>
-                        <li class="list-inline-item me-4"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-twitter-x text-body" style="font-size: 1.5rem;">
-                                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"></path>
-                                </svg></a></li>
-                        <li class="list-inline-item"><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-instagram text-body" style="font-size: 1.5rem;">
-                                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"></path>
-                                </svg></a></li>
-                    </ul>
-                </div>
-            </div>
-            <p class="text-body mb-0">Copyright © 2024 ORT Testing System. All rights reserved.</p>
+    <footer class="text-center bg-dark text-light py-4 mt-auto">
+        <div class="container py-3">
+            <ul class="list-inline mb-3">
+                <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/about">О платформе</a></li>
+                <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/tests">Тесты</a></li>
+                <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/contact">Контакты</a></li>
+            </ul>
+            <p class="text-light opacity-50 mb-0 fs-6">Copyright © 2026 NovaPrep AI. Все права защищены.</p>
         </div>
-    </footer>
+    </footer><script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем, есть ли уже сохраненный выбор в localStorage
+    const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
 
-    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    // Инициализируем модальное окно Bootstrap
+    const cookieModalElement = document.getElementById('cookieModal');
+    const cookieModal = new bootstrap.Modal(cookieModalElement);
+
+    if (!cookieConsent) {
+        // Если выбора нет, показываем окно
+        cookieModal.show();
+    } else if (cookieConsent === 'all') {
+        // Здесь вы можете вызвать функцию загрузки Google Analytics
+        // loadGoogleAnalytics();
+    }
+
+    // Обработка кнопки "Принять все"
+    document.getElementById('acceptAllCookies').addEventListener('click', function() {
+        localStorage.setItem('novaPrepCookieConsent', 'all');
+        cookieModal.hide();
+        // Включаем аналитику
+        // loadGoogleAnalytics();
+    });
+
+    // Обработка кнопки "Только технические"
+    document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
+        localStorage.setItem('novaPrepCookieConsent', 'essential');
+        cookieModal.hide();
+        // Аналитику не загружаем
+    });
+});
+</script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Загрузка аватара
+            try {
+                if (typeof makeRequest === 'function') {
+                    const data = await makeRequest('/api/user/', 'GET', null, false);
+                    if (data && data.avatar) {
+                        const navAvatar = document.getElementById('navbarAvatar');
+                        if (navAvatar) {
+                            navAvatar.src = data.avatar;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Гостевой режим или ошибка загрузки профиля.');
+            }
+
+            // Проверка авторизации перед стартом теста
             const startBtn = document.getElementById('startTestBtn');
+            const authWarning = document.getElementById('authWarning');
 
             if (startBtn) {
-                startBtn.addEventListener('click', function(e) {
-                    // Check if the user has an access token
-                    const token = localStorage.getItem('access_token');
+                startBtn.addEventListener('click', async function(e) {
+                    // Используем вашу функцию из auth.js
+                    const isAuth = await isAuthenticated();
 
-                    if (!token) {
-                        e.preventDefault(); // Stop the link from opening the test
+                    if (!isAuth) {
+                        e.preventDefault(); // Останавливаем переход
 
-                        // Optional: Save where they were trying to go so you can redirect them back after login
+                        // Показываем предупреждение
+                        authWarning.style.display = 'block';
+
+                        // Сохраняем URL, чтобы вернуть пользователя сюда после логина
                         sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
 
-                        alert('You must be logged in to take this test.');
-
-                        // Redirect to your login page (Update this URL to match your actual login route)
-                        window.location.href = '/login';
+                        // Через секунду перенаправляем на логин
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 1500);
+                    } else {
+                        // Если авторизован, кнопка показывает статус загрузки
+                        startBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Загрузка...';
+                        startBtn.classList.add('disabled');
                     }
                 });
             }
         });
     </script>
+    </div>
 </body>
 
 </html>

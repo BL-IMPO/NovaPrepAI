@@ -1,12 +1,6 @@
-import os
-from pathlib import Path
 from asgiref.sync import sync_to_async
-
-from dotenv import load_dotenv
+from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from contextlib import asynccontextmanager
@@ -19,18 +13,25 @@ from . import django_settings
 from .routers.testing import router as test_router
 from .routers.results import router as results_router
 
+# 1. Сначала создаем пустой инструментатор
+instrumentator = Instrumentator()
 
-
+# 2. Затем определяем функцию lifespan, которая его использует
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     print("FastAPI Testing System starting...")
+    instrumentator.expose(app)
     yield
     # Shutdown
     print("FastAPI Testing System shutting down...")
 
-
+# 3. Теперь создаем app и передаем в него уже готовую функцию lifespan
 app = FastAPI(title="ORT Testing System", lifespan=lifespan)
+
+# 4. И только теперь применяем инструментатор к нашему готовому app
+instrumentator.instrument(app)
+
 
 # ------- CORS ---------
 app.add_middleware(
@@ -44,7 +45,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # ----------------------
-
 app.include_router(test_router)
 app.include_router(results_router)
 
