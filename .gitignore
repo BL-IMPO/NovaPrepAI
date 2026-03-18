@@ -3,3 +3,5 @@
 /backend_core/src/media/
 /media/
 /.VSCodeCounter/
+__pycache__/
+*.pyc
