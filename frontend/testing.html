@@ -15,7 +15,7 @@
     <style>
         /* Отключаем прокрутку и прыжки для всего окна браузера */
         body {
-            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             margin: 0;
             background-color: #212529;
@@ -69,7 +69,7 @@
 
         /* --- Layout --- */
         .sidebar {
-            height: calc(100vh - 76px);
+            height: calc(100dvh - 76px);
             overflow-y: auto;
             border-right: 1px solid #e9ecef;
             background-color: #ffffff;
@@ -85,7 +85,7 @@
         .main-content {
             margin-left: 300px;
             padding: 2rem;
-            min-height: calc(100vh - 76px);
+            min-height: calc(100dvh - 76px);
             display: flex;
             justify-content: center; /* Centering the question block */
         }
@@ -136,6 +136,7 @@
             align-items: center;
             font-weight: 500;
             text-decoration: none; /* Убираем подчеркивание для ссылок */
+            gap: 10px;
         }
         .question-sidebar-item:hover {
             background-color: #f8f9fa;
@@ -261,6 +262,30 @@
             .sidebar-overlay { display: none; position: fixed; top: 76px; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(2px); }
             .sidebar-overlay.show { display: block; }
             .ort-passage { column-count: 1; column-rule: none; }
+
+            /* --- НОВЫЙ КОД ДЛЯ МОБИЛОК --- */
+
+            /* 1. Спасаем нижние вопросы в боковом меню от обрезки */
+            .sidebar {
+                padding-bottom: 100px;
+            }
+
+            /* 2. Закрепляем кнопки навигации внизу экрана */
+            .nav-buttons {
+                position: sticky;
+                bottom: 0;
+                background-color: var(--bg-color); /* Фон сливается со страницей */
+                padding: 15px !important;
+                margin: 0 -1rem -1rem -1rem; /* Растягиваем на всю ширину мобильного экрана */
+                z-index: 1020;
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.08); /* Красивая тень сверху */
+                border-top: none !important;
+            }
+
+            /* 3. Даем отступ последнему блоку вопросов, чтобы кнопки его не перекрыли */
+            #answersContainer {
+                padding-bottom: 20px;
+            }
         }
     </style>
 </head>
