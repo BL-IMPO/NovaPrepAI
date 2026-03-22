@@ -109,7 +109,7 @@ async def get_test_data(test_type: str, current_user = Depends(get_current_user)
                             "type": "question",
                             "index": idx,
                             "question": q_data["question"],
-                            "answers": q_data["answers"]
+                            "answers": q_data["options"]
                         }) + "\n"
 
             return StreamingResponse(cached_stream_generator(), media_type="application/x-ndjson")
