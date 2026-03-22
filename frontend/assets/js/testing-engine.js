@@ -32,7 +32,41 @@ class TestingEngine {
         this.initEventListeners();
     }
 
-    // НОВЫЙ МЕТОД: Определяет секцию и локальный номер вопроса
+    // --- МЕТОДЫ ДЛЯ СОХРАНЕНИЯ ПРОГРЕССА ---
+    saveLocalProgress() {
+        const progress = {
+            answers: Array.from(this.answers.entries()),
+            markedQuestions: Array.from(this.markedQuestions),
+            // Сохраняем время окончания теста, чтобы таймер не сбрасывался
+            endTime: Date.now() + (this.timeLeft * 1000)
+        };
+        sessionStorage.setItem(`nova_prep_${this.testType}_progress`, JSON.stringify(progress));
+    }
+
+    loadLocalProgress() {
+        const saved = sessionStorage.getItem(`nova_prep_${this.testType}_progress`);
+        if (saved) {
+            const progress = JSON.parse(saved);
+            this.answers = new Map(progress.answers);
+            this.markedQuestions = new Set(progress.markedQuestions);
+
+            // Восстанавливаем таймер
+            const timeRemaining = Math.floor((progress.endTime - Date.now()) / 1000);
+            if (timeRemaining > 0) {
+                this.timeLeft = timeRemaining;
+            } else {
+                this.timeLeft = 0; // Время вышло, пока страница была закрыта
+            }
+            return true;
+        }
+        return false;
+    }
+
+    clearLocalProgress() {
+        sessionStorage.removeItem(`nova_prep_${this.testType}_progress`);
+    }
+    // ----------------------------------------
+
     getQuestionMeta(globalIndex) {
         if (this.testType !== 'full_test') {
             return {
@@ -85,9 +119,15 @@ class TestingEngine {
 
                         if (chunk.type === 'meta') {
                             this.totalTime = chunk.time_limit;
-                            this.timeLeft = this.totalTime;
-
                             this.questions = new Array(chunk.total_questions).fill(null);
+
+                            // Пытаемся загрузить локальный прогресс (ответы и таймер)
+                            const hasSavedProgress = this.loadLocalProgress();
+
+                            // Если прогресса нет, ставим таймер на максимум
+                            if (!hasSavedProgress) {
+                                this.timeLeft = this.totalTime;
+                            }
 
                             this.updateTimerDisplay();
                             this.renderSidebar();
@@ -245,6 +285,9 @@ class TestingEngine {
         }
         this.renderSidebar();
         this.renderQuestion();
+
+        // Сохраняем прогресс после отметки
+        this.saveLocalProgress();
     }
 
     renderQuestion() {
@@ -560,6 +603,9 @@ class TestingEngine {
         this.renderSidebar();
         this.renderQuestion();
         this.updateProgress();
+
+        // Сохраняем прогресс после каждого ответа
+        this.saveLocalProgress();
     }
 
     goToQuestion(index) {
@@ -666,6 +712,9 @@ class TestingEngine {
     async submitTest() {
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.clearRefreshInterval();
+
+        // Очищаем локальное хранилище, так как тест завершен
+        this.clearLocalProgress();
 
         try {
             const answersObj = {};

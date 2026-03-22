@@ -5,3 +5,5 @@
 /.VSCodeCounter/
 __pycache__/
 *.pyc
+/nginx/logs/
+/nginx/ssl/

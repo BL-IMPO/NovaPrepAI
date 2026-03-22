@@ -89,6 +89,31 @@ async def get_test_data(test_type: str, current_user = Depends(get_current_user)
     """Get test data including questions and time limit.
         Hides complexity scores from frontend"""
     try:
+        cache_key = f"ort_test:{current_user.id}:{test_type}"
+        cached_data = redis_client.get(cache_key)
+
+        if cached_data:
+            print(f"Returning cached test for user {current_user.id}")
+            questions = json.loads(cached_data)
+            total_questions = len(questions)
+
+            time_limit = test_ort.test_time_limits.get(test_type, 60)
+
+            async def cached_stream_generator():
+                # Send metadata first
+                yield json.dumps({"type": "meta", "time_limit": time_limit, "total_questions": total_questions}) + "\n"
+
+                for idx, q_data in enumerate(questions):
+                    if q_data:
+                        yield json.dumps({
+                            "type": "question",
+                            "index": idx,
+                            "question": q_data["question"],
+                            "answers": q_data["answers"]
+                        }) + "\n"
+
+            return StreamingResponse(cached_stream_generator(), media_type="application/x-ndjson")
+
         data = await test_ort.get_test_data(test_type)
         time_limit = data["time_limit"]
         tasks = data["tasks"]
@@ -117,8 +142,11 @@ async def get_test_data(test_type: str, current_user = Depends(get_current_user)
                 except Exception as e:
                     print(f"Error in question stream: {e}")
 
-            cache_key = f"ort_test:{current_user.id}:{test_type}"
-            redis_client.setex(cache_key, 14400, json.dumps(cached_questions))
+            # Calculate TTL based on test time limit (convert minutes to seconds) + 10 minute grace period
+            expiration_seconds = (time_limit * 60) + 600
+
+            # Cache the test
+            redis_client.setex(cache_key, expiration_seconds, json.dumps(cached_questions))
 
         return StreamingResponse(stream_generator(), media_type="application/x-ndjson")
 

@@ -1,0 +1,17 @@
+User-agent: *
+
+# Keep bots out of your backend services and APIs
+Disallow: /api/
+Disallow: /admin/
+Disallow: /internal/
+
+# Keep bots out of private student areas
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /tests/generate/
+
+# Allow bots to crawl everything else (landing pages, public subjects)
+Allow: /
+
+# Point them to your sitemap
+Sitemap: https://www.yourdomain.com/sitemap.xml
