@@ -13,25 +13,21 @@ from . import django_settings
 from .routers.testing import router as test_router
 from .routers.results import router as results_router
 
-# 1. Сначала создаем пустой инструментатор
-instrumentator = Instrumentator()
-
-# 2. Затем определяем функцию lifespan, которая его использует
+# 1. Define lifespan (Keep it purely for startup/shutdown tasks like DB connections if needed)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     print("FastAPI Testing System starting...")
-    instrumentator.expose(app)
     yield
     # Shutdown
     print("FastAPI Testing System shutting down...")
 
-# 3. Теперь создаем app и передаем в него уже готовую функцию lifespan
+# 2. Create app with lifespan
 app = FastAPI(title="ORT Testing System", lifespan=lifespan)
 
-# 4. И только теперь применяем инструментатор к нашему готовому app
-instrumentator.instrument(app)
-
+# 3. Instrument and expose Prometheus metrics globally (OUTSIDE the lifespan)
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 # ------- CORS ---------
 app.add_middleware(
@@ -45,6 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # ----------------------
+
 app.include_router(test_router)
 app.include_router(results_router)
 
@@ -71,7 +68,6 @@ async def health_check():
     except Exception as e:
         print(f"Health check failed: {e}")
         raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001, reload=True)

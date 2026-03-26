@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # SECURITY HOSTS
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
@@ -45,8 +45,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1",
     "http://127.0.0.1:80",
-    "https://novaprepai.com",
-    "https://www.novaprepai.com",
+   # "https://novaprepai.com",
+    #"https://www.novaprepai.com",
 ]
 
 CORS_ALLOW_CREDENTIALS =True

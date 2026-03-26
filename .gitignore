@@ -7,3 +7,5 @@ __pycache__/
 *.pyc
 /nginx/logs/
 /nginx/ssl/
+/nginx/
+docker-compose.yml

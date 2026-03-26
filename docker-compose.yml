@@ -31,8 +31,8 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    expose:
-      - "6379"
+    ports:
+      - "127.0.0.1:6379:6379" # Bound to localhost so you can use Redis GUI tools locally
     networks:
       - app-network
     healthcheck:
@@ -52,31 +52,25 @@ services:
     command: >
       sh -c "
       echo 'Waiting for database...' &&
-      while ! nc -z postgres 5432; do
-        sleep 1;
-      done;
+      while ! nc -z postgres 5432; do sleep 1; done;
       echo 'Database ready!' &&
       echo 'Waiting for Redis...' &&
-      while ! nc -z redis 6379; do
-        sleep 1;
-      done;
+      while ! nc -z redis 6379; do sleep 1; done;
       echo 'Redis ready!' &&
       python manage.py migrate &&
-      python manage.py collectstatic --noinput &&
       python manage.py createsuperuser --noinput || true &&
-      gunicorn backend_core.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 120
+      python manage.py runserver 0.0.0.0:8000
       "
     volumes:
       - ./backend_core/src:/app
       - django_static:/app/staticfiles
       - ./media:/app/media
-      - ./frontend:/app/frontend:ro  # Read-only mount for frontend
+      - ./frontend:/app/frontend:ro
     env_file:
       - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
-      DEBUG: "false"
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_EMAIL: admin@example.com
       DJANGO_SUPERUSER_PASSWORD: 25072004
@@ -99,17 +93,15 @@ services:
       dockerfile: backend_fastapi/Dockerfile
     container_name: diploma_fastapi
     restart: unless-stopped
-    # Clean command without internal comments to avoid syntax errors
     command: >
       sh -c "echo 'Waiting for dependencies...' &&
       while ! nc -z postgres 5432; do sleep 1; done;
       while ! nc -z redis 6379; do sleep 1; done;
       while ! nc -z django 8000; do sleep 1; done;
       echo 'All dependencies ready!' &&
-      uvicorn src.app:app --host 0.0.0.0 --port 8001 --workers 4 --reload"
+      uvicorn src.app:app --host 0.0.0.0 --port 8001 --reload"
     volumes:
       - ./backend_fastapi/src:/app/src
-      # Mount django project to the path expected by PYTHONPATH in Dockerfile
       - ./backend_core/src:/app/backend_core/src:ro
       - ./frontend:/usr/share/nginx/html:ro
     env_file:
@@ -117,7 +109,6 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       DJANGO_SETTINGS_MODULE: backend_core.settings
-      # Ensure python knows where to find both apps
       PYTHONPATH: /app/src:/app/backend_core/src
     depends_on:
       postgres:
@@ -140,13 +131,11 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./frontend:/usr/share/nginx/html:ro
       - django_static:/usr/share/nginx/django-static:ro
       - ./media:/usr/share/nginx/media:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./nginx/logs:/var/log/nginx
     depends_on:
       - django
@@ -161,11 +150,10 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
-    # ПОРТЫ ЗАКРЫТЫ: Никаких ports: - "9090:9090". Prometheus доступен только внутри app-network.
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=15d' # Хранить метрики 15 дней (чтобы не забить диск)
+      - '--storage.tsdb.retention.time=15d'
     networks:
       - app-network
 
@@ -178,10 +166,10 @@ services:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=SuperStrongPassword2026! # ОБЯЗАТЕЛЬНО СМЕНИТЕ!
+      - GF_SECURITY_ADMIN_PASSWORD=SuperStrongPassword2026!
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
-      - "127.0.0.1:3000:3000" # Привязываем только к локалхосту для максимальной безопасности!
+      - "127.0.0.1:3000:3000"
     depends_on:
       - prometheus
     networks:
@@ -198,7 +186,6 @@ volumes:
   postgres_data:
   redis_data:
   django_static:
- # django_media:
   prometheus_data:
   grafana_data:
 
