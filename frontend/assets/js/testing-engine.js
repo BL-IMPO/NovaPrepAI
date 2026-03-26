@@ -161,7 +161,14 @@ class TestingEngine {
 
         } catch (error) {
             console.error('Ошибка загрузки теста:', error);
-            alert('Ошибка загрузки теста. Пожалуйста, обновите страницу.');
+
+            // Если функция доступна в testing.html, вызываем красивое окно.
+            // Иначе падаем обратно на стандартный alert.
+            if (typeof window.showLoginRequiredModal === 'function') {
+                window.showLoginRequiredModal();
+            } else {
+                alert('Ошибка загрузки теста. Пожалуйста, войдите в систему.');
+            }
         }
     }
 
