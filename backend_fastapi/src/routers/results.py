@@ -1,9 +1,21 @@
+import json
 from pathlib import Path
 
 from fastapi import APIRouter, Request, HTTPException
+from fastapi.params import Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from asgiref.sync import sync_to_async
+
+from ..dependencies import get_current_user
+
+try:
+    from django.contrib.auth import get_user_model
+    from main.models import TestAttempt
+    print("Successfully imported Django models")
+except Exception as e:
+    print(f"Error importing Django models: {e}")
+    raise
 
 from src.tasks_generation import  ai_chat_response
 from ..schemas.schemas import ChatRequest, ChatResponse
@@ -163,5 +175,46 @@ async def export_chat(thread_id: int):
     return {
         "clipboard_text": clean_transcript.strip()
     }
+
+@router.get("/api/user/statistics")
+async def get_user_statistics(current_user = Depends(get_current_user)):
+    """
+    Returns the user's entire test history for the Chart.js dashboard.
+    """
+
+    def db_get_stats():
+        attempts = TestAttempt.objects.filter(user=current_user).order_by('created_at')
+        data = []
+
+        for a in attempts:
+            details = a.details
+
+            # Parse JSON
+            if isinstance(details, str):
+                try:
+                    details = json.loads(details)
+                except:
+                    details = []
+
+            total_q = len(details) if isinstance(details, list) else 0
+
+            data.append({
+                "id": a.id,
+                "test_type": a.test_type,
+                "score": a.score,
+                "weighted_score": a.weighted_score,
+                "total_questions": total_q,
+                "passed": a.passed,
+                "created_at": a.created_at.isoformat()
+            })
+
+        return data
+
+    try:
+        stats = await sync_to_async(db_get_stats)()
+        return {"status": "success", "data": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 

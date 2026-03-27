@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/bss-overrides.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
+    <script>
+        window.nativeAlert = window.alert;
+        window.alert = function(msg) {
+            console.log("Suppressed Alert: " + msg);
+        };
+    </script>
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/auth-middleware.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -257,37 +263,33 @@
         /* --- Mobile --- */
         .mobile-sidebar-toggle { display: none; }
         @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
+            .sidebar {
+                transform: translateX(-100%);
+                top: 0;
+                height: 100dvh;
+                z-index: 1050;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+                box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+            }
             .main-content { margin-left: 0; padding: 1rem; }
             .mobile-sidebar-toggle { display: inline-block; }
-            .sidebar-overlay { display: none; position: fixed; top: 76px; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(2px); }
+
+            .sidebar-overlay {
+                display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-color: rgba(0,0,0,0.5); z-index: 1040; backdrop-filter: blur(2px);
+            }
             .sidebar-overlay.show { display: block; }
             .ort-passage { column-count: 1; column-rule: none; }
 
-            /* --- НОВЫЙ КОД ДЛЯ МОБИЛОК --- */
-
-            /* 1. Спасаем нижние вопросы в боковом меню от обрезки */
-            .sidebar {
-                padding-bottom: 100px;
-            }
-
-            /* 2. Закрепляем кнопки навигации внизу экрана */
+            .sidebar { padding-bottom: 100px; }
             .nav-buttons {
-                position: sticky;
-                bottom: 0;
-                background-color: var(--bg-color); /* Фон сливается со страницей */
-                padding: 15px !important;
-                margin: 0 -1rem -1rem -1rem; /* Растягиваем на всю ширину мобильного экрана */
-                z-index: 1020;
-                box-shadow: 0 -4px 15px rgba(0,0,0,0.08); /* Красивая тень сверху */
-                border-top: none !important;
+                position: sticky; bottom: 0; background-color: var(--bg-color);
+                padding: 15px !important; margin: 0 -1rem -1rem -1rem;
+                z-index: 1020; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); border-top: none !important;
             }
-
-            /* 3. Даем отступ последнему блоку вопросов, чтобы кнопки его не перекрыли */
-            #answersContainer {
-                padding-bottom: 20px;
-            }
+            #answersContainer { padding-bottom: 20px; }
         }
     </style>
 </head>
@@ -298,13 +300,13 @@
 
             <div class="d-flex align-items-center">
                 <button class="btn btn-outline-light mobile-sidebar-toggle me-3 border-0" id="toggleSidebarBtn">
-                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' class='bi bi-list' viewBox='0 0 16 16'>
+                    <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='currentColor' class='bi bi-list' viewBox='0 0 16 16'>
                         <path fill-rule='evenodd' d='M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5'/>
                     </svg>
                 </button>
 
                 <a class="navbar-brand d-flex align-items-center m-0" href="/index.html">
-                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="44" width="44" class="me-2" style="object-fit: contain;">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="32" width="32" class="me-2" style="object-fit: contain;">
 
                 <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
             </a>
@@ -323,7 +325,15 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar" id="sidebar">
-        <div class="p-4">
+        <div class="d-flex justify-content-between align-items-center d-lg-none p-3 border-bottom mb-2 bg-light">
+            <div class="fw-bold text-dark d-flex align-items-center">
+                <img src="/assets/img/logo-icon.png" height="24" width="24" class="me-2" style="object-fit: contain; filter: invert(1);">
+                Меню теста
+            </div>
+            <button class="btn-close" id="closeSidebarBtn" aria-label="Закрыть"></button>
+        </div>
+
+        <div class="p-4 pt-lg-4 pt-1">
             <h6 class="text-uppercase fw-bold text-muted mb-4 pb-2 border-bottom" id="testTypeTitle">Загрузка...</h6>
 
             <div class="mb-4 bg-light p-3 rounded-3 border">
@@ -446,6 +456,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="loginRequiredModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center pb-5 px-4 pt-5">
+                    <div class="bg-primary bg-opacity-10 text-primary d-inline-flex p-4 rounded-circle mb-4">
+                        <svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='currentColor' class='bi bi-person-lock' viewBox='0 0 16 16'>
+                          <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0 5.996V14H3s-1 0-1-1 1-4 6-4c.564 0 1.077.038 1.544.107a4.524 4.524 0 0 0-.803.918A10.46 10.46 0 0 0 3.2 10c-.1.08-.25.14-.4.2.2.4.6.8 1.2 1.1.8.4 2 .8 4 .8M13 9a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1v1a2 2 0 1 1-4 0v-1a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold mb-3">Требуется авторизация</h3>
+                    <p class="fs-5 text-muted mb-4">Чтобы начать тестирование и сохранить свой прогресс, пожалуйста, войдите в систему.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-column flex-sm-row mt-4">
+                        <a href="/login" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm rounded-pill">Войти</a>
+                        <a href="/registration" class="btn btn-outline-secondary btn-lg px-4 fw-medium rounded-pill">Регистрация</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -556,6 +586,30 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="allAnsweredModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body text-center pb-5 px-4">
+                    <div class="bg-primary bg-opacity-10 text-primary d-inline-flex p-3 rounded-circle mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-check2-all" viewBox="0 0 16 16">
+                            <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
+                            <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold mb-3">Тест полностью решен!</h3>
+                    <p class="text-muted mb-4">Вы ответили на все вопросы. Уверены, что хотите завершить тест и узнать результаты?</p>
+
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="button" class="btn btn-light btn-lg px-4 fw-medium" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm" id="confirmAllAnsweredBtn">Завершить тест</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/testing-engine.js"></script>
         <script>
@@ -592,10 +646,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
     <script>
-        // Sidebar Toggle Logic for Mobile
+        // Обновленная логика открытия и закрытия бокового меню (добавили closeSidebarBtn)
         document.getElementById('toggleSidebarBtn').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
+            document.getElementById('sidebar').classList.add('show');
+            document.getElementById('sidebarOverlay').classList.add('show');
+        });
+
+        document.getElementById('closeSidebarBtn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('sidebarOverlay').classList.remove('show');
         });
 
         document.getElementById('sidebarOverlay').addEventListener('click', function() {
@@ -623,7 +682,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('sidebarOverlay').classList.remove('show');
             }
         });
+
+        // Функция вызова красивой модалки вместо alert
+        window.showLoginRequiredModal = function() {
+            if(window.nativeAlert) window.alert = window.nativeAlert; // Восстанавливаем оригинальный алерт на всякий случай
+            const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+            modal.show();
+        };
     </script>
     </div>
 </body>
 </html>
+
