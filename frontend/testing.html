@@ -586,6 +586,30 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="allAnsweredModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body text-center pb-5 px-4">
+                    <div class="bg-primary bg-opacity-10 text-primary d-inline-flex p-3 rounded-circle mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-check2-all" viewBox="0 0 16 16">
+                            <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
+                            <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold mb-3">Тест полностью решен!</h3>
+                    <p class="text-muted mb-4">Вы ответили на все вопросы. Уверены, что хотите завершить тест и узнать результаты?</p>
+
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="button" class="btn btn-light btn-lg px-4 fw-medium" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm" id="confirmAllAnsweredBtn">Завершить тест</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/testing-engine.js"></script>
         <script>

@@ -673,11 +673,25 @@ class TestingEngine {
 
                     confirmModal.show();
                 } else {
-                    if (confirm('Вы ответили на все вопросы. Уверены, что хотите завершить тест?')) {
+                    // --- ИЗМЕНЕННЫЙ БЛОК: Вызов красивой модалки вместо alert() ---
+                    const allAnsweredModal = new bootstrap.Modal(document.getElementById('allAnsweredModal'));
+                    const confirmBtn = document.getElementById('confirmAllAnsweredBtn');
+
+                    const newConfirmBtn = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+                    newConfirmBtn.addEventListener('click', () => {
+                        newConfirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Отправка...';
+                        newConfirmBtn.disabled = true;
+                        allAnsweredModal.hide();
+
                         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>';
                         submitBtn.disabled = true;
                         this.submitTest();
-                    }
+                    });
+
+                    allAnsweredModal.show();
+                    // ---------------------------------------------------------------
                 }
             });
         }

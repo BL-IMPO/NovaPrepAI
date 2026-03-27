@@ -76,6 +76,61 @@ async def generate_text(example_text: str):
 
     return response.choices[0].message.content
 
+async def generate_additional_data(data_type: str, description: str) -> str:
+    """
+    Acts as a specialized rendere. Takes a description of a graph/table and returns ONLY the raw SVG or HTML code.
+    """
+
+    if data_type == "SVG_GRAPH":
+        system_instructions = """
+                    You are an expert SVG developer for math and physics exams.
+                    Your task is to generate clean, highly accurate, and scalable SVG code based on the user's description.
+
+                    CRITICAL RULES:
+                    1. Output ONLY the raw <svg>...</svg> code. No markdown formatting (do not use ```xml or ```svg).
+                    2. Do not include any conversational text.
+                    3. You MUST calculate the extreme bounds of all elements (including text labels) and set an accurate `viewBox` with at least 20px padding.
+                    4. NEVER hardcode absolute `width` and `height` (e.g., width="500"). ALWAYS use width="100%" height="100%".
+                    5. Add `overflow="visible"` to the <svg> tag.
+                    6. Use standard math conventions (e.g., right angle squares, clear axes, neat text labels for vertices/sides).
+                    7. AESTHETIC RULE: NEVER draw Cartesian coordinates (like "(50,110)") next to vertex labels. Just draw the letter itself (e.g., "A", "B").
+                    8. AESTHETIC RULE: Ensure text elements DO NOT OVERLAP. Space labels and values cleanly.
+                    """
+    elif data_type == "HTML_TABLE":
+        system_instructions = """
+            You are an expert HTML developer.
+            Your task is to generate a clean Bootstrap 5 HTML table based on the user's description.
+
+            CRITICAL RULES:
+            1. Output ONLY the raw <table>...</table> code. No markdown formatting.
+            2. Do not include any conversational text.
+            3. Add standard bootstrap classes: class="table table-bordered table-hover text-center align-middle".
+            """
+    else:
+        # Fallback for FORMULA or TEXT_BLOCK, though usually the main LLM can handle these easily.
+        return description
+
+    prompt = f"Description of the required visual:\n{description}"
+
+
+    response = await client.chat.completions.create(
+        model="gpt-5",  # or gpt-4o depending on your client setup
+        messages=[
+            {"role": "system", "content": system_instructions},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.1,
+    )
+
+    raw_output = response.choices[0].message.content.strip()
+    if raw_output.startswith("```"):
+        lines = raw_output.split("\n")
+        raw_output = "\n".join(lines[1:-1])
+
+    return raw_output.strip()
+
+
+
 async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type="default") -> dict:
     """Clones a specific question using Structured Outputs and tailored rules per test type."""
     example_dict = {example_q_text: example_array}
@@ -99,6 +154,10 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - Use Russian words. Maintain the exact formatting of the example.
             - The relationship (synonyms, antonyms) or contextual fit must be logically sound and unambiguous.
             - You MUST generate exactly 4 answer options.
+            - Answer options MUST NOT contain the same pair of words as in question. And MUST NOT contain any of words from question in answers.
+            
+            CRITICAL EXTRA_DATA RULES: 
+            If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
 
     elif test_type == "russian_grammar":
@@ -108,6 +167,9 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - Focus purely on Russian syntax, punctuation, spelling, or vocabulary context.
             - Keep the difficulty appropriate for high school graduation exams.
             - You MUST generate exactly 4 answer options.
+            
+            CRITICAL EXTRA_DATA RULES: 
+            If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
     elif test_type == "reading":
         type_specific_rules = """
@@ -116,41 +178,50 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - The generated question MUST relate directly to the provided TEXT_BLOCK in the extra_data.
             - Do not ask general knowledge questions; the answer must be derived purely from the text.
             - You MUST generate exactly 4 answer options.
+            
+            CRITICAL EXTRA_DATA RULES: 
+            If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
     elif test_type == "math_1":
         type_specific_rules = """
-            CRITICAL TASK CONCEPT: QUANTITATIVE COMPARISON (Количественное сравнение)
-            - This is NOT a standard multiple-choice question. Do not ask a direct question.
-            - STRICT FIELD MAPPING:
-              - 'question_text': The SHARED CONTEXT (e.g., "x > 5"). If the example's question_text is "none", your question_text MUST exactly be "none".
-              - 'answer_a': ONLY the raw mathematical expression for Column A.
-              - 'answer_b': ONLY the raw mathematical expression for Column B.
-              - 'answer_c' & 'answer_d': Remaining distractors/text (usually "=" or empty).
-            - STRICT ZERO-BOILERPLATE FOR COLUMNS: DO NOT label the columns. NEVER write "Колонка А:" или "Колонка Б:" in the generated answers.
-              - BAD answer_a: "Колонка А: 5/7"
-              - GOOD answer_a: "5/7"
-            - You MUST generate exactly 4 options.
-            CRITICAL SVG GENERATION RULES:
-            1. You MUST calculate the extreme bounds (min X, min Y, max X, max Y) of all elements you draw, including text labels and strokes.
-            2. Set the `viewBox` attribute on the <svg> tag to encompass ALL elements with at least a 20px padding on all sides. 
-                 - Example: If your lowest element is at y=250 and highest at y=10, your viewBox height should be at least 280, and min-y should be -10.
-            3. NEVER hardcode absolute `width` and `height` like width="500". ALWAYS use width="100%" height="100%" alongside the accurate `viewBox`.
-            4. Add `overflow="visible"` to the <svg> tag as a fallback.
-            """
+                    CRITICAL TASK CONCEPT: QUANTITATIVE COMPARISON (Количественное сравнение)
+                    - This is NOT a standard multiple-choice question. Do not ask a direct question.
+                    - STRICT FIELD MAPPING:
+                      - 'question_text': The SHARED CONTEXT (e.g., "x > 5"). If the example's question_text is "none", your question_text MUST exactly be "none".
+                      - 'answer_a': ONLY the raw mathematical expression for Column A.
+                      - 'answer_b': ONLY the raw mathematical expression for Column B.
+                      - 'answer_c' & 'answer_d': Remaining distractors/text (usually "=" or empty).
+                    - STRICT ZERO-BOILERPLATE FOR COLUMNS: DO NOT label the columns.
+                    - You MUST generate exactly 4 options.
+                    
+                    CRITICAL MATHJAX/LATEX FORMATTING:
+                    - You MUST format ALL mathematical expressions, fractions, powers, and equations using LaTeX wrapped in \\( and \\). 
+                    - BAD: 0,75^2
+                    - GOOD: \\( 0,75^2 \\)
+                    - BAD: 9/16
+                    - GOOD: \\( \\frac{9}{16} \\)
+                    
+                    CRITICAL EXTRA_DATA RULES (DELEGATED RENDERING):
+                    If the task requires an SVG_GRAPH or HTML_TABLE, DO NOT WRITE RAW CODE. 
+                    Instead, set the extra_data tag (e.g., "SVG_GRAPH") and for the content, write a highly detailed, explicit instruction prompt for a visual developer. 
+                    Include exact coordinates, vertex names, side lengths, and what specific geometry or data must be drawn to make the problem solvable.
+                    """
     elif test_type == "math_2":
         type_specific_rules = """
-            CRITICAL TASK CONCEPT: STANDARD MATHEMATICS (Математика)
-            - STRICT STRUCTURAL CLONE RULE: Identify the mathematical sub-topic in the example (e.g., percentages, geometry, equations, probability). Your generated question MUST test the EXACT SAME sub-topic.
-            - Generate a standard math word problem, algebraic equation, or geometry task matching the example's structure.
-            - You MUST generate exactly 5 answer options (A, B, C, D, E).
-            - Ensure calculations are accurate and only one correct option exists.
-            CRITICAL SVG GENERATION RULES:
-            1. You MUST calculate the extreme bounds (min X, min Y, max X, max Y) of all elements you draw, including text labels and strokes.
-            2. Set the `viewBox` attribute on the <svg> tag to encompass ALL elements with at least a 20px padding on all sides. 
-                - Example: If your lowest element is at y=250 and highest at y=10, your viewBox height should be at least 280, and min-y should be -10.
-            3. NEVER hardcode absolute `width` and `height` like width="500". ALWAYS use width="100%" height="100%" alongside the accurate `viewBox`.
-            4. Add `overflow="visible"` to the <svg> tag as a fallback.
-            """
+                    CRITICAL TASK CONCEPT: STANDARD MATHEMATICS (Математика)
+                    - STRICT STRUCTURAL CLONE RULE: Identify the mathematical sub-topic in the example. Your generated question MUST test the EXACT SAME sub-topic.
+                    - You MUST generate exactly 5 answer options (A, B, C, D, E).
+                    - Ensure calculations are accurate and only one correct option exists.
+                    
+                    CRITICAL MATHJAX/LATEX FORMATTING:
+                    - You MUST format ALL mathematical expressions, fractions, powers, and equations in the question text and answer options using LaTeX wrapped in \\( and \\). 
+                    - Example: \\( x^2 + 2x = 0 \\) or \\( \\frac{1}{2} \\).
+                    
+                    CRITICAL EXTRA_DATA RULES (DELEGATED RENDERING):
+                    If the task requires an SVG_GRAPH or HTML_TABLE, DO NOT WRITE RAW CODE. 
+                    Instead, set the extra_data tag (e.g., "SVG_GRAPH") and for the content, write a highly detailed, explicit instruction prompt for a visual developer. 
+                    Include exact coordinates, vertex names, side lengths, and what specific geometry or data must be drawn to make the problem solvable.
+                    """
     else:
         type_specific_rules = """
             CRITICAL TASK CONCEPT: GENERAL MULTIPLE CHOICE
@@ -196,17 +267,28 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
     ai_data = response.choices[0].message.parsed
     details = ai_data.task_details
 
+    final_extra_data = details.extra_data
+
+    if final_extra_data and isinstance(final_extra_data, list) and len(final_extra_data) >= 2:
+        data_tag = final_extra_data[0]
+        data_description = final_extra_data[1]
+
+        if data_tag in ["SVG_GRAPH", "HTML_TABLE"]:
+            generated_code = await generate_additional_data(data_tag, data_description)
+
+            final_extra_data = [data_tag, generated_code]
+
     if test_type == "math_2":
         task_array = [
             details.correct_answer, details.answer_a, details.answer_b,
             details.answer_c, details.answer_d, details.answer_e,
-            details.points, details.extra_data,
+            details.points, final_extra_data,
         ]
     else:
         task_array = [
             details.correct_answer, details.answer_a, details.answer_b,
             details.answer_c, details.answer_d,
-            details.points, details.extra_data,
+            details.points, final_extra_data,
         ]
 
     return {
@@ -219,17 +301,19 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
 async def ai_chat_response(task_context: str, chat_history_list: list):
     system_blueprint = f"""
     You are an expert ORT (Общереспубликанское тестирование) tutor.
-    Your goal is to help the student understand their mistake on this specific task:
+    Your goal is to help the student understand their mistake on this specific task.
 
     TASK CONTEXT:
     {task_context}
 
-    STRICT RULES:
-    1. GIVE THE RIGHT ANSWER and explain why it's the right one. Give formulas or examples.
-    2. Ask a guiding question to help the student find the logic error themselves.
-    3. Keep your explanations under 3 sentences.
-    4. Be encouraging but firm about the rules of the subject.
-    5. Response in Russian language.
+    STRICT RULES FOR YOUR BEHAVIOR:
+    1. ANALYZE THE CONVERSATION HISTORY FIRST:
+       - IF THIS IS THE VERY FIRST MESSAGE: Give the correct answer, explain why it's right (using formulas/rules), and ask exactly ONE guiding question to test their understanding.
+       - IF THIS IS A FOLLOW-UP MESSAGE: DO NOT repeat the initial solution. Directly address the student's new reply. Answer their specific question, correct their logic if they are wrong, or praise them if they figured it out. 
+    2. Keep your explanations short and focused (under 3-4 sentences).
+    3. Be encouraging but firm about the rules of the subject.
+    4. Always respond in Russian.
+    5. Act as a natural conversational partner. Let the dialogue flow logically.
     """
 
     messages = [
@@ -245,7 +329,6 @@ async def ai_chat_response(task_context: str, chat_history_list: list):
     response = await client.chat.completions.create(
         model="gpt-5-mini",
         messages=messages,
-        #temperature=0.9,
     )
 
     return response.choices[0].message.content
