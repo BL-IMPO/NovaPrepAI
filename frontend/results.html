@@ -18,7 +18,7 @@
     <style>
         :root {
             --bg-color: #f8f9fc;
-            --primary-color: #6610f2; /* НОВЫЙ ФИОЛЕТОВЫЙ ЦВЕТ */
+            --primary-color: #6610f2;
             --success-color: #198754;
             --danger-color: #dc3545;
             --warning-color: #f59f00;
@@ -56,7 +56,7 @@
 
         /* --- Result Cards & Layout --- */
         .results-container {
-            padding-bottom: 5rem; /* Отступ снизу страницы, чтобы не прилипало */
+            padding-bottom: 5rem;
         }
 
         .result-card {
@@ -64,7 +64,7 @@
             border-radius: 1.25rem;
             border: 1px solid #e9ecef;
             box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            margin-bottom: 2.5rem; /* Увеличенный отступ между карточками */
+            margin-bottom: 2.5rem;
             overflow: hidden;
         }
 
@@ -199,7 +199,6 @@
         <div class="container-fluid px-md-4">
             <a class="navbar-brand d-flex align-items-center m-0" href="/index.html">
                 <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="32" width="32" class="me-2" style="object-fit: contain;">
-
                 <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
             </a>
             <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
@@ -292,6 +291,45 @@
                         {{ item.question }}
                     </div>
 
+                    {% if item.extra_data and item.extra_data|length >= 2 and item.extra_data[0] != "None" %}
+                    <div class="px-4 pb-3">
+                        {% if item.extra_data[0] == "SVG_GRAPH" or item.extra_data[0] == "HTML_TABLE" %}
+                            <div class="table-responsive text-center overflow-visible">
+                                {{ item.extra_data[1] | safe }}
+                            </div>
+                        {% elif item.extra_data[0] == "TEXT_BLOCK" or item.extra_data[0] == "TEXT_BLOCK_LARGE" %}
+                            <div class="p-3 bg-light rounded border text-start">
+                                {{ item.extra_data[1] | replace('\n', '<br>') | safe }}
+                            </div>
+                        {% elif item.extra_data[0] == "IMAGE_URL" %}
+                            <div class="text-center">
+                                <img src="{{ item.extra_data[1] }}" class="img-fluid rounded shadow-sm" alt="Дополнительные материалы" style="max-height: 300px;">
+                            </div>
+                        {% elif item.extra_data[0] == "FORMULA" %}
+                            <div class="text-center fs-5 py-2">
+                                {{ item.extra_data[1] | safe }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if attempt.test_type == 'math_1' and answers|length >= 2 %}
+                    <div class="row text-center px-4 pb-4 g-3">
+                        <div class="col-6">
+                            <div class="p-3 border rounded bg-light h-100 d-flex flex-column justify-content-center">
+                                <h6 class="text-muted fw-bold small text-uppercase mb-2">Колонка А</h6>
+                                <div class="fs-5 fw-medium">{{ answers[0] | safe }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 border rounded bg-light h-100 d-flex flex-column justify-content-center">
+                                <h6 class="text-muted fw-bold small text-uppercase mb-2">Колонка Б</h6>
+                                <div class="fs-5 fw-medium">{{ answers[1] | safe }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <div class="answer-wrapper">
                         <div class="row g-4 d-flex align-items-stretch">
                             <div class="col-md-6 mb-3 mb-md-0">
@@ -300,7 +338,9 @@
                                     <div class="answer-box {% if item.is_correct %}correct-variant{% else %}wrong-variant{% endif %}">
                                         <span class="option-letter">{{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else '?' }}</span>
                                         <span class="pt-1 fw-medium">
-                                            {% if answers and u_ans < answers|length %}
+                                            {% if attempt.test_type == 'math_1' and u_ans < 4 %}
+                                                {{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][u_ans] }}
+                                            {% elif answers and u_ans < answers|length %}
                                                 {{ answers[u_ans] }}
                                             {% else %}
                                                 Вариант {{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else u_ans }}
@@ -319,7 +359,9 @@
                                 <div class="answer-box correct-variant">
                                     <span class="option-letter">{{ ['А','Б','В','Г','Д'][c_ans] if c_ans is not none and c_ans < 5 else '?' }}</span>
                                     <span class="pt-1 fw-medium">
-                                        {% if answers and c_ans is not none and c_ans < answers|length %}
+                                        {% if attempt.test_type == 'math_1' and c_ans is not none and c_ans < 4 %}
+                                            {{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][c_ans] }}
+                                        {% elif answers and c_ans is not none and c_ans < answers|length %}
                                             {{ answers[c_ans] }}
                                         {% else %}
                                             Информации о правильном ответе нет
@@ -337,8 +379,8 @@
                             data-attempt-id="{{ attempt.id }}"
                             data-task-id="task_{{ loop.index0 }}"
                             data-question="{{ item.question | e }}"
-                            data-user-answer="{% if u_ans is not none and answers and u_ans < answers|length %}{{ answers[u_ans] | e }}{% else %}Пропущен{% endif %}"
-                            data-correct-answer="{% if c_ans is not none and answers and c_ans < answers|length %}{{ answers[c_ans] | e }}{% else %}Вариант {{ ['А','Б','В','Г','Д'][c_ans] }}{% endif %}">
+                            data-user-answer="{% if attempt.test_type == 'math_1' and u_ans is not none and u_ans < 4 %}{{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][u_ans] }}{% elif u_ans is not none and answers and u_ans < answers|length %}{{ answers[u_ans] | e }}{% else %}Пропущен{% endif %}"
+                            data-correct-answer="{% if attempt.test_type == 'math_1' and c_ans is not none and c_ans < 4 %}{{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][c_ans] }}{% elif c_ans is not none and answers and c_ans < answers|length %}{{ answers[c_ans] | e }}{% else %}Вариант {{ ['А','Б','В','Г','Д'][c_ans] }}{% endif %}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-robot me-2" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
                             Объяснить с ИИ
                         </button>
@@ -418,7 +460,7 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <button type="button" class="btn btn-dark w-100 fw-bold rounded-pill py-2" id="copyChatBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard me-2" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard me-2" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
                                 Скопировать текст
                             </button>
                         </div>
