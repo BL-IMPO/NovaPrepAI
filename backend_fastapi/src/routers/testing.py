@@ -186,8 +186,10 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
             if test_type == "math_1":
                 correct_index = int(options[-3])
                 points = float(options[-2])
+                extra_data = options[-1]  # <--- ИЗВЛЕКАЕМ ЭКСТРА ДАННЫЕ
             else:
                 correct_index = int(options[-1])
+                extra_data = options[-2]  # <--- ИЗВЛЕКАЕМ ЭКСТРА ДАННЫЕ
                 points = float(options[-3])
 
             answer_options = options[:-3]
@@ -205,11 +207,13 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
                 base_score += 1
                 weighted_score += points
 
+            # Сохраняем extra_data в БД
             details.append({
                 "question": question,
                 "user_answer": user_answer_idx,
                 "correct_answer": correct_index,
                 "answers": answer_options,
+                "extra_data": extra_data,  # <--- ДОБАВЛЕНО СЮДА
                 "is_correct": is_correct,
                 "is_marked": idx in marked_questions
             })
