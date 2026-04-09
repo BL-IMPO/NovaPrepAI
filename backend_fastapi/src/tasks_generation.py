@@ -54,19 +54,21 @@ class AIQuestionOutput8(BaseModel):
 
 async def generate_text(example_text: str):
     prompt = f"""
-    You are an expert ORT exam text creator.
-    
-    Generate ONE new unique text similar in skill to the example.
-    
-    Rules:
-    1. TEXT MUST EXIST IN REAL WORLD: Text must be from a book or publication and must suit the original text mean meanings.
-    2. Preserve the structure and difficulty.
-    3. Keep realistic language suitable for textbooks.
-    4. Maintain _start, _pause, _continue markers if needed.
-    
-    Example:
-    {example_text}
-    """
+        You are an expert creator of the ORT (Общереспубликанское тестирование) reading comprehension exam.
+
+        Your task is to generate ONE new, high-quality reading passage that mimics the exact difficulty, tone, and subject matter of the example.
+
+        CRITICAL RULES:
+        1. STRICTLY IN RUSSIAN: The entire generated text MUST be in the Russian language. Do not output a single English word unless it is a specific scientific term present in the original.
+        2. LENGTH ENFORCEMENT: You must perform a word count on the example text before generating. Your generated text MUST be equal to or up to 15% longer than the example. Do not summarize. Do not cut corners. Provide a full-depth, comprehensive passage.
+        3. REALISTIC ACADEMIC STYLE: Instead of trying to retrieve a specific real-world book (which causes translation errors), generate a highly realistic, factual, and structurally complex text that perfectly mimics a real-world publication (encyclopedia, historical archive, scientific journal, or classic literature).
+        4. PRESERVE MARKERS: You must perfectly maintain any structural formatting markers (such as _start, _pause, _continue) exactly as they dictate the flow in the example. 
+
+        EXAMPLE TEXT FOR REFERENCE:
+        {example_text}
+
+        ВАЖНО: Твой финальный ответ (текст) должен быть написан ИСКЛЮЧИТЕЛЬНО на русском академическом языке. Начни генерацию текста:
+        """
 
     response = await client.chat.completions.create(
         model="gpt-5-mini",
