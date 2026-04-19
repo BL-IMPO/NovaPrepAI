@@ -22,7 +22,7 @@ def health_check(request):
     return HttpResponse("OK")
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('nova-control-center/', admin.site.urls),
     path('health/', health_check),
     path('', include('users.urls', namespace='users')),
 ]

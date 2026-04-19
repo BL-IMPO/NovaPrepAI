@@ -71,7 +71,7 @@ async def generate_text(example_text: str):
         """
 
     response = await client.chat.completions.create(
-        model="gpt-5-mini",
+        model="gpt-5",
         messages=[{"role": "user", "content": prompt}],
         #temperature=0.9,
     )

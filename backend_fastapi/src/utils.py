@@ -405,3 +405,27 @@ class Description:
 
     def get_test_types(self) -> list[str]:
         return list(self.descriptions.keys())
+
+
+
+if __name__ == "__main__":
+
+    import os
+
+    if os.getcwd().endswith("src"):
+        os.chdir("..")
+
+    async def local_test():
+        print("---LARGE TEXT GENERATION TESTING---")
+        ORT = TestORT()
+
+        print("\t" * 20, "\n---GENERATION STARTED---\n", "\t" * 20)
+
+        coroutine_list = await ORT.standard_reading_test()
+
+        reading_tasks = await asyncio.gather(*coroutine_list)
+
+        print("\t" * 20, "\n---GENERATION ENDED---\n", "\t" * 20)
+        print(reading_tasks[-1])
+
+    asyncio.run(local_test())

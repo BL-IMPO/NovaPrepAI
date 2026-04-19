@@ -13,3 +13,4 @@ drf-yasg>=1.21.7
 django-redis>=5.3.0
 Pillow
 requests==2.31.0
+django-jazzmin==2.6.0
