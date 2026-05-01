@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI Elements
     const statTotalTests = document.getElementById('statTotalTests');
     const statAvgScore = document.getElementById('statAvgScore');
+    const statBestSubject = document.getElementById('statBestSubject'); // Добавлен Лучший предмет
     const historyTableBody = document.getElementById('historyTableBody');
     const progressChartCanvas = document.getElementById('progressChart');
     const radarChartCanvas = document.getElementById('radarChart');
@@ -33,9 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
-    // Главная функция инициализации
     const initDashboard = async () => {
-        if(isDashboardLoaded) return; // Чтобы не грузить дважды при переключении табов
+        if(isDashboardLoaded) return;
 
         try {
             let data;
@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 calculateOverallStats(attempts);
                 renderCharts(attempts);
 
-                if(spinner) spinner.style.display = 'none';
-                if(progressChartCanvas) progressChartCanvas.style.display = 'block';
-                if(radarChartCanvas) radarChartCanvas.style.display = 'block';
+                if(spinner) spinner.style.display = 'none'; // Spinner doesn't have d-none, so this is fine
+                if(progressChartCanvas) progressChartCanvas.classList.remove('d-none');
+                if(radarChartCanvas) radarChartCanvas.classList.remove('d-none');
 
                 isDashboardLoaded = true;
             }
@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Отрисовка таблицы истории
     const renderHistoryTable = (attempts) => {
         if (!historyTableBody) return;
         historyTableBody.innerHTML = '';
@@ -101,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Подсчет общих цифр
     const calculateOverallStats = (attempts) => {
         if(attempts.length === 0 || !statTotalTests) return;
 
@@ -109,44 +107,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let totalPercentageSum = 0;
         let validTests = 0;
+        const subjectScores = {};
 
         attempts.forEach(a => {
             if(a.total_questions > 0) {
                 const pct = (a.score / a.total_questions) * 100;
                 totalPercentageSum += pct;
                 validTests++;
+
+                if(a.test_type !== 'full_test') {
+                    if(!subjectScores[a.test_type]) subjectScores[a.test_type] = { sum: 0, count: 0 };
+                    subjectScores[a.test_type].sum += pct;
+                    subjectScores[a.test_type].count += 1;
+                }
             }
         });
 
         if(validTests > 0 && statAvgScore) {
             statAvgScore.textContent = Math.round(totalPercentageSum / validTests) + '%';
         }
+
+        if (statBestSubject) {
+            let bestSubj = '-';
+            let highestAvg = -1;
+            for (const [key, value] of Object.entries(subjectScores)) {
+                const avg = value.sum / value.count;
+                if(avg > highestAvg) {
+                    highestAvg = avg;
+                    bestSubj = formatTestName(key);
+                }
+            }
+            statBestSubject.textContent = bestSubj;
+        }
     };
 
-    // Отрисовка Chart.js графиков
     const renderCharts = (attempts) => {
         if(attempts.length === 0 || !progressChartCanvas || !radarChartCanvas) return;
 
-        // --- Данные для Линейного графика ---
         const labelsLine = [];
         const dataLine = [];
+        const subjectScores = {};
 
         attempts.forEach(a => {
             if(a.total_questions > 0) {
                 const dateObj = new Date(a.created_at);
                 labelsLine.push(`${dateObj.getDate()}.${dateObj.getMonth()+1}`);
                 dataLine.push(Math.round((a.score / a.total_questions) * 100));
-            }
-        });
 
-        // --- Данные для Радара (или Бара) ---
-        const subjectScores = {};
-        attempts.forEach(a => {
-            if(a.total_questions > 0 && a.test_type !== 'full_test') {
-                const pct = (a.score / a.total_questions) * 100;
-                if(!subjectScores[a.test_type]) subjectScores[a.test_type] = { sum: 0, count: 0 };
-                subjectScores[a.test_type].sum += pct;
-                subjectScores[a.test_type].count += 1;
+                if (a.test_type !== 'full_test') {
+                    const pct = (a.score / a.total_questions) * 100;
+                    if(!subjectScores[a.test_type]) subjectScores[a.test_type] = { sum: 0, count: 0 };
+                    subjectScores[a.test_type].sum += pct;
+                    subjectScores[a.test_type].count += 1;
+                }
             }
         });
 
@@ -156,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
         Chart.defaults.color = '#6c757d';
 
-        // Инициализация Line Chart
+        // Line Chart
         new Chart(progressChartCanvas.getContext('2d'), {
             type: 'line',
             data: {
@@ -164,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Точность (%)',
                     data: dataLine,
-                    borderColor: '#0d6efd', // Primary color
+                    borderColor: '#0d6efd',
                     backgroundColor: 'rgba(13, 110, 253, 0.1)',
                     borderWidth: 3,
                     pointBackgroundColor: '#ffffff',
@@ -178,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Ensures the chart respects the container's fixed height
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { beginAtZero: true, max: 100, grid: { borderDash: [4, 4] } },
@@ -186,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Инициализация Radar/Bar Chart
+        // Radar / Bar Chart
         if (radarLabels.length > 2) {
             new Chart(radarChartCanvas.getContext('2d'), {
                 type: 'radar',
@@ -195,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     datasets: [{
                         label: 'Средняя точность',
                         data: radarData,
-                        backgroundColor: 'rgba(25, 135, 84, 0.2)', // Success color
+                        backgroundColor: 'rgba(25, 135, 84, 0.2)',
                         borderColor: '#198754',
                         pointBackgroundColor: '#198754',
                         pointBorderColor: '#fff',
@@ -218,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } else if (radarLabels.length > 0) {
-             // Если предметов мало (1 или 2), радар выглядит как линия. Рисуем обычные столбики.
              new Chart(radarChartCanvas.getContext('2d'), {
                  type: 'bar',
                  data: {
@@ -240,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Слушатель: загружаем графики только тогда, когда пользователь нажимает на вкладку "Мои результаты"
     const historyMainTab = document.getElementById('history-tab');
     if (historyMainTab) {
         historyMainTab.addEventListener('shown.bs.tab', function () {

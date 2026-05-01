@@ -38,6 +38,12 @@ async function loadProfileData() {
         // Handle avatar if it exists
         if (data.avatar) {
             document.getElementById('avatarPreview').src = data.avatar;
+
+            // ADD THESE LINES to update the navbar avatar too:
+            const navAvatar = document.getElementById('navbarAvatar');
+            if (navAvatar) {
+                navAvatar.src = data.avatar;
+            }
         }
 
     } catch (error) {
@@ -128,6 +134,11 @@ async function loadTestHistory() {
         // Use makeRequest (cookies automatically sent)
         const tests = await makeRequest('/api/user/tests/', 'GET');
         const container = document.getElementById('testHistoryContainer');
+
+        // CRITICAL FIX: Exit the function if the old Bootstrap container no longer exists
+        // This prevents the null reference error that crashes the script thread.
+        if (!container) return;
+
         container.innerHTML = ''; // Clear the loading spinner
 
         if (tests.length === 0) {
@@ -190,10 +201,15 @@ async function loadTestHistory() {
 
     } catch (error) {
         console.error("Error loading test history:", error);
-        document.getElementById('testHistoryContainer').innerHTML = `
-            <div class="col-12 text-center text-danger py-5">
-                <p>Failed to load test history. Please try refreshing the page.</p>
-            </div>`;
+
+        // Added the same check here just in case the error block triggers
+        const container = document.getElementById('testHistoryContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-12 text-center text-danger py-5">
+                    <p>Failed to load test history. Please try refreshing the page.</p>
+                </div>`;
+        }
     }
 }
 

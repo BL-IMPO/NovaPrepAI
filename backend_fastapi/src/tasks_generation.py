@@ -60,8 +60,7 @@ async def generate_text(example_text: str):
 
         CRITICAL RULES:
         1. STRICTLY IN RUSSIAN: The entire generated text MUST be in the Russian language. Do not output a single English word unless it is a specific scientific term present in the original.
-        2. LENGTH ENFORCEMENT: You must perform a word count on the example text before generating. Your generated text MUST be equal to or up to 15% longer than the example. Do not summarize. Do not cut corners. Provide a full-depth, comprehensive passage.
-        3. REALISTIC ACADEMIC STYLE: Instead of trying to retrieve a specific real-world book (which causes translation errors), generate a highly realistic, factual, and structurally complex text that perfectly mimics a real-world publication (encyclopedia, historical archive, scientific journal, or classic literature).
+        2. LENGTH ENFORCEMENT: You must perform a word count on the example text before generating. Your generated text MUST be exactly the same length (+/- 5%) as the example. Do not summarize, but do not artificially inflate the text. The length must mimic the original perfectly.          3. REALISTIC ACADEMIC STYLE: Instead of trying to retrieve a specific real-world book (which causes translation errors), generate a highly realistic, factual, and structurally complex text that perfectly mimics a real-world publication (encyclopedia, historical archive, scientific journal, or classic literature).
         4. PRESERVE MARKERS: You must perfectly maintain any structural formatting markers (such as _start, _pause, _continue) exactly as they dictate the flow in the example. 
 
         EXAMPLE TEXT FOR REFERENCE:
@@ -121,7 +120,7 @@ async def generate_additional_data(data_type: str, description: str) -> str:
             {"role": "system", "content": system_instructions},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.1,
+        #temperature=0.1,
     )
 
     raw_output = response.choices[0].message.content.strip()
