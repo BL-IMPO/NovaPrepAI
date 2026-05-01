@@ -37,7 +37,6 @@ class TestingEngine {
         const progress = {
             answers: Array.from(this.answers.entries()),
             markedQuestions: Array.from(this.markedQuestions),
-            // Сохраняем время окончания теста, чтобы таймер не сбрасывался
             endTime: Date.now() + (this.timeLeft * 1000)
         };
         sessionStorage.setItem(`nova_prep_${this.testType}_progress`, JSON.stringify(progress));
@@ -50,12 +49,11 @@ class TestingEngine {
             this.answers = new Map(progress.answers);
             this.markedQuestions = new Set(progress.markedQuestions);
 
-            // Восстанавливаем таймер
             const timeRemaining = Math.floor((progress.endTime - Date.now()) / 1000);
             if (timeRemaining > 0) {
                 this.timeLeft = timeRemaining;
             } else {
-                this.timeLeft = 0; // Время вышло, пока страница была закрыта
+                this.timeLeft = 0;
             }
             return true;
         }
@@ -121,10 +119,8 @@ class TestingEngine {
                             this.totalTime = chunk.time_limit;
                             this.questions = new Array(chunk.total_questions).fill(null);
 
-                            // Пытаемся загрузить локальный прогресс (ответы и таймер)
                             const hasSavedProgress = this.loadLocalProgress();
 
-                            // Если прогресса нет, ставим таймер на максимум
                             if (!hasSavedProgress) {
                                 this.timeLeft = this.totalTime;
                             }
@@ -161,9 +157,6 @@ class TestingEngine {
 
         } catch (error) {
             console.error('Ошибка загрузки теста:', error);
-
-            // Если функция доступна в testing.html, вызываем красивое окно.
-            // Иначе падаем обратно на стандартный alert.
             if (typeof window.showLoginRequiredModal === 'function') {
                 window.showLoginRequiredModal();
             } else {
@@ -207,14 +200,13 @@ class TestingEngine {
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
             if (this.timeLeft > 0 && this.timeLeft < 300) {
-                timerElement.style.color = '#ff6b6b';
-                timerElement.style.borderColor = '#ff6b6b';
+                timerElement.classList.add('text-error', 'border-error');
+                timerElement.classList.remove('text-warning', 'border-warning');
             } else if (this.timeLeft > 0 && this.timeLeft < 600) {
-                timerElement.style.color = '#feca57';
-                timerElement.style.borderColor = '#feca57';
+                timerElement.classList.add('text-warning', 'border-warning');
+                timerElement.classList.remove('text-error', 'border-error');
             } else {
-                timerElement.style.color = '';
-                timerElement.style.borderColor = '';
+                timerElement.classList.remove('text-error', 'border-error', 'text-warning', 'border-warning');
             }
         }
     }
@@ -229,12 +221,9 @@ class TestingEngine {
         this.questions.forEach((question, index) => {
             const meta = this.getQuestionMeta(index);
 
-            // Если мы в полном тесте и началась новая секция — добавляем заголовок
             if (this.testType === 'full_test' && meta.subType !== currentSectionId) {
                 const header = document.createElement('div');
-                header.className = 'bg-light text-primary small fw-bold px-3 py-2 border-bottom border-top sticky-top';
-                header.style.zIndex = '2';
-                header.style.letterSpacing = '0.5px';
+                header.className = 'text-xs font-bold text-base-content/50 uppercase tracking-widest px-2 py-3 mt-4 mb-2 border-b border-base-200/50 sticky top-0 bg-base-100 z-10';
                 header.textContent = meta.sectionName;
                 sidebar.appendChild(header);
                 currentSectionId = meta.subType;
@@ -259,12 +248,12 @@ class TestingEngine {
                 }
             }
             if (isMarked) item.classList.add('marked');
-            if (!isLoaded) item.classList.add('loading');
+            if (!isLoaded) item.classList.add('opacity-50', 'pointer-events-none', 'border-dashed');
 
             item.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <span>Вопрос ${questionNumber} ${!isLoaded ? '<span class="ms-2 fs-6">⏳</span>' : ''} ${isMarked ? '<span class="ms-1 fs-6">🚩</span>' : ''}</span>
-                    ${isAnswered ? '<span class="fw-bold">✓</span>' : ''}
+                <div class="flex justify-between items-center w-full">
+                    <span class="flex items-center gap-2">Вопрос ${questionNumber} ${!isLoaded ? '<span class="loading loading-spinner loading-xs text-primary/50"></span>' : ''} ${isMarked ? '<span>🚩</span>' : ''}</span>
+                    ${isAnswered ? '<span class="font-bold">✓</span>' : ''}
                 </div>
             `;
 
@@ -274,9 +263,9 @@ class TestingEngine {
 
                 const sidebarEl = document.getElementById('sidebar');
                 const overlayEl = document.getElementById('sidebarOverlay');
-                if (window.innerWidth <= 992 && sidebarEl && sidebarEl.classList.contains('show')) {
-                    sidebarEl.classList.remove('show');
-                    if (overlayEl) overlayEl.classList.remove('show');
+                if (window.innerWidth <= 1024 && sidebarEl && sidebarEl.classList.contains('open')) {
+                    sidebarEl.classList.remove('open');
+                    if (overlayEl) overlayEl.classList.remove('open');
                 }
             });
 
@@ -293,7 +282,6 @@ class TestingEngine {
         this.renderSidebar();
         this.renderQuestion();
 
-        // Сохраняем прогресс после отметки
         this.saveLocalProgress();
     }
 
@@ -316,9 +304,10 @@ class TestingEngine {
             const textEl = document.getElementById('questionText');
             if (textEl) {
                 textEl.innerHTML = `
-                    <div class="text-center my-5 py-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-4 text-muted fs-5">ИИ генерирует этот вариант...<br><span class="fs-6">Пожалуйста, решите другие вопросы, пока мы его подготавливаем.</span></p>
+                    <div class="text-center my-16 py-10">
+                        <span class="loading loading-spinner text-primary w-16 h-16"></span>
+                        <p class="mt-6 text-base-content/60 font-bold text-xl">ИИ генерирует этот вариант...</p>
+                        <p class="text-base-content/40 font-medium mt-2">Пожалуйста, решите другие вопросы, пока мы его подготавливаем.</p>
                     </div>
                 `;
             }
@@ -373,20 +362,20 @@ class TestingEngine {
                         mediaContainer.innerHTML = content;
                         break;
                     case 'IMAGE_URL':
-                        mediaContainer.innerHTML = `<img src="${content}" class="img-fluid rounded border mb-0" style="max-height: 400px; object-fit: contain;">`;
+                        mediaContainer.innerHTML = `<img src="${content}" class="rounded-xl border border-base-300 shadow-sm" style="max-height: 400px; object-fit: contain;">`;
                         break;
                     case 'HTML_TABLE':
-                        mediaContainer.innerHTML = `<div class="table-responsive w-100 d-flex justify-content-center m-0">${content}</div>`;
+                        mediaContainer.innerHTML = `<div class="overflow-x-auto w-full flex justify-center"><div class="table-wrapper">${content}</div></div>`;
                         break;
                     case 'TEXT_BLOCK':
-                        mediaContainer.innerHTML = `<div class="p-4 bg-light border rounded-4 w-100 text-start fw-medium" style="font-size: 1.1rem;">${content}</div>`;
+                        mediaContainer.innerHTML = `<div class="p-6 bg-base-200/50 border border-base-300 rounded-[1.5rem] w-full text-left font-medium text-lg leading-relaxed text-base-content/80 shadow-sm">${content}</div>`;
                         break;
                     case 'FORMULA':
-                        mediaContainer.innerHTML = `<div class="fs-4">$$${content}$$</div>`;
+                        mediaContainer.innerHTML = `<div class="text-3xl text-base-content font-bold p-4">$$${content}$$</div>`;
                         break;
                     case 'TEXT_BLOCK_LARGE':
                         mediaContainer.innerHTML = `
-                            <button type="button" class="btn btn-primary rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#readingPassageModal">
+                            <button type="button" class="btn btn-primary rounded-full px-8 py-4 h-auto text-lg font-bold shadow-lg shadow-primary/20" onclick="document.getElementById('readingPassageModal').showModal();">
                                 📖 Открыть текст для чтения
                             </button>
                         `;
@@ -439,7 +428,7 @@ class TestingEngine {
                                 let numDisplay = '';
                                 if (isNumbering && line.trim() !== '') {
                                     if (lineNumber === 1) {
-                                        numDisplay = '<span style="font-size: 0.7em;">строка</span>';
+                                        numDisplay = '<span class="text-xs">строка</span>';
                                     } else if (lineNumber % 5 === 0) {
                                         numDisplay = lineNumber;
                                     }
@@ -450,7 +439,7 @@ class TestingEngine {
 
                                 formattedHtml += `
                                 <div class="ort-line">
-                                    <div class="ort-line-number">${numDisplay}</div>
+                                    <div class="ort-line-number font-mono">${numDisplay}</div>
                                     <div class="ort-line-text">${textHtml}</div>
                                 </div>`;
                             });
@@ -474,10 +463,9 @@ class TestingEngine {
         const previousAnswer = this.previousAnswers.get(this.currentQuestionIndex);
         const isLocked = this.previousAnswers.has(this.currentQuestionIndex) && previousAnswer !== currentAnswer;
 
-        // ПРОВЕРЯЕМ ПОДТИП (meta.subType) ВМЕСТО this.testType
         if (meta.subType === 'math_1') {
             if (comparisonContainer) {
-                comparisonContainer.style.display = 'flex';
+                comparisonContainer.style.display = 'grid';
                 document.getElementById('columnA').innerHTML = actualAnswers[0] || '';
                 document.getElementById('columnB').innerHTML = actualAnswers[1] || '';
             }
@@ -486,18 +474,18 @@ class TestingEngine {
             const answerLetters = ['А', 'Б', 'В', 'Г'];
 
             ortOptions.forEach((answerText, index) => {
-                const col = document.createElement('div');
-                col.className = 'col-md-6';
 
                 const answerDiv = document.createElement('div');
-                answerDiv.className = `answer-option ${currentAnswer === index ? 'selected shadow-sm' : ''} ${previousAnswer === index && currentAnswer !== index ? 'previous' : ''} ${isLocked && currentAnswer !== index && previousAnswer !== index ? 'opacity-50' : ''}`;
+                answerDiv.className = `answer-option ${currentAnswer === index ? 'selected' : ''} ${previousAnswer === index && currentAnswer !== index ? 'previous' : ''} ${isLocked && currentAnswer !== index && previousAnswer !== index ? 'opacity-50' : ''}`;
+
                 if (isLocked) answerDiv.style.cursor = 'not-allowed';
 
                 answerDiv.innerHTML = `
-                    <div class="form-check w-100 mb-0 d-flex align-items-center">
-                        <input class="form-check-input d-none" type="radio" name="answer" id="answer${index}" value="${index}" ${currentAnswer === index ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
-                        <label class="form-check-label w-100 d-flex align-items-center" for="answer${index}" ${isLocked ? 'style="cursor: not-allowed;"' : 'style="cursor: pointer;"'}>
-                            <span class="option-letter">${answerLetters[index]}</span> <span class="fs-5">${answerText}</span>
+                    <div class="flex items-center w-full pointer-events-none">
+                        <input class="hidden" type="radio" name="answer" id="answer${index}" value="${index}" ${currentAnswer === index ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                        <label class="flex items-center w-full m-0 pointer-events-none" for="answer${index}">
+                            <span class="option-letter">${answerLetters[index]}</span>
+                            <span class="flex-grow">${answerText}</span>
                         </label>
                     </div>
                 `;
@@ -507,8 +495,7 @@ class TestingEngine {
                     this.selectAnswer(index);
                 });
 
-                col.appendChild(answerDiv);
-                container.appendChild(col);
+                container.appendChild(answerDiv);
             });
 
             if (window.MathJax) {
@@ -520,18 +507,18 @@ class TestingEngine {
 
             const answerLetters = ['А', 'Б', 'В', 'Г', 'Д'];
             actualAnswers.forEach((answer, index) => {
-                const col = document.createElement('div');
-                col.className = 'col-12';
 
                 const answerDiv = document.createElement('div');
-                answerDiv.className = `answer-option ${currentAnswer === index ? 'selected shadow-sm' : ''} ${previousAnswer === index && currentAnswer !== index ? 'previous' : ''} ${isLocked && currentAnswer !== index && previousAnswer !== index ? 'opacity-50' : ''}`;
+                answerDiv.className = `answer-option ${currentAnswer === index ? 'selected' : ''} ${previousAnswer === index && currentAnswer !== index ? 'previous' : ''} ${isLocked && currentAnswer !== index && previousAnswer !== index ? 'opacity-50' : ''}`;
+
                 if (isLocked) answerDiv.style.cursor = 'not-allowed';
 
                 answerDiv.innerHTML = `
-                    <div class="form-check w-100 mb-0 d-flex align-items-center">
-                        <input class="form-check-input d-none" type="radio" name="answer" id="answer${index}" value="${index}" ${currentAnswer === index ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
-                        <label class="form-check-label w-100 d-flex align-items-center" for="answer${index}" ${isLocked ? 'style="cursor: not-allowed;"' : 'style="cursor: pointer;"'}>
-                            <span class="option-letter">${answerLetters[index] || index + 1})</span> <span class="fs-5">${answer}</span>
+                    <div class="flex items-center w-full pointer-events-none">
+                        <input class="hidden" type="radio" name="answer" id="answer${index}" value="${index}" ${currentAnswer === index ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                        <label class="flex items-center w-full m-0 pointer-events-none" for="answer${index}">
+                            <span class="option-letter">${answerLetters[index] || index + 1})</span>
+                            <span class="flex-grow">${answer}</span>
                         </label>
                     </div>
                 `;
@@ -541,8 +528,7 @@ class TestingEngine {
                     this.selectAnswer(index);
                 });
 
-                col.appendChild(answerDiv);
-                container.appendChild(col);
+                container.appendChild(answerDiv);
             });
 
             if (window.MathJax) {
@@ -564,28 +550,24 @@ class TestingEngine {
         const markBtn = document.getElementById('markBtn');
         const markCurrentBtn = document.getElementById('markCurrentBtn');
 
-        const warningIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-flag-fill me-2" viewBox="0 0 16 16"><path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001"/></svg>`;
+        const warningIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001"/></svg>`;
 
         if (markBtn) {
             if (isMarked) {
-                markBtn.classList.remove('btn-outline-warning');
-                markBtn.classList.add('btn-warning');
+                markBtn.classList.remove('btn-outline');
                 markBtn.innerHTML = `${warningIcon} Снять сомнение`;
             } else {
-                markBtn.classList.remove('btn-warning');
-                markBtn.classList.add('btn-outline-warning');
+                markBtn.classList.add('btn-outline');
                 markBtn.innerHTML = `${warningIcon} Сомневаюсь`;
             }
         }
 
         if (markCurrentBtn) {
             if (isMarked) {
-                markCurrentBtn.classList.remove('btn-outline-warning');
-                markCurrentBtn.classList.add('btn-warning');
+                markCurrentBtn.classList.remove('btn-outline');
                 markCurrentBtn.innerHTML = `${warningIcon} Снять отметку`;
             } else {
-                markCurrentBtn.classList.remove('btn-warning');
-                markCurrentBtn.classList.add('btn-outline-warning');
+                markCurrentBtn.classList.add('btn-outline');
                 markCurrentBtn.innerHTML = `${warningIcon} Сомневаюсь`;
             }
         }
@@ -611,7 +593,6 @@ class TestingEngine {
         this.renderQuestion();
         this.updateProgress();
 
-        // Сохраняем прогресс после каждого ответа
         this.saveLocalProgress();
     }
 
@@ -629,7 +610,7 @@ class TestingEngine {
         const progressText = document.getElementById('progressText');
         if (progressText) progressText.textContent = `${answeredCount}/${totalQuestions}`;
         const progressBar = document.getElementById('progressBar');
-        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (progressBar) progressBar.value = percentage;
     }
 
     initEventListeners() {
@@ -657,41 +638,44 @@ class TestingEngine {
             submitBtn.addEventListener('click', () => {
                 const unanswered = this.questions.length - this.answers.size;
                 if (unanswered > 0) {
-                    const confirmModal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
-                    document.getElementById('unansweredCount').textContent = unanswered;
 
-                    const confirmBtn = document.getElementById('confirmSubmitBtn');
-                    const newConfirmBtn = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                    const confirmModalEl = document.getElementById('confirmSubmitModal');
+                    if (confirmModalEl) {
+                        document.getElementById('unansweredCount').textContent = unanswered;
 
-                    newConfirmBtn.addEventListener('click', () => {
-                        newConfirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Отправка...';
-                        newConfirmBtn.disabled = true;
-                        confirmModal.hide();
-                        this.submitTest();
-                    });
+                        const confirmBtn = document.getElementById('confirmSubmitBtn');
+                        const newConfirmBtn = confirmBtn.cloneNode(true);
+                        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
-                    confirmModal.show();
+                        newConfirmBtn.addEventListener('click', () => {
+                            newConfirmBtn.innerHTML = '<span class="loading loading-spinner loading-sm mr-2"></span>Отправка...';
+                            newConfirmBtn.disabled = true;
+                            confirmModalEl.close();
+                            this.submitTest();
+                        });
+
+                        confirmModalEl.showModal();
+                    }
                 } else {
-                    // --- ИЗМЕНЕННЫЙ БЛОК: Вызов красивой модалки вместо alert() ---
-                    const allAnsweredModal = new bootstrap.Modal(document.getElementById('allAnsweredModal'));
-                    const confirmBtn = document.getElementById('confirmAllAnsweredBtn');
+                    const allAnsweredModalEl = document.getElementById('allAnsweredModal');
+                    if (allAnsweredModalEl) {
+                        const confirmBtn = document.getElementById('confirmAllAnsweredBtn');
 
-                    const newConfirmBtn = confirmBtn.cloneNode(true);
-                    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                        const newConfirmBtn = confirmBtn.cloneNode(true);
+                        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
-                    newConfirmBtn.addEventListener('click', () => {
-                        newConfirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Отправка...';
-                        newConfirmBtn.disabled = true;
-                        allAnsweredModal.hide();
+                        newConfirmBtn.addEventListener('click', () => {
+                            newConfirmBtn.innerHTML = '<span class="loading loading-spinner loading-sm mr-2"></span>Отправка...';
+                            newConfirmBtn.disabled = true;
+                            allAnsweredModalEl.close();
 
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>';
-                        submitBtn.disabled = true;
-                        this.submitTest();
-                    });
+                            submitBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
+                            submitBtn.disabled = true;
+                            this.submitTest();
+                        });
 
-                    allAnsweredModal.show();
-                    // ---------------------------------------------------------------
+                        allAnsweredModalEl.showModal();
+                    }
                 }
             });
         }
@@ -734,7 +718,6 @@ class TestingEngine {
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.clearRefreshInterval();
 
-        // Очищаем локальное хранилище, так как тест завершен
         this.clearLocalProgress();
 
         try {
@@ -756,6 +739,16 @@ class TestingEngine {
 
             if (!response.ok) throw new Error(`Ошибка отправки: ${response.status}`);
             const result = await response.json();
+            const streakCount = document.getElementById('streakCount');
+            const streakBadge = document.getElementById('navStreakBar');
+
+            if (streakCount && streakBadge) {
+                if (!streakBadge.classList.contains('bg-warning')) {
+                    let currentStreak = parseInt(streakCount.textContent) || 0;
+                    streakCount.textContent = currentStreak + 1;
+                    streakBadge.classList.remove('d-none');
+                }
+            }
 
             const scoreEl = document.getElementById('modalScore');
             if (scoreEl) scoreEl.textContent = result.score;
@@ -770,11 +763,11 @@ class TestingEngine {
             const passedElement = document.getElementById('modalPassed');
             if (passedElement) {
                 passedElement.textContent = result.passed ? 'ПРОЙДЕН' : 'НЕ ПРОЙДЕН';
-                passedElement.className = result.passed ? 'badge bg-success px-3 py-2 rounded-pill' : 'badge bg-danger px-3 py-2 rounded-pill';
+                passedElement.className = result.passed ? 'badge badge-success font-black text-xs py-3 px-4 shadow-sm' : 'badge badge-error font-black text-xs py-3 px-4 shadow-sm';
             }
 
             const barEl = document.getElementById('scoreProgressBar');
-            if (barEl) barEl.style.width = `${percentage}%`;
+            if (barEl) barEl.value = percentage;
 
             const viewResultsBtn = document.getElementById('viewResultsBtn');
             if (viewResultsBtn) {
@@ -782,10 +775,7 @@ class TestingEngine {
             }
 
             const modalEl = document.getElementById('successModal');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            if (modalEl) modalEl.showModal();
 
         } catch (error) {
             console.error('Ошибка при отправке теста:', error);

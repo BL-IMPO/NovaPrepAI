@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="ru">
+<html data-theme="dark" lang="ru">
 
 <head>
     <base href="/">
@@ -8,50 +8,18 @@
     <title>Вход — NovaPrep AI</title>
     <meta name="description" content="Войдите в свою учетную запись NovaPrepAI, чтобы получить доступ к созданным с помощью ИИ учебным пособиям и пробным тестам.">
     <link rel="icon" type="image/jpeg" href="/assets/img/favicon.jpg">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/bss-overrides.css">
-    <link rel="stylesheet" href="assets/css/Footer-Dark-icons.css">
+
+    <!-- Link to the compiled Tailwind/DaisyUI CSS -->
+    <link rel="stylesheet" href="/assets/css/output.css">
+
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/login-handler.js"></script>
     <script src="assets/js/auth-middleware.js"></script>
+    <script src="assets/js/streak.js"></script>
+
     <style>
-                /* Отключаем прокрутку и прыжки для всего окна браузера */
-        body {
-            height: 100dvh;
-            overflow: hidden;
-            margin: 0;
-            background-color: #212529; /* Темный фон на случай микро-лагов */
-        }
-
-        /* Navbar всегда остается сверху */
-        .navbar {
-            flex-shrink: 0;
-            z-index: 1030;
-        }
-
-        /* Это наш новый контейнер, который будет скроллиться */
-        .scrollable-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            background-color: var(--bg-color, #f8f9fc); /* Возвращаем светлый фон контенту */
-
-            /* Сохраняем инерцию и резинку для iOS, но не передаем ее браузеру */
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
-        }
-
-        /* Footer (если вынесете его наружу) будет всегда приклеен к низу */
-        footer {
-            flex-shrink: 0;
-        }
-                /* Small custom tweak for smooth hovering on our new feature cards */
-                .feature-icon-wrapper {
-                    transition: transform 0.3s ease;
-                }
-                .feature-block:hover .feature-icon-wrapper {
-                    transform: translateY(-5px);
-                }
-        /* Плавное появление сообщений от сервера */
+        .d-none { display: none !important; }
+        /* Smooth appearance for server messages */
         #loginMessage {
             transition: all 0.3s ease-in-out;
             border: none;
@@ -59,170 +27,234 @@
     </style>
 </head>
 
-<body class="bg-light d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-md bg-dark py-3 shadow-sm sticky-top" data-bs-theme="dark">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center m-0" href="/index.html">
-                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="32" width="32" class="me-2" style="object-fit: contain;">
+<body class="flex flex-col min-h-screen bg-base-100 font-sans selection:bg-primary selection:text-white">
 
-                <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
-            </a>
-            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
-                <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navcol-5">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link fs-6" href="/tests">Тесты</a></li>
-                    <li class="nav-item"><a class="nav-link fs-6" href="/about">О нас</a></li>
+    <!-- NAVBAR (Wide, Glassmorphism) -->
+    <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-200 px-4 md:px-8 transition-all duration-300">
+        <div class="navbar-start flex-1 w-full md:w-auto">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </div>
+                <ul tabindex="0" class="menu menu-lg dropdown-content mt-3 z-[1] p-4 shadow-2xl bg-base-100 rounded-box w-64 border border-base-200">
+                    <li><a href="/tests" class="font-semibold">Тесты</a></li>
+                    <li><a href="/about" class="font-semibold">О нас</a></li>
                 </ul>
-                <a class="btn btn-primary ms-md-4 px-4" role="button" href="/registration">Регистрация</a>
             </div>
+
+            <!-- Logo -->
+            <a class="flex items-center gap-3 hover:opacity-80 transition-opacity" href="/index.html">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-10 w-10 object-contain drop-shadow-sm">
+                <span class="font-black text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
+            </a>
+
+            <!-- Links moved near logo -->
+            <ul class="menu menu-horizontal px-1 gap-2 hidden lg:flex ml-6">
+                <li><a href="/tests" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">Тесты</a></li>
+                <li><a href="/about" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">О нас</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-end flex-none gap-3 w-full md:w-auto">
+
+            <!-- Theme Controller -->
+            <label class="swap swap-rotate btn btn-ghost btn-circle">
+              <input type="checkbox" class="theme-controller" value="light" />
+              <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17.65,17.29l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,18.36,17ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Z"/></svg>
+              <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            </label>
+
+            <!-- Auth Elements -->
+            <div data-auth="true" style="display: none;" class="flex items-center gap-3">
+                <a href="/profile" class="avatar transition-transform hover:scale-105">
+                    <div class="w-11 h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
+                        <img id="navbarAvatar" src="assets/img/default-avatar.webp" alt="Профиль">
+                    </div>
+                </a>
+                <div id="navStreakBar" class="badge badge-warning badge-lg gap-2 font-bold shadow-sm border-warning/20 py-4 px-4 d-none">
+                    🔥 <span id="streakCount">0</span>
+                </div>
+            </div>
+
+            <!-- Guest Elements -->
+            <a href="/registration" class="btn btn-primary shadow-lg shadow-primary/30 font-bold" data-guest="true">Регистрация</a>
         </div>
     </nav>
-    <div class="scrollable-content">
-    <section class="position-relative py-5 flex-grow-1 d-flex align-items-center">
-        <div class="container">
-            <div class="row d-flex justify-content-center">
-                <div class="col-md-8 col-lg-6 col-xl-5">
-                    <div class="card bg-white border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
-                        <div class="card-body p-5 d-flex flex-column align-items-center">
 
-                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow pt-20 flex items-center justify-center relative overflow-hidden bg-base-200/30">
+        <!-- Decorative Background Blobs -->
+        <div class="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] opacity-60 pointer-events-none"></div>
+
+        <section class="container mx-auto px-4 py-16 relative z-10">
+            <div class="max-w-md mx-auto">
+                <div class="card bg-base-100 shadow-2xl border border-base-300">
+                    <div class="card-body p-8 sm:p-10">
+
+                        <!-- Header -->
+                        <div class="flex flex-col items-center text-center mb-8">
+                            <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
                                 </svg>
                             </div>
-
-                            <h2 class="fw-bold mb-2">Вход в систему</h2>
-                            <p class="text-muted mb-4 text-center">Продолжите подготовку к экзаменам</p>
-
-                            <form class="w-100" id="loginForm" method="post">
-
-                                <div class="form-floating mb-3">
-                                    <input class="form-control" type="email" name="email" id="email" placeholder="name@example.com" required>
-                                    <label for="email" class="text-muted">Email адрес</label>
-                                </div>
-
-                                <div class="form-floating mb-4">
-                                    <input class="form-control" type="password" name="password" id="password" placeholder="Пароль" required>
-                                    <label for="password" class="text-muted">Пароль</label>
-                                </div>
-
-                                <div class="mb-3">
-                                    <button class="btn btn-primary btn-lg w-100 fw-semibold" type="submit" id="loginButton">Войти</button>
-                                </div>
-
-                                <div class="d-flex justify-content-between mt-4">
-                                    <a href="/registration" class="text-decoration-none small fw-semibold">Создать аккаунт</a>
-                                </div>
-
-                                <div id="loginMessage" class="mt-4 p-3 rounded-3 shadow-sm d-flex align-items-center" style="display: none;"></div>
-                            </form>
-
+                            <h2 class="text-3xl font-black text-base-content">С возвращением!</h2>
+                            <p class="text-base-content/60 mt-2 font-medium">Войдите, чтобы продолжить подготовку</p>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-        <div class="modal fade" id="cookieModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="row g-0">
-                        <div class="col-md-4 bg-dark text-white d-flex align-items-center justify-content-center p-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
-                                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
-                                <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/>
-                            </svg>
-                        </div>
-                        <div class="col-md-8 p-4 p-md-5">
-                            <h4 class="fw-bold text-dark mb-3">Ваша конфиденциальность</h4>
-                            <p class="text-muted mb-4" style="font-size: 0.95rem;">
-                                Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
-                            </p>
-                            <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
-                                <button type="button" class="btn btn-primary fw-bold px-4 py-2 flex-grow-1 shadow-sm" id="acceptAllCookies">Принять все</button>
-                                <button type="button" class="btn btn-light fw-medium px-4 py-2 flex-grow-1 text-muted border" id="acceptEssentialCookies">Только технические</button>
+
+                        <!-- Login Form -->
+                        <form id="loginForm" method="post" class="space-y-5">
+
+                            <div class="form-control">
+                                <label class="label" for="email">
+                                    <span class="label-text font-bold text-base-content/80">Email адрес</span>
+                                </label>
+                                <input type="email" id="email" name="email" placeholder="name@example.com" class="input input-bordered w-full bg-base-200/50 focus:bg-base-100" required>
                             </div>
-                        </div>
+
+                            <div class="form-control">
+                                <label class="label" for="password">
+                                    <span class="label-text font-bold text-base-content/80">Пароль</span>
+                                </label>
+                                <input type="password" id="password" name="password" placeholder="••••••••" class="input input-bordered w-full bg-base-200/50 focus:bg-base-100" required>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="submit" id="loginButton" class="btn btn-primary w-full shadow-lg shadow-primary/20 text-lg">Войти</button>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-2">
+                                <a href="/registration" class="link link-hover text-sm font-semibold text-primary">Создать аккаунт</a>
+                                <a href="#" class="link link-hover text-sm font-medium text-base-content/50">Забыли пароль?</a>
+                            </div>
+
+                            <!-- Error/Success Message Container -->
+                            <div id="loginMessage" class="mt-4 p-4 rounded-xl text-center text-sm font-medium d-none"></div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-base-200 border-t border-base-300 pt-16 pb-8">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <a class="flex items-center gap-3 mb-4" href="/index.html">
+                        <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-8 w-8 object-contain">
+                        <span class="font-black text-xl tracking-tight text-base-content">NovaPrep AI</span>
+                    </a>
+                    <p class="text-base-content/70 max-w-md font-medium">Умная платформа для подготовки к Общереспубликанскому тестированию. Индивидуальный подход к каждому ученику с помощью ИИ.</p>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Платформа</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/about" class="hover:text-primary transition-colors">О платформе</a></li>
+                        <li><a href="/tests" class="hover:text-primary transition-colors">Все тесты</a></li>
+                        <li><a href="/contact" class="hover:text-primary transition-colors">Контакты</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Документы</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/privacy" class="hover:text-primary transition-colors">Политика конфиденциальности</a></li>
+                        <li><a href="/terms" class="hover:text-primary transition-colors">Пользовательское соглашение</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-base-300">
+                <p class="text-base-content/50 text-sm font-semibold mb-4 md:mb-0">© 2026 NovaPrep AI. Все права защищены.</p>
+
+                <!-- Socials -->
+                <div class="flex gap-4">
+                    <a href="https://api.whatsapp.com/send?text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся:%20https://www.novaprepai.com/" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                    </a>
+                    <a href="https://t.me/share/url?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/></svg>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.novaprepai.com/" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- NATIVE DAISYUI COOKIE MODAL -->
+    <dialog id="cookieModal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box p-0 overflow-hidden max-w-3xl bg-base-100 border border-base-300 shadow-2xl">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/3 bg-base-200 flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-base-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" viewBox="0 0 16 16" class="mb-4 text-primary"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/><path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/></svg>
+                    <h3 class="font-bold text-xl text-base-content">Настройки Cookie</h3>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <p class="text-base-content/70 mb-8 leading-relaxed font-medium">
+                        Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="acceptAllCookies" class="btn btn-primary flex-1 shadow-md">Принять все</button>
+                        <button id="acceptEssentialCookies" class="btn btn-outline flex-1 bg-base-100">Только технические</button>
                     </div>
                 </div>
             </div>
         </div>
-        <footer class="text-center bg-dark text-light py-5 mt-auto">
-    <div class="container py-3">
-        <ul class="list-inline mb-4">
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/about">О платформе</a></li>
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/tests">Тесты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/contact">Контакты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/privacy">Privacy</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/terms">Terms</a></li>
-        </ul>
+    </dialog>
 
-        <div class="d-flex justify-content-center gap-4 mb-4">
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://api.whatsapp.com/send?text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся:%20https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                </svg>
-            </a>
+    <!-- SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
+            const cookieModal = document.getElementById('cookieModal');
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://t.me/share/url?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/>
-                </svg>
-            </a>
+            if (!cookieConsent) {
+                cookieModal.showModal();
+            }
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://twitter.com/intent/tweet?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся%20к%20NovaPrepAI:" target="_blank" rel="noopener noreferrer" aria-label="Share on X">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
-                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
-                </svg>
-            </a>
+            document.getElementById('acceptAllCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'all');
+                cookieModal.close();
+            });
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://www.facebook.com/sharer/sharer.php?u=https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
-                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
-                </svg>
-            </a>
-        </div>
+            document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'essential');
+                cookieModal.close();
+            });
+        });
 
-        <p class="text-light opacity-50 mb-0 fs-6">Copyright © 2026 NovaPrep AI. Все права защищены.</p>
-    </div>
-</footer>
-        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем, есть ли уже сохраненный выбор в localStorage
-    const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
+        // Theme saving script
+        const themeController = document.querySelector('.theme-controller');
+        const htmlTag = document.documentElement;
 
-    // Инициализируем модальное окно Bootstrap
-    const cookieModalElement = document.getElementById('cookieModal');
-    const cookieModal = new bootstrap.Modal(cookieModalElement);
+        const savedTheme = localStorage.getItem('novaPrepTheme');
+        if (savedTheme) {
+            htmlTag.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'light') {
+                themeController.checked = true;
+            }
+        } else {
+            htmlTag.setAttribute('data-theme', 'dark');
+        }
 
-    if (!cookieConsent) {
-        // Если выбора нет, показываем окно
-        cookieModal.show();
-    } else if (cookieConsent === 'all') {
-        // Здесь вы можете вызвать функцию загрузки Google Analytics
-        // loadGoogleAnalytics();
-    }
-
-    // Обработка кнопки "Принять все"
-    document.getElementById('acceptAllCookies').addEventListener('click', function() {
-        localStorage.setItem('novaPrepCookieConsent', 'all');
-        cookieModal.hide();
-        // Включаем аналитику
-        // loadGoogleAnalytics();
-    });
-
-    // Обработка кнопки "Только технические"
-    document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
-        localStorage.setItem('novaPrepCookieConsent', 'essential');
-        cookieModal.hide();
-        // Аналитику не загружаем
-    });
-});
-</script>
+        themeController.addEventListener('change', (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            htmlTag.setAttribute('data-theme', newTheme);
+            localStorage.setItem('novaPrepTheme', newTheme);
+        });
+    </script>
 </body>
-
 </html>

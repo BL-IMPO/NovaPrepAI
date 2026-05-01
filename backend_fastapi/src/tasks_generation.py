@@ -119,7 +119,7 @@ async def generate_additional_data(data_type: str, description: str) -> str:
             {"role": "system", "content": system_instructions},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.1,
+
     )
 
     raw_output = response.choices[0].message.content.strip()

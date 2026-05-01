@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 calculateOverallStats(attempts);
                 renderCharts(attempts);
 
-                if(spinner) spinner.style.display = 'none';
-                if(progressChartCanvas) progressChartCanvas.style.display = 'block';
-                if(radarChartCanvas) radarChartCanvas.style.display = 'block';
+                if(spinner) spinner.style.display = 'none'; // Spinner doesn't have d-none, so this is fine
+                if(progressChartCanvas) progressChartCanvas.classList.remove('d-none');
+                if(radarChartCanvas) radarChartCanvas.classList.remove('d-none');
 
                 isDashboardLoaded = true;
             }
