@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="ru">
+<html data-theme="dark" lang="ru">
+
 <head>
     <base href="/">
     <meta charset="utf-8">
@@ -7,313 +8,181 @@
     <title>Результаты — NovaPrep AI</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/jpeg" href="/assets/img/favicon.jpg">
-    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/bss-overrides.css">
-    <link rel="stylesheet" href="/assets/css/Footer-Dark-icons.css">
-    <script src="/assets/js/auth.js"></script>
-    <script src="/assets/js/auth-middleware.js"></script>
+
+    <!-- Link to the compiled Tailwind/DaisyUI CSS -->
+    <link rel="stylesheet" href="/assets/css/output.css">
+
+    <script src="/assets/js/auth.js" defer></script>
+    <script src="/assets/js/auth-middleware.js" defer></script>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        :root {
-            --bg-color: #f8f9fc;
-            --primary-color: #6610f2;
-            --success-color: #198754;
-            --danger-color: #dc3545;
-            --warning-color: #f59f00;
-            --surface-color: #ffffff;
-        }
+        .d-none { display: none !important; }
 
-        body {
-            background-color: var(--bg-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #2b3035;
+        /* Custom scrollbar for Chat Sidebar */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
         }
-
-        /* --- Header Stats --- */
-        .stats-dashboard {
-            background: var(--surface-color);
-            border-radius: 1.5rem;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
-            position: relative;
-            overflow: hidden;
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
         }
-        .stats-dashboard::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: var(--primary-color);
-        }
-        .stat-box {
-            background-color: #f8f9fa;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            height: 100%;
-            border: 1px solid #f1f3f5;
-        }
-
-        /* --- Result Cards & Layout --- */
-        .results-container {
-            padding-bottom: 5rem;
-        }
-
-        .result-card {
-            background-color: var(--surface-color);
-            border-radius: 1.25rem;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            margin-bottom: 2.5rem;
-            overflow: hidden;
-        }
-
-        .question-header {
-            background-color: #fbfbfc;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .question-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #212529;
-            font-weight: 500;
-            padding: 1.5rem;
-        }
-
-        /* --- Answer Boxes --- */
-        .answer-wrapper {
-            padding: 0 1.5rem 1.5rem 1.5rem;
-        }
-
-        .answer-box {
-            padding: 1.25rem;
-            border-radius: 1rem;
-            height: 100%;
-            display: flex;
-            align-items: flex-start;
-            font-size: 1rem;
-        }
-
-        .correct-variant {
-            background-color: rgba(25, 135, 84, 0.05);
-            border: 1px solid rgba(25, 135, 84, 0.15);
-            color: #146c43;
-        }
-
-        .wrong-variant {
-            background-color: rgba(220, 53, 69, 0.04);
-            border: 1px solid rgba(220, 53, 69, 0.15);
-            color: #b02a37;
-        }
-
-        .neutral-variant {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            color: #6c757d;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .option-letter {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        .correct-variant .option-letter { background-color: var(--success-color); color: white; }
-        .wrong-variant .option-letter { background-color: var(--danger-color); color: white; }
-
-        /* --- AI Chat Sidebar --- */
-        .chat-message {
-            padding: 12px 16px;
-            border-radius: 1.2rem;
-            margin-bottom: 12px;
-            max-width: 85%;
-            word-wrap: break-word;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .chat-message.user {
-            background-color: var(--primary-color);
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 0.3rem;
-            box-shadow: 0 3px 10px rgba(102, 16, 242, 0.15);
-        }
-        .chat-message.assistant {
-            background-color: var(--surface-color);
-            border: 1px solid #e9ecef;
-            color: #212529;
-            margin-right: auto;
-            border-bottom-left-radius: 0.3rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .chat-container {
-            background-color: var(--bg-color);
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-        .typing-indicator {
-            display: none;
-            color: #adb5bd;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            padding-left: 10px;
-        }
-
-        .offcanvas-resizer {
-            position: absolute;
-            top: 0; left: 0; width: 6px; height: 100%;
-            cursor: ew-resize;
-            background-color: transparent;
-            z-index: 1055;
-            transition: background-color 0.2s;
-        }
-        .offcanvas-resizer:hover, .offcanvas-resizer.is-resizing {
-            background-color: var(--primary-color);
-            opacity: 0.3;
-        }
-
-        .ask-ai-btn {
-            transition: all 0.2s ease;
-        }
-        .ask-ai-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 16, 242, 0.15);
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: rgba(150, 150, 150, 0.3);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-md bg-dark py-3 shadow-sm sticky-top" data-bs-theme="dark">
-        <div class="container-fluid px-md-4">
-            <a class="navbar-brand d-flex align-items-center m-0" href="/index.html">
-                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="32" width="32" class="me-2" style="object-fit: contain;">
-                <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
-            </a>
-            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-5">
-                <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navcol-5">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/tests">Тесты</a></li>
-                    <li class="nav-item"><a class="nav-link fs-6" href="/about">О нас</a></li>
-                </ul>
 
-                <div data-auth="true" style="display: none;">
-                    <a class="ms-md-4 d-flex align-items-center text-decoration-none" href="/profile">
-                        <img id="navbarAvatar" src="/assets/img/default-avatar.webp" class="rounded-circle border border-2 border-secondary shadow-sm" alt="Профиль" style="width: 42px; height: 42px; object-fit: cover;">
-                    </a>
+<body class="flex flex-col min-h-screen bg-base-100 font-sans selection:bg-primary selection:text-white">
+
+    <!-- NAVBAR -->
+    <nav class="navbar fixed top-0 w-full z-40 bg-base-100/80 backdrop-blur-lg border-b border-base-200 px-4 md:px-8 transition-all duration-300">
+        <div class="navbar-start flex-1 w-full md:w-auto">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
                 </div>
-
-                <a class="btn btn-outline-light ms-md-4 px-4" data-guest="true" role="button" href="/login">Войти</a>
+                <ul tabindex="0" class="menu menu-lg dropdown-content mt-3 z-[1] p-4 shadow-2xl bg-base-100 rounded-box w-64 border border-base-200">
+                    <li><a href="/tests" class="font-semibold">Тесты</a></li>
+                    <li><a href="/about" class="font-semibold">О нас</a></li>
+                </ul>
             </div>
+
+            <a class="flex items-center gap-3 hover:opacity-80 transition-opacity" href="/index.html">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-10 w-10 object-contain drop-shadow-sm">
+                <span class="font-black text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
+            </a>
+
+            <ul class="menu menu-horizontal px-1 gap-2 hidden lg:flex ml-6">
+                <li><a href="/tests" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">Тесты</a></li>
+                <li><a href="/about" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">О нас</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-end flex-none gap-3 w-full md:w-auto">
+            <label class="swap swap-rotate btn btn-ghost btn-circle">
+              <input type="checkbox" class="theme-controller" value="light" />
+              <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17.65,17.29l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,18.36,17ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Z"/></svg>
+              <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            </label>
+
+            <div data-auth="true" style="display: none;" class="flex items-center gap-2 sm:gap-3">
+                <a href="/profile" class="avatar transition-transform hover:scale-105">
+                    <div class="w-11 h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
+                        <img id="navbarAvatar" src="/assets/img/default-avatar.webp" alt="Профиль">
+                    </div>
+                </a>
+                <a href="#" class="btn btn-error btn-sm rounded-xl font-bold logout-btn shadow-md shadow-error/20 ml-2 hidden sm:flex">Выйти</a>
+            </div>
+
+            <a class="btn btn-outline btn-primary btn-sm rounded-xl px-4 hidden" data-guest="true" role="button" href="/login">Войти</a>
         </div>
     </nav>
 
-    <div class="container results-container py-5">
-        <div class="row mb-5 justify-content-center">
-            <div class="col-lg-10">
-                <div class="stats-dashboard p-4 p-md-5">
-                    <div class="text-center mb-4">
-                        <h2 class="display-6 fw-bold mb-2 text-dark" id="testNameDisplay">Результаты тестирования</h2>
-                        <p class="text-muted fs-5">Завершен {{ attempt.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow pt-24 pb-20 bg-base-200/30 relative">
+        <div class="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] opacity-60 pointer-events-none"></div>
+
+        <div class="container mx-auto px-4 max-w-5xl relative z-10">
+
+            <!-- Stats Dashboard -->
+            <div class="bg-base-100 shadow-2xl border border-base-300 rounded-[2.5rem] p-8 md:p-12 mb-12 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-black text-base-content mb-2 tracking-tight" id="testNameDisplay">Результаты тестирования</h2>
+                    <p class="text-base-content/60 font-medium text-lg">Завершен {{ attempt.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-stretch">
+                    <!-- Score Box -->
+                    <div class="bg-primary/10 border border-primary/20 rounded-[2rem] p-8 text-center flex flex-col justify-center">
+                        <h6 class="uppercase text-primary font-bold text-xs tracking-wider mb-3">Ваш результат</h6>
+                        <div class="text-5xl font-black text-primary">
+                            {{ attempt.score }} <span class="text-3xl text-primary/40 mx-2">/</span> <span class="text-3xl text-primary/80">{{ details|length }}</span>
+                        </div>
                     </div>
 
-                    <div class="row g-4 justify-content-center align-items-stretch">
-                        <div class="col-md-5">
-                            <div class="stat-box text-center">
-                                <h6 class="text-uppercase text-muted fw-bold small mb-3">Ваш результат</h6>
-                                <div class="display-4 fw-bolder text-primary">
-                                    {{ attempt.score }} <span class="fs-3 text-muted mx-1">/</span> <span class="fs-3 text-muted">{{ details|length }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="stat-box text-center d-flex flex-column justify-content-center">
-                                <h6 class="text-uppercase text-muted fw-bold small mb-3">Статус прохождения</h6>
-                                <div>
-                                    {% if attempt.passed %}
-                                    <span class="badge bg-success px-4 py-3 rounded-pill fs-5 shadow-sm w-100">УСПЕШНО</span>
-                                    {% else %}
-                                    <span class="badge bg-danger px-4 py-3 rounded-pill fs-5 shadow-sm w-100">ТРЕБУЕТСЯ ПРАКТИКА</span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                    <!-- Status Box -->
+                    <div class="bg-base-200/50 border border-base-300 rounded-[2rem] p-8 text-center flex flex-col justify-center items-center">
+                        <h6 class="uppercase text-base-content/60 font-bold text-xs tracking-wider mb-4">Статус прохождения</h6>
+                        <div class="w-full">
+                            {% if attempt.passed %}
+                            <span class="badge badge-success badge-lg px-8 py-5 text-lg border-none shadow-sm w-full font-bold">УСПЕШНО</span>
+                            {% else %}
+                            <span class="badge badge-error badge-lg px-8 py-5 text-lg border-none shadow-sm w-full font-bold">ТРЕБУЕТСЯ ПРАКТИКА</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <h4 class="fw-bold mb-4 ps-2">Детальный разбор</h4>
+            <!-- Detailed Results Loop -->
+            <div>
+                <h4 class="text-2xl font-bold mb-6 text-base-content ps-2">Детальный разбор</h4>
 
                 {% for item in details %}
 
-                {# Подготавливаем безопасные переменные для Jinja #}
+                {# Jinja Vars #}
                 {% set u_ans = item.user_answer %}
                 {% set c_ans = item.correct_answer %}
                 {% set answers = item.answers | default([]) %}
 
-                <div class="result-card">
-                    <div class="question-header">
-                        <span class="fw-bold text-muted text-uppercase small">Вопрос {{ loop.index }}</span>
+                <!-- Increased mb-8 to mb-12 for more space between questions -->
+                <div class="bg-base-100 rounded-[2rem] shadow-xl border border-base-300 overflow-hidden mb-12 transition-all hover:shadow-2xl">
+
+                    <!-- Question Header -->
+                    <div class="bg-base-200/50 p-4 px-6 border-b border-base-300 flex justify-between items-center">
+                        <span class="font-bold text-base-content/60 uppercase text-sm tracking-wider">Вопрос {{ loop.index }}</span>
                         <div>
                             {% if item.is_correct %}
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-bold">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> Верно
+                                <span class="badge bg-success/10 text-success border border-success/20 px-4 py-3 rounded-full font-bold gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> Верно
                                 </span>
                             {% elif u_ans is none %}
-                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill fw-bold text-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/></svg> Пропущен
+                                <span class="badge bg-warning/10 text-warning border border-warning/20 px-4 py-3 rounded-full font-bold gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/></svg> Пропущен
                                 </span>
                             {% else %}
-                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill fw-bold">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg> Ошибка
+                                <span class="badge bg-error/10 text-error border border-error/20 px-4 py-3 rounded-full font-bold gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg> Ошибка
                                 </span>
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="question-text">
+                    <!-- Question Text -->
+                    <div class="p-6 md:p-8 text-lg font-medium text-base-content leading-relaxed">
                         {{ item.question }}
                     </div>
 
+                    <!-- SERVER LOGIC: Extra Data Processing -->
                     {% if item.extra_data %}
-                        <div class="px-4 pb-3">
+                        <div class="px-6 md:px-8 pb-6">
                             {% if item.extra_data is string and item.extra_data != 'None' and item.extra_data != 'none' %}
-                                <div class="text-start fs-6 p-3 bg-light rounded border">{{ item.extra_data | safe }}</div>
+                                <div class="text-left text-lg p-6 bg-base-200/50 rounded-2xl border border-base-300 shadow-inner">
+                                    {{ item.extra_data | safe }}
+                                </div>
                             {% elif item.extra_data is iterable and item.extra_data|length >= 2 and item.extra_data[0] != "None" %}
                                 {% if item.extra_data[0] == "SVG_GRAPH" or item.extra_data[0] == "HTML_TABLE" %}
-                                    <div class="table-responsive text-center overflow-visible">
+                                    <div class="overflow-x-auto w-full flex justify-center py-4 text-base-content">
                                         {{ item.extra_data[1] | safe }}
                                     </div>
                                 {% elif item.extra_data[0] == "TEXT_BLOCK" or item.extra_data[0] == "TEXT_BLOCK_LARGE" %}
-                                    <div class="p-3 bg-light rounded border text-start">
+                                    <div class="p-6 bg-base-200/50 rounded-2xl border border-base-300 text-left text-lg leading-relaxed shadow-inner">
                                         {{ item.extra_data[1] | replace('\n', '<br>') | safe }}
                                     </div>
                                 {% elif item.extra_data[0] == "IMAGE_URL" %}
-                                    <div class="text-center">
-                                        <img src="{{ item.extra_data[1] }}" class="img-fluid rounded shadow-sm" alt="Дополнительные материалы" style="max-height: 300px;">
+                                    <div class="flex justify-center py-4">
+                                        <img src="{{ item.extra_data[1] }}" class="max-h-[350px] object-contain rounded-xl border border-base-300 shadow-sm" alt="Дополнительные материалы">
                                     </div>
                                 {% elif item.extra_data[0] == "FORMULA" %}
-                                    <div class="text-center fs-5 py-2">
+                                    <div class="text-center text-2xl font-bold py-4 text-base-content">
                                         {{ item.extra_data[1] | safe }}
                                     </div>
                                 {% else %}
-                                    <div class="text-start p-3 bg-light rounded border">
+                                    <div class="text-left p-6 bg-base-200/50 rounded-2xl border border-base-300 shadow-inner">
                                         {{ item.extra_data[1] | safe }}
                                     </div>
                                 {% endif %}
@@ -321,34 +190,38 @@
                         </div>
                     {% endif %}
 
+                    <!-- SERVER LOGIC: Math 1 Column View -->
                     {% if attempt.test_type == 'math_1' and answers|length >= 2 %}
-                    <div class="row text-center px-4 pb-4 g-3">
-                        <div class="col-6">
-                            <div class="p-3 border rounded bg-light h-100 d-flex flex-column justify-content-center shadow-sm">
-                                <h6 class="text-muted fw-bold small text-uppercase mb-2">Колонка А</h6>
-                                <div class="fs-4 fw-medium text-dark">{{ answers[0] | safe }}</div>
+                    <div class="px-6 md:px-8 pb-8">
+                        <div class="grid grid-cols-2 gap-4 md:gap-8">
+                            <div class="p-6 border border-base-300 rounded-[1.5rem] bg-base-200/30 flex flex-col justify-center shadow-sm text-center">
+                                <h6 class="text-base-content/50 font-bold text-xs uppercase tracking-widest mb-3">Колонка А</h6>
+                                <div class="text-2xl font-medium text-base-content">{{ answers[0] | safe }}</div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 border rounded bg-light h-100 d-flex flex-column justify-content-center shadow-sm">
-                                <h6 class="text-muted fw-bold small text-uppercase mb-2">Колонка Б</h6>
-                                <div class="fs-4 fw-medium text-dark">{{ answers[1] | safe }}</div>
+                            <div class="p-6 border border-base-300 rounded-[1.5rem] bg-base-200/30 flex flex-col justify-center shadow-sm text-center">
+                                <h6 class="text-base-content/50 font-bold text-xs uppercase tracking-widest mb-3">Колонка Б</h6>
+                                <div class="text-2xl font-medium text-base-content">{{ answers[1] | safe }}</div>
                             </div>
                         </div>
                     </div>
                     {% endif %}
 
-                    <div class="answer-wrapper">
-                        <div class="row g-4 d-flex align-items-stretch">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <h6 class="text-muted small fw-bold text-uppercase mb-2 ps-1">Ваш выбор</h6>
+                    <!-- Answers Blocks -->
+                    <div class="px-6 md:px-8 pb-10">
+                        <div class="grid md:grid-cols-2 gap-6 items-stretch">
+
+                            <!-- User Answer -->
+                            <div>
+                                <h6 class="text-base-content/60 text-xs font-bold uppercase tracking-wider mb-3 ps-1">Ваш выбор</h6>
                                 {% if u_ans is not none %}
-                                    <div class="answer-box {% if item.is_correct %}correct-variant{% else %}wrong-variant{% endif %}">
-                                        <span class="option-letter">{{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else '?' }}</span>
-                                        <span class="pt-1 fw-medium">
-                                            {% if attempt.test_type == 'math_1' and u_ans < 4 %}
+                                    <div class="p-4 rounded-2xl flex items-start gap-4 h-full border {% if item.is_correct %}bg-success/10 border-success/20 text-success{% else %}bg-error/10 border-error/20 text-error{% endif %}">
+                                        <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-sm {% if item.is_correct %}bg-success text-success-content{% else %}bg-error text-error-content{% endif %}">
+                                            {{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else '?' }}
+                                        </span>
+                                        <span class="pt-1 font-medium">
+                                            {% if attempt.test_type == 'math_1' and u_ans is not none and u_ans < 4 %}
                                                 {{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][u_ans] }}
-                                            {% elif answers and u_ans < answers|length %}
+                                            {% elif answers and u_ans is not none and u_ans < answers|length %}
                                                 {{ answers[u_ans] }}
                                             {% else %}
                                                 Вариант {{ ['А','Б','В','Г','Д'][u_ans] if u_ans < 5 else u_ans }}
@@ -356,17 +229,21 @@
                                         </span>
                                     </div>
                                 {% else %}
-                                    <div class="answer-box neutral-variant d-flex align-items-center justify-content-center">
-                                        <span class="fst-italic"><i class="bi bi-dash me-1"></i>Ответ не был выбран</span>
+                                    <div class="p-4 rounded-2xl flex items-center justify-center gap-2 h-full bg-base-200 border border-base-300 text-base-content/60 italic font-medium">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>
+                                        Ответ не был выбран
                                     </div>
                                 {% endif %}
                             </div>
 
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <h6 class="text-muted small fw-bold text-uppercase mb-2 ps-1">Правильный ответ</h6>
-                                <div class="answer-box correct-variant">
-                                    <span class="option-letter">{{ ['А','Б','В','Г','Д'][c_ans] if c_ans is not none and c_ans < 5 else '?' }}</span>
-                                    <span class="pt-1 fw-medium">
+                            <!-- Correct Answer -->
+                            <div>
+                                <h6 class="text-base-content/60 text-xs font-bold uppercase tracking-wider mb-3 ps-1">Правильный ответ</h6>
+                                <div class="p-4 rounded-2xl flex items-start gap-4 h-full border bg-success/10 border-success/20 text-success">
+                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-sm bg-success text-success-content">
+                                        {{ ['А','Б','В','Г','Д'][c_ans] if c_ans is not none and c_ans < 5 else '?' }}
+                                    </span>
+                                    <span class="pt-1 font-medium">
                                         {% if attempt.test_type == 'math_1' and c_ans is not none and c_ans < 4 %}
                                             {{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][c_ans] }}
                                         {% elif answers and c_ans is not none and c_ans < answers|length %}
@@ -377,19 +254,21 @@
                                     </span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
+                    <!-- AI Button Footer -->
                     {% if not item.is_correct %}
-                    <div class="bg-light px-4 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <span class="text-muted small">Не поняли, почему такой ответ?</span>
-                        <button class="btn btn-outline-primary rounded-pill px-4 fw-bold ask-ai-btn shadow-sm"
+                    <div class="bg-base-200/50 px-6 py-4 border-t border-base-300 flex justify-between items-center flex-wrap gap-4">
+                        <span class="text-base-content/60 font-medium text-sm">Не поняли, почему такой ответ?</span>
+                        <button class="btn btn-outline btn-primary rounded-full px-6 font-bold shadow-sm ask-ai-btn hover:-translate-y-0.5 transition-transform"
                             data-attempt-id="{{ attempt.id }}"
                             data-task-id="task_{{ loop.index0 }}"
                             data-question="{{ item.question | e }}"
                             data-user-answer="{% if attempt.test_type == 'math_1' and u_ans is not none and u_ans < 4 %}{{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][u_ans] }}{% elif u_ans is not none and answers and u_ans < answers|length %}{{ answers[u_ans] | e }}{% else %}Пропущен{% endif %}"
                             data-correct-answer="{% if attempt.test_type == 'math_1' and c_ans is not none and c_ans < 4 %}{{ ['Значение в колонке А больше', 'Значение в колонке Б больше', 'Значения равны', 'Недостаточно информации'][c_ans] }}{% elif c_ans is not none and answers and c_ans < answers|length %}{{ answers[c_ans] | e }}{% else %}Вариант {{ ['А','Б','В','Г','Д'][c_ans] }}{% endif %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-robot me-2" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
                             Объяснить с ИИ
                         </button>
                     </div>
@@ -398,385 +277,388 @@
                 </div>
                 {% endfor %}
             </div>
-        </div>
 
-        <div class="row mt-4 mb-5">
-            <div class="col-12 text-center d-flex justify-content-center gap-3 flex-wrap">
-                <a href="/tests" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
+            <!-- Action Buttons -->
+            <div class="flex justify-center gap-4 mt-12 flex-wrap">
+                <a href="/tests" class="btn btn-primary btn-lg rounded-full px-8 shadow-lg shadow-primary/20 font-bold border-none">
                     К списку тестов
                 </a>
-                <button class="btn btn-outline-secondary btn-lg rounded-pill px-4 bg-white" onclick="window.print()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16">
-                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zm4 3h2V3h-2zm-2 4v5h6V8zm-2 3v1H2v-1zm0-3v1H2V8z"/>
+                <button class="btn btn-outline btn-lg rounded-full px-8 bg-base-100 font-bold" onclick="window.print()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="mr-2" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zm4 3h2V3h-2zm-2 4v5h6V8zm-2 3v1H2v-1zm0-3v1H2V8z"/>
                     </svg>
                     Распечатать
                 </button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div class="offcanvas offcanvas-end shadow-lg border-0" tabindex="-1" id="chatSidebar" aria-labelledby="chatSidebarLabel" style="width: 450px; transition: transform 0.3s ease-in-out;">
-        <div class="offcanvas-resizer" id="chatResizer"></div>
+    <!-- AI CHAT SIDEBAR (Tailwind Fixed Sidebar) -->
+    <div id="chatSidebar" class="fixed top-0 right-0 h-full w-[350px] md:w-[450px] bg-base-100 shadow-[rgba(0,0,0,0.3)_0px_0px_40px] z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-base-300">
 
-        <div class="offcanvas-header bg-white border-bottom py-3">
-            <h5 class="offcanvas-title fw-bold d-flex align-items-center" id="chatSidebarLabel">
-                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3 d-flex align-items-center justify-content-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-robot" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
+        <!-- Sidebar Resizer area -->
+        <div class="absolute top-0 left-0 w-1.5 h-full cursor-ew-resize bg-transparent hover:bg-primary/30 transition-colors z-50" id="chatResizer"></div>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between p-5 border-b border-base-300 bg-base-100">
+            <h5 class="font-bold text-lg flex items-center text-base-content">
+                <div class="bg-primary/10 text-primary rounded-full p-2.5 mr-3 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.889a28.68 28.68 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a1.157 1.157 0 0 1-1.156 1.157h-.24A1.15 1.15 0 0 1 10.45 9.53a1.1 1.1 0 0 0-2.1-.03 1.15 1.15 0 0 1-1.155.845h-.24A1.157 1.157 0 0 1 3 9.219zm10.5-2.522c1.649.21 3 1.51 3 3.178V9.22a2.157 2.157 0 0 1-2.156 2.157h-.24a2.15 2.15 0 0 1-2.062-1.47 2.1 2.1 0 0 0-3.984-.03 2.15 2.15 0 0 1-2.063 1.47h-.24A2.157 2.157 0 0 1 0 9.219V8.718c0-1.668 1.35-2.968 3-3.178V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2zM5 4c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v1.222a28.2 28.2 0 0 0-6 0zM3.5 10A1.5 1.5 0 1 0 3.5 7a1.5 1.5 0 0 0 0 3m9 0A1.5 1.5 0 1 0 12.5 7a1.5 1.5 0 0 0 0 3"/></svg>
                 </div>
                 ИИ-Репетитор
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+            <button type="button" class="btn btn-ghost btn-circle btn-sm text-base-content/60" id="closeSidebarBtn" aria-label="Закрыть">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+            </button>
         </div>
 
-        <div class="offcanvas-body d-flex flex-column p-0">
-            <div id="chatMessages" class="chat-container flex-grow-1 p-3 p-md-4 d-flex flex-column">
-                </div>
+        <!-- Messages Area -->
+        <div id="chatMessages" class="chat-container flex-grow overflow-y-auto p-5 flex flex-col bg-base-200/30"></div>
 
-            <div id="aiTypingIndicator" class="typing-indicator">
-                <div class="spinner-grow spinner-grow-sm text-primary me-2" role="status"></div> Анализирую ответ...
-            </div>
-
-            <div class="p-3 border-top bg-white">
-                <form id="chatForm" class="d-flex gap-2">
-                    <input type="text" id="chatInput" class="form-control rounded-pill px-4 bg-light border-0 shadow-none" placeholder="Задайте вопрос..." autocomplete="off" required="">
-                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" id="chatSendBtn" style="width: 48px; height: 48px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                        </svg>
-                    </button>
-                </form>
-            </div>
+        <!-- Typing Indicator -->
+        <div id="aiTypingIndicator" class="hidden px-5 pb-3 text-base-content/50 text-sm font-medium flex items-center">
+            <span class="loading loading-dots loading-sm text-primary mr-2"></span> Анализирую...
         </div>
-    </div>
 
-    <div class="modal fade" id="exportChatModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-warning bg-opacity-10 border-0 pb-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                </div>
-                <div class="modal-body px-4 pb-5 text-center">
-                    <div class="bg-warning text-white d-inline-flex p-3 rounded-circle mb-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-hourglass-bottom" viewBox="0 0 16 16"><path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5zm2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.492v.7c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.35v-.7c0-.701.478-1.236 1.011-1.492A3.5 3.5 0 0 0 11.5 3V2h-7z"/></svg>
-                    </div>
-                    <h4 class="fw-bold mb-3">Лимит сообщений исчерпан</h4>
-                    <p class="text-muted mb-4">Эта сессия быстрой помощи достигла лимита в 10 сообщений. Чтобы продолжить разбор без потери контекста, скопируйте историю ниже и вставьте её в ChatGPT или Gemini.</p>
-
-                    <textarea id="exportChatText" class="form-control mb-4 bg-light font-monospace rounded-3" rows="5" readonly style="font-size: 0.85rem; resize: none;"></textarea>
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-dark w-100 fw-bold rounded-pill py-2" id="copyChatBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard me-2" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
-                                Скопировать текст
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Input Area -->
+        <div class="p-4 border-t border-base-300 bg-base-100">
+            <form id="chatForm" class="flex gap-2">
+                <input type="text" id="chatInput" class="input input-bordered w-full rounded-full bg-base-200 focus:bg-base-100" placeholder="Задайте вопрос..." autocomplete="off" required="">
+                <button type="submit" class="btn btn-primary btn-circle shadow-md shrink-0" id="chatSendBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/></svg>
+                </button>
+            </form>
         </div>
     </div>
-    <div class="modal fade" id="cookieModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cookieModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="row g-0">
-                        <div class="col-md-4 bg-dark text-white d-flex align-items-center justify-content-center p-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
-                                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
-                                <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/>
-                            </svg>
-                        </div>
-                        <div class="col-md-8 p-4 p-md-5">
-                            <h4 class="fw-bold text-dark mb-3">Ваша конфиденциальность</h4>
-                            <p class="text-muted mb-4" style="font-size: 0.95rem;">
-                                Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
-                            </p>
-                            <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
-                                <button type="button" class="btn btn-primary fw-bold px-4 py-2 flex-grow-1 shadow-sm" id="acceptAllCookies">Принять все</button>
-                                <button type="button" class="btn btn-light fw-medium px-4 py-2 flex-grow-1 text-muted border" id="acceptEssentialCookies">Только технические</button>
-                            </div>
-                        </div>
+
+    <!-- EXPORT MODAL (Native DaisyUI) -->
+    <dialog id="exportChatModal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box p-8 overflow-hidden max-w-lg bg-base-100 border border-base-300 shadow-2xl text-center">
+            <div class="bg-warning text-warning-content inline-flex p-4 rounded-full mb-6 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16"><path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5zm2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.492v.7c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.35v-.7c0-.701.478-1.236 1.011-1.492A3.5 3.5 0 0 0 11.5 3V2h-7z"/></svg>
+            </div>
+            <h4 class="text-2xl font-bold mb-4 text-base-content">Лимит исчерпан</h4>
+            <p class="text-base-content/70 mb-6 font-medium leading-relaxed">Эта сессия быстрой помощи достигла лимита. Чтобы продолжить разбор без потери контекста, скопируйте историю ниже и вставьте её в ChatGPT или Gemini.</p>
+
+            <textarea id="exportChatText" class="textarea textarea-bordered w-full mb-6 bg-base-200 font-mono text-sm resize-none" rows="5" readonly></textarea>
+
+            <form method="dialog" class="flex flex-col gap-3">
+                <button type="button" class="btn btn-neutral w-full rounded-full font-bold" id="copyChatBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                    Скопировать текст
+                </button>
+                <button class="btn btn-ghost w-full rounded-full">Закрыть</button>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- NATIVE DAISYUI COOKIE MODAL -->
+    <dialog id="cookieModal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box p-0 overflow-hidden max-w-3xl bg-base-100 border border-base-300 shadow-2xl">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/3 bg-base-200 flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-base-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" viewBox="0 0 16 16" class="mb-4 text-primary"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/><path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/></svg>
+                    <h3 class="font-bold text-xl text-base-content">Настройки Cookie</h3>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <p class="text-base-content/70 mb-8 leading-relaxed font-medium">
+                        Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="acceptAllCookies" class="btn btn-primary flex-1 shadow-md">Принять все</button>
+                        <button id="acceptEssentialCookies" class="btn btn-outline flex-1 bg-base-100">Только технические</button>
                     </div>
                 </div>
             </div>
         </div>
-    <footer class="text-center bg-dark text-light py-5 mt-auto">
-    <div class="container py-3">
-        <ul class="list-inline mb-4">
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/about">О платформе</a></li>
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/tests">Тесты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/contact">Контакты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/privacy">Privacy</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/terms">Terms</a></li>
-        </ul>
+    </dialog>
 
-        <div class="d-flex justify-content-center gap-4 mb-4">
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://api.whatsapp.com/send?text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся:%20https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                </svg>
-            </a>
-
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://t.me/share/url?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/>
-                </svg>
-            </a>
-
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://twitter.com/intent/tweet?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся%20к%20NovaPrepAI:" target="_blank" rel="noopener noreferrer" aria-label="Share on X">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
-                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
-                </svg>
-            </a>
-
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://www.facebook.com/sharer/sharer.php?u=https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
-                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
-                </svg>
-            </a>
+    <!-- FOOTER -->
+    <footer class="bg-base-200 border-t border-base-300 pt-16 pb-8 mt-auto">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <a class="flex items-center gap-3 mb-4" href="/index.html">
+                        <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-8 w-8 object-contain">
+                        <span class="font-black text-xl tracking-tight text-base-content">NovaPrep AI</span>
+                    </a>
+                    <p class="text-base-content/70 max-w-md font-medium">Умная платформа для подготовки к Общереспубликанскому тестированию. Индивидуальный подход к каждому ученику с помощью ИИ.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Платформа</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/about" class="hover:text-primary transition-colors">О платформе</a></li>
+                        <li><a href="/tests" class="hover:text-primary transition-colors">Все тесты</a></li>
+                        <li><a href="/contact" class="hover:text-primary transition-colors">Контакты</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Документы</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/privacy" class="hover:text-primary transition-colors">Политика конфиденциальности</a></li>
+                        <li><a href="/terms" class="hover:text-primary transition-colors">Пользовательское соглашение</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-base-300">
+                <p class="text-base-content/50 text-sm font-semibold mb-4 md:mb-0">© 2026 NovaPrep AI. Все права защищены.</p>
+                <div class="flex gap-4">
+                    <a href="#" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                    </a>
+                    <a href="#" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/></svg>
+                    </a>
+                </div>
+            </div>
         </div>
+    </footer>
 
-        <p class="text-light opacity-50 mb-0 fs-6">Copyright © 2026 NovaPrep AI. Все права защищены.</p>
-    </div>
-</footer>
-
-    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем, есть ли уже сохраненный выбор в localStorage
-    const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
-
-    // Инициализируем модальное окно Bootstrap
-    const cookieModalElement = document.getElementById('cookieModal');
-    const cookieModal = new bootstrap.Modal(cookieModalElement);
-
-    if (!cookieConsent) {
-        // Если выбора нет, показываем окно
-        cookieModal.show();
-    } else if (cookieConsent === 'all') {
-        // Здесь вы можете вызвать функцию загрузки Google Analytics
-        // loadGoogleAnalytics();
-    }
-
-    // Обработка кнопки "Принять все"
-    document.getElementById('acceptAllCookies').addEventListener('click', function() {
-        localStorage.setItem('novaPrepCookieConsent', 'all');
-        cookieModal.hide();
-        // Включаем аналитику
-        // loadGoogleAnalytics();
-    });
-
-    // Обработка кнопки "Только технические"
-    document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
-        localStorage.setItem('novaPrepCookieConsent', 'essential');
-        cookieModal.hide();
-        // Аналитику не загружаем
-    });
-});
-</script>
+    <!-- SCRIPTS -->
     <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Подгрузка аватара в Navbar
-        try {
-            if (typeof makeRequest === 'function') {
-                const data = await makeRequest('/api/user/', 'GET', null, false);
-                if (data && data.avatar) {
-                    const navAvatar = document.getElementById('navbarAvatar');
-                    if (navAvatar) navAvatar.src = data.avatar;
-                }
-            }
-        } catch (error) { console.log('Гостевой режим'); }
+        // --- Cookie & Theme Setup ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
+            const cookieModal = document.getElementById('cookieModal');
 
-        // --- Chat Configuration ---
-        const API_BASE_URL = '/fastapi/api/chat';
-        let currentAttemptId = null;
-        let currentTaskId = null;
-        let currentTaskContext = "";
-        let currentThreadId = null;
+            if (!cookieConsent) cookieModal.showModal();
 
-        const chatSidebarEl = document.getElementById('chatSidebar');
-        const chatSidebar = new bootstrap.Offcanvas(chatSidebarEl);
-        const chatMessages = document.getElementById('chatMessages');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const aiTypingIndicator = document.getElementById('aiTypingIndicator');
-        const exportModalEl = document.getElementById('exportChatModal');
-        const exportModal = new bootstrap.Modal(exportModalEl);
-        const exportChatText = document.getElementById('exportChatText');
-        const copyChatBtn = document.getElementById('copyChatBtn');
+            document.getElementById('acceptAllCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'all');
+                cookieModal.close();
+            });
 
-        // Formats test name for JS logic if needed
-        const testNameDisplay = document.getElementById('testNameDisplay');
-        if(testNameDisplay) {
-            let rawText = "{{ attempt.test_type }}";
-            let formatted = rawText.replace(/_/g, ' ').toUpperCase();
-            if(rawText === "math_1") formatted = "МАТЕМАТИКА (ОСНОВНОЙ)";
-            if(rawText === "math_2") formatted = "МАТЕМАТИКА 2";
-            if(rawText === "reading") formatted = "ЧТЕНИЕ И ПОНИМАНИЕ";
-            if(rawText === "grammar") formatted = "ПРАКТИЧЕСКАЯ ГРАММАТИКА";
-            if(rawText === "analogy") formatted = "АНАЛОГИИ";
-            if(rawText === "full_test") formatted = "ПОЛНЫЙ ТЕСТ ОРТ";
-            testNameDisplay.textContent = `Разбор теста: ${formatted}`;
-        }
-
-        // --- 1. Open Sidebar & Load History ---
-        document.querySelectorAll('.ask-ai-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                currentAttemptId = btn.getAttribute('data-attempt-id');
-                currentTaskId = btn.getAttribute('data-task-id');
-
-                const q = btn.getAttribute('data-question');
-                const ua = btn.getAttribute('data-user-answer');
-                const ca = btn.getAttribute('data-correct-answer');
-                currentTaskContext = `Вопрос: ${q}\nСтудент ответил: ${ua}\nПравильный ответ: ${ca}`;
-
-                chatMessages.innerHTML = '';
-                chatInput.disabled = false;
-                chatSidebar.show();
-
-                try {
-                    const response = await fetch(`${API_BASE_URL}/history?attempt_id=${currentAttemptId}&task_id=${currentTaskId}`);
-                    if (response.ok) {
-                        const data = await response.json();
-
-                        if (data.messages.length === 0) {
-                            // Начальный промпт на русском
-                            chatInput.value = "Я ошибся в этом вопросе. Можешь подробно объяснить логику решения?";
-                            chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                        } else {
-                            data.messages.forEach(msg => appendMessage(msg.role, msg.content));
-                        }
-                        scrollToBottom();
-                    }
-                } catch (error) {
-                    console.error("Ошибка загрузки истории:", error);
-                    appendSystemMessage("Не удалось загрузить историю чата.");
-                }
+            document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'essential');
+                cookieModal.close();
             });
         });
 
-        // --- 2. Send Message ---
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text) return;
+        const themeController = document.querySelector('.theme-controller');
+        const htmlTag = document.documentElement;
+        const savedTheme = localStorage.getItem('novaPrepTheme');
 
-            appendMessage('user', text);
-            chatInput.value = '';
-            chatInput.disabled = true;
-            aiTypingIndicator.style.display = 'block';
-            scrollToBottom();
+        if (savedTheme) {
+            htmlTag.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'light') themeController.checked = true;
+        } else {
+            htmlTag.setAttribute('data-theme', 'dark');
+        }
 
-            const payload = {
-                attempt_id: parseInt(currentAttemptId),
-                task_id: currentTaskId,
-                user_message: text,
-                task_context: currentTaskContext
+        themeController.addEventListener('change', (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            htmlTag.setAttribute('data-theme', newTheme);
+            localStorage.setItem('novaPrepTheme', newTheme);
+        });
+
+        // --- Core Chat & Page Logic ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (typeof makeRequest === 'function') {
+                    const data = await makeRequest('/api/user/', 'GET', null, false);
+                    if (data && data.avatar) {
+                        const navAvatar = document.getElementById('navbarAvatar');
+                        if (navAvatar) navAvatar.src = data.avatar;
+                    }
+                }
+            } catch (error) { console.log('Гостевой режим'); }
+
+            const API_BASE_URL = '/fastapi/api/chat';
+            let currentAttemptId = null;
+            let currentTaskId = null;
+            let currentTaskContext = "";
+            let currentThreadId = null;
+
+            const chatSidebarEl = document.getElementById('chatSidebar');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatForm = document.getElementById('chatForm');
+            const chatInput = document.getElementById('chatInput');
+            const aiTypingIndicator = document.getElementById('aiTypingIndicator');
+
+            // Custom sidebar handling to replace Bootstrap Offcanvas
+            const chatSidebar = {
+                show: () => chatSidebarEl.classList.remove('translate-x-full'),
+                hide: () => chatSidebarEl.classList.add('translate-x-full')
             };
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/message`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            const exportModalEl = document.getElementById('exportChatModal');
+            const exportChatText = document.getElementById('exportChatText');
+            const copyChatBtn = document.getElementById('copyChatBtn');
+
+            // Format Test Name
+            const testNameDisplay = document.getElementById('testNameDisplay');
+            if(testNameDisplay) {
+                let rawText = "{{ attempt.test_type }}";
+                let formatted = rawText.replace(/_/g, ' ').toUpperCase();
+                if(rawText === "math_1") formatted = "МАТЕМАТИКА (ОСНОВНОЙ)";
+                if(rawText === "math_2") formatted = "МАТЕМАТИКА 2";
+                if(rawText === "reading") formatted = "ЧТЕНИЕ И ПОНИМАНИЕ";
+                if(rawText === "grammar") formatted = "ПРАКТИЧЕСКАЯ ГРАММАТИКА";
+                if(rawText === "analogy") formatted = "АНАЛОГИИ";
+                if(rawText === "full_test") formatted = "ПОЛНЫЙ ТЕСТ ОРТ";
+                testNameDisplay.textContent = `Разбор теста: ${formatted}`;
+            }
+
+            // Close Sidebar listener
+            document.getElementById('closeSidebarBtn').addEventListener('click', () => chatSidebar.hide());
+
+            // 1. Open Sidebar & Load History
+            document.querySelectorAll('.ask-ai-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    currentAttemptId = btn.getAttribute('data-attempt-id');
+                    currentTaskId = btn.getAttribute('data-task-id');
+
+                    const q = btn.getAttribute('data-question');
+                    const ua = btn.getAttribute('data-user-answer');
+                    const ca = btn.getAttribute('data-correct-answer');
+                    currentTaskContext = `Вопрос: ${q}\nСтудент ответил: ${ua}\nПравильный ответ: ${ca}`;
+
+                    chatMessages.innerHTML = '';
+                    chatInput.disabled = false;
+                    chatSidebar.show();
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/history?attempt_id=${currentAttemptId}&task_id=${currentTaskId}`);
+                        if (response.ok) {
+                            const data = await response.json();
+
+                            if (data.messages.length === 0) {
+                                chatInput.value = "Я ошибся в этом вопросе. Можешь подробно объяснить логику решения?";
+                                chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            } else {
+                                data.messages.forEach(msg => appendMessage(msg.role, msg.content));
+                            }
+                            scrollToBottom();
+                        }
+                    } catch (error) {
+                        appendSystemMessage("Не удалось загрузить историю чата.");
+                    }
                 });
+            });
 
-                const data = await response.json();
-                currentThreadId = data.thread_id;
+            // 2. Send Message
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if (!text) return;
 
-                if (data.status === "limit_reached") {
-                    triggerExportFlow();
-                } else if (data.status === "success") {
-                    appendMessage('assistant', data.reply);
-                } else {
-                    appendSystemMessage("Произошла ошибка на сервере.");
-                }
-            } catch (error) {
-                console.error("Ошибка отправки:", error);
-                appendSystemMessage("Ошибка сети. Проверьте подключение.");
-            } finally {
-                aiTypingIndicator.style.display = 'none';
-                chatInput.disabled = false;
-                chatInput.focus();
+                appendMessage('user', text);
+                chatInput.value = '';
+                chatInput.disabled = true;
+                aiTypingIndicator.classList.remove('hidden');
                 scrollToBottom();
+
+                const payload = {
+                    attempt_id: parseInt(currentAttemptId),
+                    task_id: currentTaskId,
+                    user_message: text,
+                    task_context: currentTaskContext
+                };
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/message`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    currentThreadId = data.thread_id;
+
+                    if (data.status === "limit_reached") {
+                        triggerExportFlow();
+                    } else if (data.status === "success") {
+                        appendMessage('assistant', data.reply);
+                    } else {
+                        appendSystemMessage("Произошла ошибка на сервере.");
+                    }
+                } catch (error) {
+                    appendSystemMessage("Ошибка сети. Проверьте подключение.");
+                } finally {
+                    aiTypingIndicator.classList.add('hidden');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                    scrollToBottom();
+                }
+            });
+
+            // 3. Export Flow
+            async function triggerExportFlow() {
+                chatSidebar.hide();
+                try {
+                    const response = await fetch(`${API_BASE_URL}/${currentThreadId}/export`);
+                    const data = await response.json();
+                    exportChatText.value = data.clipboard_text;
+                    exportModalEl.showModal();
+                } catch (error) {
+                    alert("Не удалось экспортировать историю чата.");
+                }
             }
-        });
 
-        // --- 3. Export Flow ---
-        async function triggerExportFlow() {
-            chatSidebar.hide();
-            try {
-                const response = await fetch(`${API_BASE_URL}/${currentThreadId}/export`);
-                const data = await response.json();
-                exportChatText.value = data.clipboard_text;
-                exportModal.show();
-            } catch (error) {
-                console.error("Failed to export chat:", error);
-                alert("Не удалось экспортировать историю чата.");
+            copyChatBtn.addEventListener('click', () => {
+                exportChatText.select();
+                document.execCommand('copy');
+                const originalText = copyChatBtn.innerHTML;
+                copyChatBtn.innerHTML = 'Скопировано!';
+                copyChatBtn.classList.replace('btn-neutral', 'btn-success');
+                setTimeout(() => {
+                    copyChatBtn.innerHTML = originalText;
+                    copyChatBtn.classList.replace('btn-success', 'btn-neutral');
+                }, 2000);
+            });
+
+            // Helpers
+            function appendMessage(role, content) {
+                const div = document.createElement('div');
+                let baseClass = "p-4 rounded-2xl mb-4 max-w-[85%] text-[0.95rem] leading-relaxed ";
+
+                if (role === 'user') {
+                    div.className = baseClass + "bg-primary text-primary-content ml-auto rounded-br-sm shadow-md";
+                } else {
+                    div.className = baseClass + "bg-base-100 border border-base-300 text-base-content mr-auto rounded-bl-sm shadow-sm";
+                }
+
+                div.innerHTML = content.replace(/\n/g, '<br>');
+                chatMessages.appendChild(div);
             }
-        }
 
-        copyChatBtn.addEventListener('click', () => {
-            exportChatText.select();
-            document.execCommand('copy');
-            const originalText = copyChatBtn.innerHTML;
-            copyChatBtn.innerHTML = 'Скопировано!';
-            copyChatBtn.classList.replace('btn-dark', 'btn-success');
-            setTimeout(() => {
-                copyChatBtn.innerHTML = originalText;
-                copyChatBtn.classList.replace('btn-success', 'btn-dark');
-            }, 2000);
-        });
-
-        // --- Helpers ---
-        function appendMessage(role, content) {
-            const div = document.createElement('div');
-            div.className = `chat-message ${role}`;
-            // Простая конвертация переносов строк
-            div.innerHTML = content.replace(/\n/g, '<br>');
-            chatMessages.appendChild(div);
-        }
-
-        function appendSystemMessage(text) {
-            const div = document.createElement('div');
-            div.className = 'text-center text-muted small my-3 fw-bold';
-            div.textContent = text;
-            chatMessages.appendChild(div);
-        }
-
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // --- Sidebar Resizer ---
-        const resizer = document.getElementById('chatResizer');
-        let isResizing = false;
-
-        resizer.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            resizer.classList.add('is-resizing');
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            let newWidth = window.innerWidth - e.clientX;
-            if (newWidth > 350 && newWidth < (window.innerWidth * 0.8)) {
-                chatSidebarEl.style.width = `${newWidth}px`;
+            function appendSystemMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'text-center text-base-content/50 text-xs font-bold my-4';
+                div.textContent = text;
+                chatMessages.appendChild(div);
             }
-        });
 
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                resizer.classList.remove('is-resizing');
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
+
+            // Sidebar Resizer
+            const resizer = document.getElementById('chatResizer');
+            let isResizing = false;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.body.style.cursor = 'ew-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                let newWidth = window.innerWidth - e.clientX;
+                if (newWidth > 350 && newWidth < (window.innerWidth * 0.8)) {
+                    chatSidebarEl.style.width = `${newWidth}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
         });
-    });
     </script>
 </body>
 </html>

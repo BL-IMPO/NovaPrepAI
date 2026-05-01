@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="ru">
+<html data-theme="dark" lang="ru">
 
 <head>
     <base href="/">
@@ -8,146 +8,137 @@
     <title>Политика конфиденциальности — NovaPrep AI</title>
     <meta name="description" content="Политика конфиденциальности платформы NovaPrepAI.">
     <link rel="icon" type="image/jpeg" href="/assets/img/favicon.jpg">
-    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/bss-overrides.css">
-    <link rel="stylesheet" href="assets/css/Footer-Dark-icons.css">
+
+    <!-- Link to the compiled Tailwind/DaisyUI CSS -->
+    <link rel="stylesheet" href="/assets/css/output.css">
+
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/auth-middleware.js"></script>
+    <script src="assets/js/streak.js"></script>
 
     <style>
-        :root {
-            --primary-color: #0d6efd;
-            --bg-color: #f4f6f9;
-        }
+        .d-none { display: none !important; }
 
-        body {
-            background-color: var(--bg-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #212529;
-            display: flex;
-            flex-direction: column;
-            min-height: 100dvh;
-        }
-
-        /* Navbar */
-        .navbar {
-            flex-shrink: 0;
-            z-index: 1030;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex-grow: 1;
-            padding-top: 3rem;
-            padding-bottom: 3rem;
-        }
-
-        .privacy-card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e9ecef;
-        }
-
-        /* Typography tweaks for legal text */
-        .privacy-card h2 {
+        /* Custom typography tweaks for the legal text to ensure perfect readability */
+        .prose h4 {
+            color: hsl(var(--p));
+            margin-top: 2.5em;
+            margin-bottom: 1em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid hsl(var(--b3));
             font-weight: 800;
-            color: #1a1d20;
-            margin-bottom: 1.5rem;
         }
-
-        .privacy-card h4 {
-            font-weight: 700;
-            color: #2c3238;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #f8f9fa;
+        .prose p {
+            line-height: 1.8;
+            margin-bottom: 1.25em;
+            color: hsl(var(--bc) / 0.8);
         }
-
-        .privacy-card p {
-            line-height: 1.7;
-            color: #495057;
-            margin-bottom: 1rem;
+        .prose ul {
+            margin-bottom: 1.5em;
+            padding-left: 1.5em;
+            list-style-type: disc;
+            color: hsl(var(--bc) / 0.8);
         }
-
-        .privacy-card ul {
-            color: #495057;
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
+        .prose li {
+            margin-bottom: 0.5em;
+            line-height: 1.6;
         }
-
-        .privacy-card li {
-            margin-bottom: 0.5rem;
-        }
-
         .bold-number {
-            font-weight: 700;
-            color: var(--primary-color);
+            font-weight: 800;
+            color: hsl(var(--p));
             margin-right: 0.25rem;
-        }
-
-        .purpose-block {
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--primary-color);
-            padding: 1.25rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .purpose-block p {
-            margin-bottom: 0.5rem;
-        }
-
-        .purpose-block p:last-child {
-            margin-bottom: 0;
-        }
-
-        footer {
-            flex-shrink: 0;
-            background-color: #212529;
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
         }
     </style>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-md bg-dark py-3 shadow-sm sticky-top" data-bs-theme="dark">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center m-0" href="/index.html">
-                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI Logo" height="32" width="32" class="me-2" style="object-fit: contain;">
+<body class="flex flex-col min-h-screen bg-base-100 font-sans selection:bg-primary selection:text-white">
 
-                <span class="fw-bold tracking-wide d-none d-sm-inline">NovaPrep AI</span>
+    <!-- NAVBAR (Wide, Glassmorphism) -->
+    <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg px-4 md:px-8 transition-all duration-300">
+        <div class="navbar-start flex-1 w-full md:w-auto">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </div>
+                <ul tabindex="0" class="menu menu-lg dropdown-content mt-3 z-[1] p-4 shadow-2xl bg-base-100 rounded-box w-64 border border-base-200">
+                    <li><a href="/tests" class="font-semibold">Тесты</a></li>
+                    <li><a href="/about" class="font-semibold">О нас</a></li>
+                </ul>
+            </div>
+
+            <!-- Logo -->
+            <a class="flex items-center gap-3 hover:opacity-80 transition-opacity" href="/index.html">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-10 w-10 object-contain drop-shadow-sm">
+                <span class="font-black text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
             </a>
 
-            <div class="d-flex align-items-center">
-                <a href="/index.html" class="btn btn-outline-light rounded-pill px-4 btn-sm fw-medium">На главную</a>
+            <!-- Links moved near logo -->
+            <ul class="menu menu-horizontal px-1 gap-2 hidden lg:flex ml-6">
+                <li><a href="/tests" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">Тесты</a></li>
+                <li><a href="/about" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">О нас</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-end flex-none gap-3 w-full md:w-auto">
+
+            <!-- 1. Theme Controller -->
+            <label class="swap swap-rotate btn btn-ghost btn-circle">
+              <!-- this hidden checkbox controls the state -->
+              <input type="checkbox" class="theme-controller" value="corporate" />
+              <!-- sun icon -->
+              <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17.65,17.29l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,18.36,17ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Z"/></svg>
+              <!-- moon icon -->
+              <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            </label>
+
+            <!-- Auth Elements -->
+            <div data-auth="true" style="display: none;" class="flex items-center gap-3">
+
+                <!-- 2. Streak Bar -->
+                <div id="navStreakBar" class="badge badge-warning badge-lg gap-2 font-bold shadow-sm border-warning/20 py-4 px-4 d-none">
+                    🔥 <span id="streakCount">0</span>
+                </div>
+
+                <!-- 3. Avatar -->
+                <a href="/profile" class="avatar transition-transform hover:scale-105">
+                    <div class="w-11 h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
+                        <img id="navbarAvatar" src="assets/img/default-avatar.webp" alt="Профиль">
+                    </div>
+                </a>
+
+
             </div>
+
+            <!-- Guest Elements -->
+            <a href="/login" class="btn btn-ghost font-bold text-base-content/70 hover:text-primary hover:bg-primary/10 hidden sm:inline-flex" data-guest="true">Войти</a>
+            <a href="/registration" class="btn btn-primary shadow-lg shadow-primary/30 font-bold" data-guest="true">Начать сейчас</a>
         </div>
     </nav>
 
-    <main class="main-content container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10 col-xl-9">
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow pt-24 pb-20 bg-base-200/30">
 
-                <div class="privacy-card p-4 p-md-5">
-                    <div class="text-center mb-5">
-                        <div class="bg-primary bg-opacity-10 text-primary d-inline-flex p-3 rounded-circle mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
-                                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
-                                <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                            </svg>
-                        </div>
-                        <h2>Политика в отношении обработки персональных данных</h2>
-                        <p class="text-muted">Действует для всех сервисов и поддоменов <a href="https://novaprepai.com" class="text-decoration-none">novaprepai.com</a></p>
-                    </div>
+        <div class="container mx-auto px-4 max-w-4xl">
+            <!-- Document Header -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                        <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-base-content mb-4 tracking-tight">Политика конфиденциальности</h1>
+                <p class="text-lg text-base-content/60 font-medium">Действует для всех сервисов и поддоменов <a href="https://novaprepai.com" class="link link-primary">novaprepai.com</a></p>
+            </div>
+
+            <!-- Document Body -->
+            <div class="card bg-base-100 shadow-xl border border-base-300">
+                <div class="card-body p-8 md:p-12 lg:p-16 prose max-w-none">
 
                     <h4>1. Общие положения</h4>
                     <p>Настоящая политика обработки персональных данных составлена в соответствии с требованиями Закона Кыргызской Республики от 14 апреля 2008 года № 58 «Об информации персонального характера» (далее — Закон об информации персонального характера) и определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных, предпринимаемые Дурневым Никитой Алексеевичем (далее — Оператор).</p>
                     <p><span class="bold-number">1.1.</span> Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни, личную и семейную тайну.</p>
-                    <p><span class="bold-number">1.2.</span> Настоящая политика Оператора в отношении обработки персональных данных (далее — Политика) применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта <a href="https://novaprepai.com">https://novaprepai.com</a>.</p>
+                    <p><span class="bold-number">1.2.</span> Настоящая политика Оператора в отношении обработки персональных данных (далее — Политика) применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта <a href="https://novaprepai.com" class="link link-primary">https://novaprepai.com</a>.</p>
 
                     <h4>2. Основные понятия, используемые в Политике</h4>
                     <p><span class="bold-number">2.1.</span> <strong>Автоматизированная обработка персональных данных</strong> — обработка персональных данных с помощью средств вычислительной техники.</p>
@@ -211,32 +202,32 @@
 
                     <h4>6. Цели обработки персональных данных</h4>
 
-                    <div class="purpose-block">
-                        <p><strong><span class="bold-number">6.1.</span> Цель:</strong> Предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на веб-сайте.</p>
-                        <p><strong>Персональные данные:</strong> фамилия, имя, отчество, электронный адрес.</p>
-                        <p><strong>Правовые основания:</strong> уставные (учредительные) документы Оператора, согласие Пользователя.</p>
-                        <p><strong>Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных.</p>
+                    <div class="bg-base-200 border-l-4 border-primary p-6 rounded-r-2xl mb-6">
+                        <p class="mb-2"><strong class="text-base-content"><span class="bold-number">6.1.</span> Цель:</strong> Предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на веб-сайте.</p>
+                        <p class="mb-2"><strong class="text-base-content">Персональные данные:</strong> фамилия, имя, отчество, электронный адрес.</p>
+                        <p class="mb-2"><strong class="text-base-content">Правовые основания:</strong> уставные (учредительные) документы Оператора, согласие Пользователя.</p>
+                        <p class="mb-0"><strong class="text-base-content">Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных.</p>
                     </div>
 
-                    <div class="purpose-block">
-                        <p><strong><span class="bold-number">6.2.</span> Цель:</strong> Информирование Пользователя посредством отправки электронных писем.</p>
-                        <p><strong>Персональные данные:</strong> фамилия, имя, отчество, электронный адрес.</p>
-                        <p><strong>Правовые основания:</strong> уставные (учредительные) документы Оператора.</p>
-                        <p><strong>Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных.</p>
+                    <div class="bg-base-200 border-l-4 border-primary p-6 rounded-r-2xl mb-6">
+                        <p class="mb-2"><strong class="text-base-content"><span class="bold-number">6.2.</span> Цель:</strong> Информирование Пользователя посредством отправки электронных писем.</p>
+                        <p class="mb-2"><strong class="text-base-content">Персональные данные:</strong> фамилия, имя, отчество, электронный адрес.</p>
+                        <p class="mb-2"><strong class="text-base-content">Правовые основания:</strong> уставные (учредительные) документы Оператора.</p>
+                        <p class="mb-0"><strong class="text-base-content">Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных.</p>
                     </div>
 
-                    <div class="purpose-block">
-                        <p><strong><span class="bold-number">6.3.</span> Цель:</strong> Улучшение качества работы алгоритмов искусственного интеллекта и персонализация процесса подготовки к экзаменам.</p>
-                        <p><strong>Персональные данные:</strong> история текстовых запросов к ИИ-моделям, результаты прохождения тестирований, статистика успеваемости на платформе.</p>
-                        <p><strong>Правовые основания:</strong> согласие Пользователя.</p>
-                        <p><strong>Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, обезличивание, передача провайдерам ИИ-инфраструктуры в обезличенном виде.</p>
+                    <div class="bg-base-200 border-l-4 border-primary p-6 rounded-r-2xl mb-6">
+                        <p class="mb-2"><strong class="text-base-content"><span class="bold-number">6.3.</span> Цель:</strong> Улучшение качества работы алгоритмов искусственного интеллекта и персонализация процесса подготовки к экзаменам.</p>
+                        <p class="mb-2"><strong class="text-base-content">Персональные данные:</strong> история текстовых запросов к ИИ-моделям, результаты прохождения тестирований, статистика успеваемости на платформе.</p>
+                        <p class="mb-2"><strong class="text-base-content">Правовые основания:</strong> согласие Пользователя.</p>
+                        <p class="mb-0"><strong class="text-base-content">Виды обработки:</strong> Сбор, запись, систематизация, накопление, хранение, обезличивание, передача провайдерам ИИ-инфраструктуры в обезличенном виде.</p>
                     </div>
 
-                    <div class="purpose-block">
-                        <p><strong><span class="bold-number">6.4.</span> Цель:</strong> Обеспечение технического функционирования платформы и аналитика.</p>
-                        <p><strong>Персональные данные:</strong> IP-адрес, данные файлов cookie (cookies), информация о браузере и устройстве.</p>
-                        <p><strong>Правовые основания:</strong> согласие Пользователя.</p>
-                        <p><strong>Виды обработки:</strong> Сбор, запись, хранение, использование в аналитических целях.</p>
+                    <div class="bg-base-200 border-l-4 border-primary p-6 rounded-r-2xl mb-6">
+                        <p class="mb-2"><strong class="text-base-content"><span class="bold-number">6.4.</span> Цель:</strong> Обеспечение технического функционирования платформы и аналитика.</p>
+                        <p class="mb-2"><strong class="text-base-content">Персональные данные:</strong> IP-адрес, данные файлов cookie (cookies), информация о браузере и устройстве.</p>
+                        <p class="mb-2"><strong class="text-base-content">Правовые основания:</strong> согласие Пользователя.</p>
+                        <p class="mb-0"><strong class="text-base-content">Виды обработки:</strong> Сбор, запись, хранение, использование в аналитических целях.</p>
                     </div>
 
                     <h4>7. Условия обработки персональных данных</h4>
@@ -252,8 +243,8 @@
                     <p>Безопасность персональных данных, которые обрабатываются Оператором, обеспечивается путем реализации правовых, организационных и технических мер, необходимых для выполнения в полном объеме требований действующего законодательства в области защиты персональных данных.</p>
                     <p><span class="bold-number">8.1.</span> Оператор обеспечивает сохранность персональных данных и принимает все возможные меры, исключающие доступ к персональным данным неуполномоченных лиц.</p>
                     <p><span class="bold-number">8.2.</span> Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим лицам, за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу для исполнения обязательств по гражданско-правовому договору. Исключение: обезличенные данные могут передаваться сторонним поставщикам вычислительных мощностей и API нейросетей исключительно для генерации учебного контента в рамках запроса Пользователя.</p>
-                    <p><span class="bold-number">8.3.</span> В случае выявления неточностей в персональных данных, Пользователь может актуализировать их самостоятельно, путем направления Оператору уведомления на адрес электронной почты Оператора <a href="mailto:belltdae@novaprepai.com">belltdae@novaprepai.com</a> с пометкой «Актуализация персональных данных».</p>
-                    <p><span class="bold-number">8.4.</span> Срок обработки персональных данных определяется достижением целей, для которых были собраны персональные данные, если иной срок не предусмотрен договором или действующим законодательством. Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора <a href="mailto:belltdae@novaprepai.com">belltdae@novaprepai.com</a> с пометкой «Отзыв согласия на обработку персональных данных».</p>
+                    <p><span class="bold-number">8.3.</span> В случае выявления неточностей в персональных данных, Пользователь может актуализировать их самостоятельно, путем направления Оператору уведомления на адрес электронной почты Оператора <a href="mailto:belltdae@novaprepai.com" class="link link-primary">belltdae@novaprepai.com</a> с пометкой «Актуализация персональных данных».</p>
+                    <p><span class="bold-number">8.4.</span> Срок обработки персональных данных определяется достижением целей, для которых были собраны персональные данные, если иной срок не предусмотрен договором или действующим законодательством. Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора <a href="mailto:belltdae@novaprepai.com" class="link link-primary">belltdae@novaprepai.com</a> с пометкой «Отзыв согласия на обработку персональных данных».</p>
                     <p><span class="bold-number">8.5.</span> Вся информация, которая собирается сторонними сервисами, в том числе платежными системами, средствами связи и другими поставщиками услуг, хранится и обрабатывается указанными лицами (Операторами) в соответствии с их Пользовательским соглашением и Политикой конфиденциальности. Оператор не несет ответственность за действия третьих лиц, в том числе указанных в настоящем пункте поставщиков услуг.</p>
                     <p><span class="bold-number">8.6.</span> Оператор при обработке персональных данных обеспечивает конфиденциальность персональных данных.</p>
                     <p><span class="bold-number">8.7.</span> Условием прекращения обработки персональных данных может являться достижение целей обработки персональных данных, истечение срока действия согласия субъекта персональных данных, отзыв согласия субъектом персональных данных или требование о прекращении обработки персональных данных, а также выявление неправомерной обработки персональных данных.</p>
@@ -270,55 +261,148 @@
                     <p>Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено законом.</p>
 
                     <h4>12. Заключительные положения</h4>
-                    <p><span class="bold-number">12.1.</span> Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты <a href="mailto:belltdae@novaprepai.com">belltdae@novaprepai.com</a>.</p>
+                    <p><span class="bold-number">12.1.</span> Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты <a href="mailto:belltdae@novaprepai.com" class="link link-primary">belltdae@novaprepai.com</a>.</p>
                     <p><span class="bold-number">12.2.</span> В данном документе будут отражены любые изменения политики обработки персональных данных Оператором. Политика действует бессрочно до замены ее новой версией.</p>
-                    <p><span class="bold-number">12.3.</span> Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу <a href="https://novaprepai.com/privacy">https://novaprepai.com/privacy</a>.</p>
+                    <p><span class="bold-number">12.3.</span> Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу <a href="https://novaprepai.com/privacy" class="link link-primary">https://novaprepai.com/privacy</a>.</p>
                 </div>
-
             </div>
         </div>
     </main>
 
-    <footer class="text-center bg-dark text-light py-5 mt-auto">
-    <div class="container py-3">
-        <ul class="list-inline mb-4">
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/about">О платформе</a></li>
-            <li class="list-inline-item me-4"><a class="text-decoration-none text-light opacity-75" href="/tests">Тесты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/contact">Контакты</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/privacy">Privacy</a></li>
-            <li class="list-inline-item"><a class="text-decoration-none text-light opacity-75" href="/terms">Terms</a></li>
-        </ul>
+    <!-- FOOTER -->
+    <footer class="bg-base-200 border-t border-base-300 pt-16 pb-8">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <a class="flex items-center gap-3 mb-4" href="/index.html">
+                        <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-8 w-8 object-contain">
+                        <span class="font-black text-xl tracking-tight text-base-content">NovaPrep AI</span>
+                    </a>
+                    <p class="text-base-content/70 max-w-md font-medium">Умная платформа для подготовки к Общереспубликанскому тестированию. Индивидуальный подход к каждому ученику с помощью ИИ.</p>
+                </div>
 
-        <div class="d-flex justify-content-center gap-4 mb-4">
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://api.whatsapp.com/send?text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся:%20https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                </svg>
-            </a>
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Платформа</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/about" class="hover:text-primary transition-colors">О платформе</a></li>
+                        <li><a href="/tests" class="hover:text-primary transition-colors">Все тесты</a></li>
+                        <li><a href="/contact" class="hover:text-primary transition-colors">Контакты</a></li>
+                    </ul>
+                </div>
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://t.me/share/url?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/>
-                </svg>
-            </a>
+                <!-- Legal -->
+                <div>
+                    <h4 class="font-bold text-base-content mb-4 uppercase tracking-wider text-sm">Документы</h4>
+                    <ul class="space-y-3 font-medium text-base-content/70">
+                        <li><a href="/privacy" class="text-primary transition-colors">Политика конфиденциальности</a></li>
+                        <li><a href="/terms" class="hover:text-primary transition-colors">Пользовательское соглашение</a></li>
+                    </ul>
+                </div>
+            </div>
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://twitter.com/intent/tweet?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся%20к%20NovaPrepAI:" target="_blank" rel="noopener noreferrer" aria-label="Share on X">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
-                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
-                </svg>
-            </a>
+            <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-base-300">
+                <p class="text-base-content/50 text-sm font-semibold mb-4 md:mb-0">© 2026 NovaPrep AI. Все права защищены.</p>
 
-            <a class="text-light opacity-75" style="transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" href="https://www.facebook.com/sharer/sharer.php?u=https://www.novaprepai.com/" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
-                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
-                </svg>
-            </a>
+                <!-- Socials -->
+                <div class="flex gap-4">
+                    <a href="https://api.whatsapp.com/send?text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!%20Присоединяйся:%20https://www.novaprepai.com/" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                    </a>
+                    <a href="https://t.me/share/url?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/></svg>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=https://www.novaprepai.com/&text=Умная%20подготовка%20к%20ОРТ%20с%20помощью%20ИИ!" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.novaprepai.com/" target="_blank" class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content/70 hover:bg-primary hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>
+                    </a>
+                </div>
+            </div>
         </div>
+    </footer>
 
-        <p class="text-light opacity-50 mb-0 fs-6">Copyright © 2026 NovaPrep AI. Все права защищены.</p>
-    </div>
-</footer>
+    <!-- NATIVE DAISYUI COOKIE MODAL -->
+    <dialog id="cookieModal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box p-0 overflow-hidden max-w-3xl bg-base-100 border border-base-300 shadow-2xl">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/3 bg-base-200 flex flex-col items-center justify-center p-8 text-center border-b md:border-b-0 md:border-r border-base-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" viewBox="0 0 16 16" class="mb-4 text-primary"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/><path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/></svg>
+                    <h3 class="font-bold text-xl text-base-content">Настройки Cookie</h3>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <p class="text-base-content/70 mb-8 leading-relaxed font-medium">
+                        Мы используем файлы cookie для обеспечения безопасности (авторизация) и сбора анонимной статистики, чтобы улучшать алгоритмы генерации тестов ОРТ.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="acceptAllCookies" class="btn btn-primary flex-1 shadow-md">Принять все</button>
+                        <button id="acceptEssentialCookies" class="btn btn-outline flex-1 bg-base-100">Только технические</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
 
-    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieConsent = localStorage.getItem('novaPrepCookieConsent');
+            const cookieModal = document.getElementById('cookieModal');
+
+            if (!cookieConsent) {
+                cookieModal.showModal();
+            }
+
+            document.getElementById('acceptAllCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'all');
+                cookieModal.close();
+            });
+
+            document.getElementById('acceptEssentialCookies').addEventListener('click', function() {
+                localStorage.setItem('novaPrepCookieConsent', 'essential');
+                cookieModal.close();
+            });
+        });
+
+        // Theme saving script
+        const themeController = document.querySelector('.theme-controller');
+        const htmlTag = document.documentElement;
+
+        const savedTheme = localStorage.getItem('novaPrepTheme');
+        if (savedTheme) {
+            htmlTag.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'light') {
+                themeController.checked = true;
+            }
+        } else {
+            htmlTag.setAttribute('data-theme', 'dark');
+        }
+
+        themeController.addEventListener('change', (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            htmlTag.setAttribute('data-theme', newTheme);
+            localStorage.setItem('novaPrepTheme', newTheme);
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (typeof makeRequest === 'function') {
+                    const data = await makeRequest('/api/user/', 'GET', null, false);
+                    if (data && data.avatar) {
+                        const navAvatar = document.getElementById('navbarAvatar');
+                        if (navAvatar) {
+                            navAvatar.src = data.avatar;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Гостевой режим или ошибка загрузки профиля.');
+            }
+        });
+    </script>
 </body>
 </html>

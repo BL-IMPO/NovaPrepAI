@@ -234,6 +234,12 @@ async def submit_test(submission: schemas.TestSubmission, current_user = Depends
             )
         test_attempt = await sync_to_async(db_save)()
 
+        try:
+            for key in redis_client.scan_iter(f"*user_streak_{current_user.id}*"):
+                redis_client.delete(key)
+        except Exception as e:
+            print(f"Failed to clear streak cache: {e}")
+
         return {
             "success": True,
             "score": base_score,

@@ -14,7 +14,8 @@ from .views import (
     RefreshTokenView,
     VerifyTokenView,
     UserTestHistoryView,
-    ContactMessageView
+    ContactMessageView,
+    StreakTestsTaken
 )
 
 app_name = "users"
@@ -39,6 +40,7 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/user/tests/', UserTestHistoryView.as_view(), name='user-tests'),
     path('api/contact/', ContactMessageView.as_view(), name='contact'),
+    path('api/streak/', StreakTestsTaken.as_view(), name='user_streak'),
 
     # Add CSRF token endpoint for Django forms
     path('api/csrf/', lambda request: JsonResponse({'csrfToken': get_token(request)}), name='csrf_token'),

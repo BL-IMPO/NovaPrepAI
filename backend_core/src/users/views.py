@@ -12,6 +12,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import QueryDict
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.core.cache import cache
 
 from main.models import TestAttempt
 from users.models import UserProfile
@@ -245,3 +246,49 @@ class ContactMessageView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class StreakTestsTaken(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # Example of date 2026-03-18 14:43:29.282586+00
+    def get(self, request):
+        from django.utils import timezone
+
+        cache_key = f"user_streak_{request.user.id}"
+
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        today = timezone.now().date()
+
+        test_dates = list(TestAttempt.objects.filter(user=request.user).dates('created_at', 'day', order='DESC'))
+
+        streak = 0
+        daily_streak = False
+
+        if test_dates:
+            most_recent_test = test_dates[0]
+
+            if most_recent_test in [today, today - timedelta(days=1)]:
+
+                if most_recent_test == today:
+                    daily_streak = True
+
+                target_date = most_recent_test
+
+                for test_date in test_dates:
+                    if test_date == target_date:
+                        streak += 1
+                        target_date -= timedelta(days=1)
+                    else:
+                        break
+
+        response_data = {
+            "streak": streak,
+            "daily_streak": daily_streak
+        }
+
+        cache.set(cache_key, response_data, timeout=86400)
+
+        return Response(response_data)
