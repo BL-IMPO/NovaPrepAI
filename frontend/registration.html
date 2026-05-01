@@ -30,8 +30,9 @@
 <body class="flex flex-col min-h-screen bg-base-100 font-sans selection:bg-primary selection:text-white">
 
     <!-- NAVBAR (Wide, Glassmorphism) -->
-    <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-200 px-4 md:px-8 transition-all duration-300">
-        <div class="navbar-start flex-1 w-full md:w-auto">
+    <!-- NAVBAR (Registration Page - Mobile Fixed) -->
+    <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-200 px-2 sm:px-4 md:px-8 transition-all duration-300">
+        <div class="navbar-start flex-1">
             <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
@@ -43,9 +44,9 @@
             </div>
 
             <!-- Logo -->
-            <a class="flex items-center gap-3 hover:opacity-80 transition-opacity" href="/index.html">
-                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-10 w-10 object-contain drop-shadow-sm">
-                <span class="font-black text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
+            <a class="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity" href="/index.html">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-8 w-8 sm:h-10 sm:w-10 object-contain drop-shadow-sm shrink-0">
+                <span class="font-black text-lg sm:text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
             </a>
 
             <!-- Links moved near logo -->
@@ -55,10 +56,10 @@
             </ul>
         </div>
 
-        <div class="navbar-end flex-none gap-3 w-full md:w-auto">
+        <div class="navbar-end flex-none gap-1.5 sm:gap-3">
 
             <!-- Theme Controller -->
-            <label class="swap swap-rotate btn btn-ghost btn-circle">
+            <label class="swap swap-rotate btn btn-ghost btn-circle shrink-0">
               <input type="checkbox" class="theme-controller" value="light" />
               <!-- sun icon -->
               <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17.65,17.29l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,18.36,17ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Z"/></svg>
@@ -67,19 +68,19 @@
             </label>
 
             <!-- Auth Elements -->
-            <div data-auth="true" style="display: none;" class="flex items-center gap-3">
-                <a href="/profile" class="avatar transition-transform hover:scale-105">
-                    <div class="w-11 h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
+            <div data-auth="true" style="display: none;" class="flex items-center gap-1.5 sm:gap-3">
+                <a href="/profile" class="avatar transition-transform hover:scale-105 shrink-0">
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
                         <img id="navbarAvatar" src="assets/img/default-avatar.webp" alt="Профиль">
                     </div>
                 </a>
-                <div id="navStreakBar" class="badge badge-warning badge-lg gap-2 font-bold shadow-sm border-warning/20 py-4 px-4 d-none">
+                <div id="navStreakBar" class="badge badge-warning badge-sm sm:badge-lg gap-1 sm:gap-2 font-bold shadow-sm border-warning/20 py-3 sm:py-4 px-2 sm:px-4 d-none">
                     🔥 <span id="streakCount">0</span>
                 </div>
             </div>
 
-            <!-- Guest Elements -->
-            <a href="/login" class="btn btn-primary shadow-lg shadow-primary/30 font-bold" data-guest="true">Войти</a>
+            <!-- Guest Elements (Original logic: only Login button) -->
+            <a href="/login" class="btn btn-primary btn-sm sm:btn-md px-3 sm:px-6 shadow-lg shadow-primary/30 font-bold whitespace-nowrap shrink-0" data-guest="true">Войти</a>
         </div>
     </nav>
 
