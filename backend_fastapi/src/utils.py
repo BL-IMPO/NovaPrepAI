@@ -48,7 +48,7 @@ class TestORT:
 
     async def _generate_tasks(self, qid: str, q_text: str, data: List, q_type="default"):
         """Asynchronously generates single tasks by given example."""
-        MAX_ATTEMPTS = 6
+        MAX_ATTEMPTS = 2
 
         for attempt in range(MAX_ATTEMPTS):
 
@@ -236,18 +236,18 @@ class TestORT:
 
         async def fetch_text(k, v):
             print(f"Generating new reading passage for {k}")
-            MAX_ATTEMPTS = 3
-            for _ in range(MAX_ATTEMPTS):
-                new_text = await generate_text(v)
+            #MAX_ATTEMPTS = 3
+            #for _ in range(MAX_ATTEMPTS):
+            new_text = await generate_text(v)
 
                 # check validation
-                val = await validate_reading_text(new_text)
+                #val = await validate_reading_text(new_text)
 
-                if not val.valid:
-                    print(f"Text validation failed for {k}!")
-                    continue
+                #if not val.valid:
+                    #print(f"Text validation failed for {k}!")
+                    #continue
 
-                return k, new_text
+            return k, new_text
 
         # Generate texts concurrently
         text_coros = [fetch_text(k, v) for k, v in texts.items()]
@@ -405,27 +405,3 @@ class Description:
 
     def get_test_types(self) -> list[str]:
         return list(self.descriptions.keys())
-
-
-
-if __name__ == "__main__":
-
-    import os
-
-    if os.getcwd().endswith("src"):
-        os.chdir("..")
-
-    async def local_test():
-        print("---LARGE TEXT GENERATION TESTING---")
-        ORT = TestORT()
-
-        print("\t" * 20, "\n---GENERATION STARTED---\n", "\t" * 20)
-
-        coroutine_list = await ORT.standard_reading_test()
-
-        reading_tasks = await asyncio.gather(*coroutine_list)
-
-        print("\t" * 20, "\n---GENERATION ENDED---\n", "\t" * 20)
-        print(reading_tasks[-1])
-
-    asyncio.run(local_test())

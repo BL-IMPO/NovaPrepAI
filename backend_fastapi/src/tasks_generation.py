@@ -21,19 +21,19 @@ class ValidationResult(BaseModel):
 
 
 class TaskDetails7(BaseModel):
-    correct_answer: str = Field(description="Correct answer (e. g., '5.')")
-    answer_a: str = Field(description="Answer A")
-    answer_b: str = Field(description="Answer B")
-    answer_c: str = Field(description="Answer C")
-    answer_d: str = Field(description="Answer D")
+    correct_answer: str = Field(description="The correct answer ONLY. MAX 5 WORDS. NO EXPLANATIONS.")
+    answer_a: str = Field(description="Answer A. MAX 5 WORDS. NO EXPLANATIONS.")
+    answer_b: str = Field(description="Answer B. MAX 5 WORDS. NO EXPLANATIONS.")
+    answer_c: str = Field(description="Answer C. MAX 5 WORDS. NO EXPLANATIONS.")
+    answer_d: str = Field(description="Answer D. MAX 5 WORDS. NO EXPLANATIONS.")
     points: float = Field(description="Points (1.3, 1.6, or 2.0)")
-    extra_data: List[str] = Field(description="Extra data array (e.g., ['None'] or ['SVG_GRAPH', '<svg>...'])")
+    extra_data: List[str] = Field(description="Extra data array. Must exactly match the structure of the example.")
 
 
 class AIQuestionOutput7(BaseModel):
-    question_text: str = Field(description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
+    question_text: str = Field(
+        description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
     task_details: TaskDetails7
-
 
 
 class TaskDetails8(BaseModel):
@@ -48,34 +48,36 @@ class TaskDetails8(BaseModel):
 
 
 class AIQuestionOutput8(BaseModel):
-    question_text: str = Field(description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
+    question_text: str = Field(
+        description="The exact text of the question ONLY. STRICT RULE: DO NOT add instructions like 'Выберите пару', 'Решите', or 'Найдите'. Mimic the exact formatting length of the example.")
     task_details: TaskDetails8
 
 
 async def generate_text(example_text: str):
     prompt = f"""
-        You are an expert creator of the ORT (Общереспубликанское тестирование) reading comprehension exam.
+    You are an expert ORT exam text creator.
 
-        Your task is to generate ONE new, high-quality reading passage that mimics the exact difficulty, tone, and subject matter of the example.
+    Generate ONE new unique text similar in skill to the example.
 
-        CRITICAL RULES:
-        1. STRICTLY IN RUSSIAN: The entire generated text MUST be in the Russian language. Do not output a single English word unless it is a specific scientific term present in the original.
-        2. LENGTH ENFORCEMENT: You must perform a word count on the example text before generating. Your generated text MUST be exactly the same length (+/- 5%) as the example. Do not summarize, but do not artificially inflate the text. The length must mimic the original perfectly.          3. REALISTIC ACADEMIC STYLE: Instead of trying to retrieve a specific real-world book (which causes translation errors), generate a highly realistic, factual, and structurally complex text that perfectly mimics a real-world publication (encyclopedia, historical archive, scientific journal, or classic literature).
-        4. PRESERVE MARKERS: You must perfectly maintain any structural formatting markers (such as _start, _pause, _continue) exactly as they dictate the flow in the example. 
+    Rules:
+    1. TEXT MUST EXIST IN REAL WORLD: Text must be from a book or publication...
+    2. Preserve the structure and difficulty.
+    3. Keep realistic language suitable for textbooks.
+    4. Maintain _start, _pause, _continue markers if needed.
+    5. STRICT LENGTH LIMIT: The generated text MUST be between 150 and 250 words. Do not exceed this limit under any circumstances.
 
-        EXAMPLE TEXT FOR REFERENCE:
-        {example_text}
-
-        ВАЖНО: Твой финальный ответ (текст) должен быть написан ИСКЛЮЧИТЕЛЬНО на русском академическом языке. Начни генерацию текста:
-        """
+    Example:
+    {example_text}
+    """
 
     response = await client.chat.completions.create(
-        model="gpt-5",
+        model="gpt-5-mini",
         messages=[{"role": "user", "content": prompt}],
-        #temperature=0.9,
+        # temperature=0.9,
     )
 
     return response.choices[0].message.content
+
 
 async def generate_additional_data(data_type: str, description: str) -> str:
     """
@@ -113,15 +115,20 @@ async def generate_additional_data(data_type: str, description: str) -> str:
 
     prompt = f"Description of the required visual:\n{description}"
 
-
     response = await client.chat.completions.create(
         model="gpt-5",  # or gpt-4o depending on your client setup
         messages=[
             {"role": "system", "content": system_instructions},
             {"role": "user", "content": prompt}
         ],
-        #temperature=0.1,
+
     )
+
+    # --- ADD THIS TO TRACK BILLING ---
+    tokens = response.usage
+    print(
+        f"[EXTRA_DATA - {data_type}] Tokens used - Input: {tokens.prompt_tokens} | Output: {tokens.completion_tokens} | Total: {tokens.total_tokens}")
+    # ---------------------------------
 
     raw_output = response.choices[0].message.content.strip()
     if raw_output.startswith("```"):
@@ -131,8 +138,8 @@ async def generate_additional_data(data_type: str, description: str) -> str:
     return raw_output.strip()
 
 
-
-async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list, test_type="default") -> dict:
+async def generate_question_from_template(question_id: str, example_q_text: str, example_array: list,
+                                          test_type="default") -> dict:
     """Clones a specific question using Structured Outputs and tailored rules per test type."""
     example_dict = {example_q_text: example_array}
     example_json_str = json.dumps(example_dict, ensure_ascii=False, indent=2)
@@ -156,7 +163,7 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - The relationship (synonyms, antonyms) or contextual fit must be logically sound and unambiguous.
             - You MUST generate exactly 4 answer options.
             - Answer options MUST NOT contain the same pair of words as in question. And MUST NOT contain any of words from question in answers.
-            
+
             CRITICAL EXTRA_DATA RULES: 
             If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
@@ -168,7 +175,7 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - Focus purely on Russian syntax, punctuation, spelling, or vocabulary context.
             - Keep the difficulty appropriate for high school graduation exams.
             - You MUST generate exactly 4 answer options.
-            
+
             CRITICAL EXTRA_DATA RULES: 
             If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
@@ -179,7 +186,7 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
             - The generated question MUST relate directly to the provided TEXT_BLOCK in the extra_data.
             - Do not ask general knowledge questions; the answer must be derived purely from the text.
             - You MUST generate exactly 4 answer options.
-            
+
             CRITICAL EXTRA_DATA RULES: 
             If extra_data is needed, write the ACTUAL raw content (e.g., exact text). DO NOT write descriptions.
             """
@@ -194,14 +201,14 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
                       - 'answer_c' & 'answer_d': Remaining distractors/text (usually "=" or empty).
                     - STRICT ZERO-BOILERPLATE FOR COLUMNS: DO NOT label the columns.
                     - You MUST generate exactly 4 options.
-                    
+
                     CRITICAL MATHJAX/LATEX FORMATTING:
                     - You MUST format ALL mathematical expressions, fractions, powers, and equations using LaTeX wrapped in \\( and \\). 
                     - BAD: 0,75^2
                     - GOOD: \\( 0,75^2 \\)
                     - BAD: 9/16
                     - GOOD: \\( \\frac{9}{16} \\)
-                    
+
                     CRITICAL EXTRA_DATA RULES (DELEGATED RENDERING):
                     If the task requires an SVG_GRAPH or HTML_TABLE, DO NOT WRITE RAW CODE. 
                     Instead, set the extra_data tag (e.g., "SVG_GRAPH") and for the content, write a highly detailed, explicit instruction prompt for a visual developer. 
@@ -213,11 +220,11 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
                     - STRICT STRUCTURAL CLONE RULE: Identify the mathematical sub-topic in the example. Your generated question MUST test the EXACT SAME sub-topic.
                     - You MUST generate exactly 5 answer options (A, B, C, D, E).
                     - Ensure calculations are accurate and only one correct option exists.
-                    
+
                     CRITICAL MATHJAX/LATEX FORMATTING:
                     - You MUST format ALL mathematical expressions, fractions, powers, and equations in the question text and answer options using LaTeX wrapped in \\( and \\). 
                     - Example: \\( x^2 + 2x = 0 \\) or \\( \\frac{1}{2} \\).
-                    
+
                     CRITICAL EXTRA_DATA RULES (DELEGATED RENDERING):
                     If the task requires an SVG_GRAPH or HTML_TABLE, DO NOT WRITE RAW CODE. 
                     Instead, set the extra_data tag (e.g., "SVG_GRAPH") and for the content, write a highly detailed, explicit instruction prompt for a visual developer. 
@@ -252,7 +259,10 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
        - BAD: "Решите уравнение: 2x = 4"
        - GOOD: "2x = 4"
        Match the exact brevity and style of the example string.
-
+    6. CONDITIONAL EXTRA_DATA RULE: 
+       - Look STRICTLY at the 'extra_data' field in the provided EXAMPLE QUESTION.
+       - IF the example's extra_data is ["None"], YOUR extra_data MUST BE EXACTLY ["None"]. Do not invent SVGs, reading texts, or explanations.
+       - IF the example contains a data tag (e.g., ["SVG_GRAPH", "..."] or ["TEXT_BLOCK", "..."]), you MUST use that exact same tag and provide the updated content for your new question.
     {type_specific_rules}
 
     EXAMPLE QUESTION:
@@ -262,8 +272,14 @@ async def generate_question_from_template(question_id: str, example_q_text: str,
         model="gpt-5-mini",
         messages=[{"role": "user", "content": prompt}],
         response_format=selected_schema,
-       # temperature=0.9,
+        # temperature=0.9,
     )
+
+    # --- ADD THIS TO TRACK BILLING ---
+    tokens = response.usage
+    print(
+        f"[{test_type.upper()}] Tokens used - Input: {tokens.prompt_tokens} | Output: {tokens.completion_tokens} | Total: {tokens.total_tokens}")
+    # ---------------------------------
 
     ai_data = response.choices[0].message.parsed
     details = ai_data.task_details
@@ -403,7 +419,6 @@ Return JSON.
 
 
 async def validate_reading_text(text):
-
     prompt = f"""
 Check this reading passage.
 
