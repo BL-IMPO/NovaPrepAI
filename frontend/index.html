@@ -39,32 +39,32 @@
 <body class="flex flex-col min-h-screen bg-base-100 font-sans selection:bg-primary selection:text-white">
 
     <!-- NAVBAR (Wide, Glassmorphism) -->
-   <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg px-2 sm:px-4 md:px-8 transition-all duration-300">
-    <!-- REMOVED w-full here to fix layout -->
-    <div class="navbar-start flex-1">
-        <div class="dropdown">
-            <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+    <nav class="navbar fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-lg px-4 md:px-8 transition-all duration-300">
+        <div class="navbar-start flex-1 w-full md:w-auto">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden -ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </div>
+                <ul tabindex="0" class="menu menu-lg dropdown-content mt-3 z-[1] p-4 shadow-2xl bg-base-100 rounded-box w-64 border border-base-200">
+                    <li><a href="/tests" class="font-semibold">Тесты</a></li>
+                    <li><a href="/about" class="font-semibold">О нас</a></li>
+                </ul>
             </div>
-            <ul tabindex="0" class="menu menu-lg dropdown-content mt-3 z-[1] p-4 shadow-2xl bg-base-100 rounded-box w-64 border border-base-200">
-                <li><a href="/tests" class="font-semibold">Тесты</a></li>
-                <li><a href="/about" class="font-semibold">О нас</a></li>
+
+            <!-- Logo -->
+            <a class="flex items-center gap-3 hover:opacity-80 transition-opacity" href="/index.html">
+                <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-10 w-10 object-contain drop-shadow-sm">
+                <span class="font-black text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
+            </a>
+
+            <!-- Links moved near logo -->
+            <ul class="menu menu-horizontal px-1 gap-2 hidden lg:flex ml-6">
+                <li><a href="/tests" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">Тесты</a></li>
+                <li><a href="/about" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">О нас</a></li>
             </ul>
         </div>
 
-        <a class="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity" href="/index.html">
-            <img src="/assets/img/logo-icon.png" alt="NovaPrep AI" class="h-8 w-8 sm:h-10 sm:w-10 object-contain drop-shadow-sm shrink-0">
-            <span class="font-black text-lg sm:text-xl tracking-tight text-base-content hidden sm:block">NovaPrep AI</span>
-        </a>
-
-        <ul class="menu menu-horizontal px-1 gap-2 hidden lg:flex ml-6">
-            <li><a href="/tests" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">Тесты</a></li>
-            <li><a href="/about" class="font-semibold text-base-content/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2">О нас</a></li>
-        </ul>
-    </div>
-
-    <!-- REMOVED w-full here to fix layout -->
-    <div class="navbar-end flex-none gap-1.5 sm:gap-3">
+        <div class="navbar-end flex-none gap-3 w-full md:w-auto">
 
             <!-- 1. Theme Controller -->
             <label class="swap swap-rotate btn btn-ghost btn-circle">
@@ -78,21 +78,27 @@
 
             <!-- Auth Elements -->
             <div data-auth="true" style="display: none;" class="flex items-center gap-3">
-            <div id="navStreakBar" class="badge badge-warning badge-sm sm:badge-lg gap-1 sm:gap-2 font-bold shadow-sm border-warning/20 py-3 sm:py-4 px-2 sm:px-4 d-none">
-                🔥 <span id="streakCount">0</span>
-            </div>
-            <a href="/profile" class="avatar transition-transform hover:scale-105 shrink-0">
-                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
-                    <img id="navbarAvatar" src="assets/img/default-avatar.webp" alt="Профиль">
-                </div>
-            </a>
-        </div>
 
-        <!-- Guest Elements (Added btn-sm for mobile scaling) -->
-        <a href="/login" class="btn btn-ghost btn-sm sm:btn-md font-bold text-base-content/70 hover:text-primary hover:bg-primary/10 hidden sm:inline-flex" data-guest="true">Войти</a>
-        <a href="/registration" class="btn btn-primary btn-sm sm:btn-md px-3 sm:px-6 shadow-lg shadow-primary/30 font-bold whitespace-nowrap" data-guest="true">Начать сейчас</a>
-    </div>
-</nav>
+                <!-- 2. Streak Bar -->
+                <div id="navStreakBar" class="badge badge-warning badge-lg gap-2 font-bold shadow-sm border-warning/20 py-4 px-4 d-none">
+                    🔥 <span id="streakCount">0</span>
+                </div>
+
+                <!-- 3. Avatar -->
+                <a href="/profile" class="avatar transition-transform hover:scale-105">
+                    <div class="w-11 h-11 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100 shadow-md">
+                        <img id="navbarAvatar" src="assets/img/default-avatar.webp" alt="Профиль">
+                    </div>
+                </a>
+
+
+            </div>
+
+            <!-- Guest Elements -->
+            <a href="/login" class="btn btn-ghost font-bold text-base-content/70 hover:text-primary hover:bg-primary/10 hidden sm:inline-flex" data-guest="true">Войти</a>
+            <a href="/registration" class="btn btn-primary shadow-lg shadow-primary/30 font-bold" data-guest="true">Начать сейчас</a>
+        </div>
+    </nav>
 
     <!-- MAIN CONTENT -->
     <main class="flex-grow pt-20"> <!-- pt-20 to account for fixed navbar -->
@@ -140,7 +146,12 @@
                         <!-- Main Window -->
                         <div class="mockup-browser border border-base-300 bg-base-100 shadow-2xl shadow-base-300/50 transform rotate-y-[-5deg] rotate-x-[5deg] transition-transform duration-700 hover:rotate-0">
                             <div class="mockup-browser-toolbar border-b border-base-300">
-                                <div class="input text-xs text-base-content/50 border-base-200 flex items-center justify-center leading-none">novaprepai.com/dashboard</div>
+                                <div class="flex items-center justify-start w-full h-8 gap-1.5 mx-4 px-3 bg-base-200 text-xs text-base-content/50 border border-base-200 rounded-lg leading-none">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+    <span>novaprepai.com/dashboard</span>
+</div>
                             </div>
                             <div class="bg-base-200 p-4">
                                 <img src="/assets/img/analyze.png" alt="Dashboard" class="rounded-lg shadow-sm border border-base-300 w-full h-auto object-cover">
